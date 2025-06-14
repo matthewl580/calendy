@@ -30,6 +30,10 @@ export function DisplaySettings({ config, onConfigChange }: DisplaySettingsProps
             <RadioGroupItem value="image-30-calendar-70" id="layout-split" />
             <Label htmlFor="layout-split" className="font-normal">Split (Image 30% / Calendar 70%)</Label>
           </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="landscape-banner" id="layout-landscape-banner" />
+            <Label htmlFor="layout-landscape-banner" className="font-normal">Landscape Banner (Image Top)</Label>
+          </div>
         </RadioGroup>
       </div>
 
@@ -44,8 +48,8 @@ export function DisplaySettings({ config, onConfigChange }: DisplaySettingsProps
         >
           {PAPER_ORIENTATION_OPTIONS.map(orientation => (
             <div key={orientation} className="flex items-center space-x-2">
-              <RadioGroupItem value={orientation} id={\`orientation-\${orientation}\`} />
-              <Label htmlFor={\`orientation-\${orientation}\`} className="font-normal">
+              <RadioGroupItem value={orientation} id={String('orientation-' + orientation)} />
+              <Label htmlFor={String('orientation-' + orientation)} className="font-normal">
                 {orientation.charAt(0).toUpperCase() + orientation.slice(1)}
               </Label>
             </div>

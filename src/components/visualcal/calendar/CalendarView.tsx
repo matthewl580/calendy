@@ -1,3 +1,4 @@
+
 "use client";
 
 import { cn } from '@/lib/utils';
@@ -56,14 +57,30 @@ export function CalendarView({ config }: CalendarViewProps) {
     for (let i = 1; i <= daysInMonth; i++) {
       daysArray.push({ day: i, isCurrentMonth: true });
     }
-    const remainingCells = 7 - (daysArray.length % 7);
-    if (remainingCells < 7) {
-      for (let i = 0; i < remainingCells; i++) {
+    const remainingCells = (showWeekends ? 7 : 5) - (daysArray.length % (showWeekends ? 7 : 5));
+
+    // Adjust total cells needed based on whether weekends are shown
+    let totalCellsTarget = 0;
+    const numWeeks = Math.ceil(daysArray.length / (showWeekends ? 7 : 5));
+    totalCellsTarget = numWeeks * (showWeekends ? 7 : 5);
+    
+    const currentLength = daysArray.length;
+    if (currentLength < totalCellsTarget) {
+       for (let i = 0; i < (totalCellsTarget - currentLength) ; i++) {
         daysArray.push({ day: null, isCurrentMonth: false });
       }
     }
+
+
+    if (!showWeekends) {
+      // If not showing weekends, filter them out after initial construction.
+      // This is complex because it requires knowing the day of the week for each.
+      // A simpler approach is to handle it in rendering and grid column count.
+      // For now, this array will still contain data for weekends,
+      // but CalendarDay will hide them and grid columns will adjust.
+    }
     return daysArray;
-  }, [selectedYear, selectedMonth, startWeekOnMonday, daysInMonth, firstDayOfMonth]);
+  }, [selectedYear, selectedMonth, startWeekOnMonday, daysInMonth, firstDayOfMonth, showWeekends]);
 
 
   const containerClasses = cn(
@@ -72,52 +89,69 @@ export function CalendarView({ config }: CalendarViewProps) {
     calendarStyle === 'classic' && borderStyle !== 'none' && 'border',
     borderStyle === 'rounded' && 'rounded-lg',
     borderStyle !== 'none' && {
-      'border-border': true, // Default border color
-      'border': borderWidth === 'thin', // Equivalent to border-1
+      'border-border': true, 
+      'border': borderWidth === 'thin', 
       'border-2': borderWidth === 'medium',
       'border-[3px]': borderWidth === 'thick',
     },
     borderStyle === 'none' && 'border-0'
   );
 
-  const headerFontClass = `font-${headerFont.toLowerCase().replace(/\s+/g, '')}`;
+  const headerFontClass = 'font-' + headerFont.toLowerCase().replace(/\s+/g, '');
 
   const dayHeaderClasses = (header: string) => cn(
     'p-2 text-center font-medium text-muted-foreground',
     headerFontClass,
     dayHeaderStyle === 'bordered' && 'border-b border-border',
     dayHeaderStyle === 'pill' && 'bg-primary text-primary-foreground rounded-full m-1 py-1',
-    !showWeekends && (header === "Sun" || header === "Sat") && 'hidden md:block'
+    !showWeekends && (header === "Sun" || header === "Sat") && 'hidden'
   );
   
   const gridClasses = cn(
-    "grid grid-cols-7",
+    "grid",
+    showWeekends ? "grid-cols-7" : "grid-cols-5", // Adjust grid columns
     resizeRowsToFill ? "flex-grow" : "",
-    (borderStyle !== 'none' && calendarStyle !== 'minimal') ? "gap-px bg-border" : "gap-0" // Creates grid lines if bordered
+    (borderStyle !== 'none' && calendarStyle !== 'minimal') ? "gap-px bg-border" : "gap-0" 
   );
   
   const cellWrapperClasses = cn(
-     (borderStyle !== 'none' && calendarStyle !== 'minimal') ? "bg-card" : "" // Individual cell background if grid lines are via gap
+     (borderStyle !== 'none' && calendarStyle !== 'minimal') ? "bg-card" : "" 
   );
 
 
   return (
     <div className={containerClasses}>
-      <div className="grid grid-cols-7">
-        {dayHeaders.map(header => (
-          <div key={header} className={dayHeaderClasses(header)}>
-            {header.substring(0,3)}
-          </div>
-        ))}
+      <div className={cn("grid", showWeekends ? "grid-cols-7" : "grid-cols-5")}>
+        {dayHeaders.map(header => {
+          if (!showWeekends && (header === "Sun" || header === "Sat")) {
+            return null; // Don't render weekend headers if not shown
+          }
+          return (
+            <div key={header} className={dayHeaderClasses(header)}>
+              {header.substring(0,3)}
+            </div>
+          );
+        })}
       </div>
       <div className={gridClasses}>
         {calendarDays.map((item, index) => {
           const dayDate = item.day ? new Date(selectedYear, selectedMonth, item.day) : null;
-          const isWeekend = dayDate ? (dayDate.getDay() === 0 || dayDate.getDay() === 6) : false;
-           // Adjust weekend check if week starts on Monday for consistency with headers
-          const adjustedIsWeekend = startWeekOnMonday
-            ? (dayDate ? (dayDate.getDay() === 6 || dayDate.getDay() === 5) : false) // Sat or Sun
-            : isWeekend; // Original Sun or Sat
+          
+          // Determine original weekend status (0=Sun, 6=Sat)
+          const isOriginalWeekend = dayDate ? (dayDate.getDay() === 0 || dayDate.getDay() === 6) : false;
+
+          if (!showWeekends && isOriginalWeekend && item.isCurrentMonth) {
+            return null; // Don't render cells for weekends if not showing weekends
+          }
+          
+          // For the isWeekend prop passed to CalendarDay, it should reflect the visual weekend
+          // based on startWeekOnMonday if weekends *are* shown.
+          // If weekends are not shown, this prop's value for non-rendered days is irrelevant.
+          let displayIsWeekend = isOriginalWeekend;
+          if (showWeekends && startWeekOnMonday) {
+             displayIsWeekend = dayDate ? (dayDate.getDay() === 5 || dayDate.getDay() === 6) : false; // Adjusted for Mon start: Sat=5, Sun=6
+          }
+
 
           return (
             <div key={index} className={cellWrapperClasses}>
@@ -125,7 +159,7 @@ export function CalendarView({ config }: CalendarViewProps) {
                 day={item.day}
                 isCurrentMonth={item.isCurrentMonth}
                 isToday={item.day === currentDay && selectedMonth === currentMonth && selectedYear === currentYear}
-                isWeekend={adjustedIsWeekend}
+                isWeekend={displayIsWeekend} // Pass the relevant weekend status
                 config={config}
               />
             </div>

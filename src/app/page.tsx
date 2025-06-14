@@ -60,7 +60,12 @@ export default function VisualCalPage() {
     if (savedConfig) {
       try {
         const parsedConfig = JSON.parse(savedConfig);
-        setCalendarConfig({ ...initialConfig, ...parsedConfig });
+        // Ensure all keys from initialConfig are present, otherwise defaults might be missed
+        const mergedConfig = { ...initialConfig, ...parsedConfig };
+        // Specifically handle potentially missing nested objects to avoid errors
+        mergedConfig.imagePosition = { ...initialConfig.imagePosition, ...(parsedConfig.imagePosition || {}) };
+        mergedConfig.notesSize = { ...initialConfig.notesSize, ...(parsedConfig.notesSize || {}) };
+        setCalendarConfig(mergedConfig);
       } catch (error) {
         console.error("Failed to parse saved config:", error);
         localStorage.removeItem('visualCalConfig'); 
@@ -96,12 +101,13 @@ export default function VisualCalPage() {
       "  .visualcal-sidebar, .visualcal-print-button-group {\n" +
       "    display: none !important;\n" +
       "  }\n" +
-      "  .visualcal-main-content {\n" +
+      "  .visualcal-main-content {\n" + // Ensure this class is applied to the correct element
       "    width: 100% !important;\n" +
       "    height: auto !important;\n" +
       "    overflow: visible !important;\n" +
+      "    padding: 0 !important;\n" + // Remove padding for print
       "  }\n" +
-      "  .visualcal-sidebar-inset {\n" +
+      "  .visualcal-sidebar-inset {\n" + // This is the parent of visualcal-main-content
       "    padding: 0 !important;\n" +
       "    margin: 0 !important;\n" +
       "    overflow: visible !important;\n" +
@@ -183,21 +189,49 @@ export default function VisualCalPage() {
         </Sidebar>
 
         <SidebarInset className="flex-1 overflow-auto bg-background visualcal-sidebar-inset">
-          <div className={cn(
-            "flex flex-col h-full visualcal-main-content",
-            calendarConfig.displayLayout === 'image-30-calendar-70' ? "md:flex-row" : "flex-col"
-          )}>
-            {calendarConfig.imageSrc && calendarConfig.displayLayout === 'image-30-calendar-70' && (
-              <div className="md:w-[30%] w-full p-4 flex flex-col space-y-4">
-                <div className="relative flex-grow bg-muted/30 p-2 rounded-lg shadow-inner min-h-[200px] md:min-h-0">
+          {/* Default Layout: Stacked */}
+          {calendarConfig.displayLayout === 'default' && (
+            <div className="flex flex-col h-full p-4 space-y-4 visualcal-main-content">
+              {calendarConfig.imageSrc && (
+                <div className="relative w-full h-[200px] bg-muted/30 p-2 rounded-lg shadow-inner">
                   <ImageDisplay
                     src={calendarConfig.imageSrc}
                     alt="Calendar visual"
                     position={calendarConfig.imagePosition}
                     size={calendarConfig.imageSize}
-                    data-ai-hint="custom background" 
+                    data-ai-hint="decorative feature" 
                   />
                 </div>
+              )}
+              {calendarConfig.imageSrc && calendarConfig.notesPosition === 'under-image' && (
+                  <Textarea
+                    value={calendarConfig.notesContent}
+                    onChange={(e) => handleConfigChange('notesContent', e.target.value)}
+                    placeholder="Notes..."
+                    className="w-full h-24 resize-none bg-card p-2 shadow-md rounded-md border-border"
+                  />
+              )}
+              <div className="flex-grow">
+                <CalendarView config={calendarConfig} />
+              </div>
+            </div>
+          )}
+
+          {/* Split Layout: Image 30% / Calendar 70% */}
+          {calendarConfig.displayLayout === 'image-30-calendar-70' && (
+            <div className="flex flex-col md:flex-row h-full visualcal-main-content">
+              <div className="md:w-[30%] w-full p-4 flex flex-col space-y-4">
+                {calendarConfig.imageSrc && (
+                  <div className="relative flex-grow bg-muted/30 p-2 rounded-lg shadow-inner min-h-[200px] md:min-h-0">
+                    <ImageDisplay
+                      src={calendarConfig.imageSrc}
+                      alt="Calendar visual"
+                      position={calendarConfig.imagePosition}
+                      size={calendarConfig.imageSize}
+                      data-ai-hint="custom background" 
+                    />
+                  </div>
+                )}
                 {calendarConfig.notesPosition === 'under-image' && (
                   <Textarea
                     value={calendarConfig.notesContent}
@@ -207,35 +241,41 @@ export default function VisualCalPage() {
                   />
                 )}
               </div>
-            )}
-            
-            <div className={cn(
-              "flex-1 p-4",
-              calendarConfig.displayLayout === 'image-30-calendar-70' ? "md:w-[70%] w-full" : "w-full"
-            )}>
-              {calendarConfig.imageSrc && calendarConfig.displayLayout === 'default' && (
-                 <div className="relative w-full h-[200px] mb-4 bg-muted/30 p-2 rounded-lg shadow-inner">
-                   <ImageDisplay
+              <div className="flex-1 p-4 md:w-[70%] w-full">
+                <CalendarView config={calendarConfig} />
+              </div>
+            </div>
+          )}
+          
+          {/* Landscape Banner Layout */}
+          {calendarConfig.displayLayout === 'landscape-banner' && (
+            <div className="flex flex-col h-full p-4 space-y-4 visualcal-main-content">
+              {calendarConfig.imageSrc && (
+                <div className="relative w-full h-[25vh] bg-muted/30 p-2 rounded-lg shadow-inner">
+                  <ImageDisplay
                     src={calendarConfig.imageSrc}
-                    alt="Calendar visual"
+                    alt="Calendar banner"
                     position={calendarConfig.imagePosition}
                     size={calendarConfig.imageSize}
-                    data-ai-hint="decorative feature" 
+                    data-ai-hint="top banner" 
                   />
-                 </div>
+                </div>
               )}
-              {calendarConfig.imageSrc && calendarConfig.displayLayout === 'default' && calendarConfig.notesPosition === 'under-image' && (
+              {calendarConfig.imageSrc && calendarConfig.notesPosition === 'under-image' && (
                   <Textarea
                     value={calendarConfig.notesContent}
                     onChange={(e) => handleConfigChange('notesContent', e.target.value)}
                     placeholder="Notes..."
-                    className="w-full h-24 resize-none bg-card p-2 shadow-md rounded-md border-border mb-4"
+                    className="w-full h-24 resize-none bg-card p-2 shadow-md rounded-md border-border"
                   />
               )}
-              <CalendarView config={calendarConfig} />
+              <div className="flex-grow">
+                <CalendarView config={calendarConfig} />
+              </div>
             </div>
-          </div>
-          
+          )}
+
+          {/* Floating Notes Display (Common for all layouts if not 'under-image') */}
           {calendarConfig.notesPosition !== 'under-image' && (
             <NotesDisplay
               config={calendarConfig}

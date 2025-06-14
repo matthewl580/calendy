@@ -1,9 +1,10 @@
+
 export type CalendarStyle = 'modern' | 'classic' | 'minimal';
 export type BorderStyle = 'solid' | 'rounded' | 'none';
 export type BorderWidth = 'thin' | 'medium' | 'thick'; // 1px, 2px, 3px
 export type DayHeaderStyle = 'simple' | 'bordered' | 'pill';
 export type NotesPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'under-image';
-export type DisplayLayout = 'default' | 'image-30-calendar-70';
+export type DisplayLayout = 'default' | 'image-30-calendar-70' | 'landscape-banner';
 export type SupportedFont = "Roboto" | "Open Sans" | "Montserrat" | "Lato" | "Poppins";
 export type PaperOrientation = 'portrait' | 'landscape';
 
@@ -40,6 +41,7 @@ export const BORDER_WIDTH_OPTIONS: { label: string, value: BorderWidth }[] = [
 export const DAY_HEADER_STYLE_OPTIONS: DayHeaderStyle[] = ['simple', 'bordered', 'pill'];
 export const NOTES_POSITION_OPTIONS: NotesPosition[] = ['top-left', 'top-right', 'bottom-left', 'bottom-right', 'under-image'];
 export const PAPER_ORIENTATION_OPTIONS: PaperOrientation[] = ['portrait', 'landscape'];
+// No explicit DISPLAY_LAYOUT_OPTIONS needed here as they are managed in DisplaySettings component
 
 export const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
