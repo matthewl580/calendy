@@ -131,7 +131,6 @@ export function CalendarView({ config }: CalendarViewProps) {
         const cellsToAdd = columns - cellsInLastRow;
         for (let i = 0; i < cellsToAdd; i++) {
             if (showWeekNumbers && (daysArray.length % columns === 0) && (daysArray.length > 0 && daysArray[daysArray.length -1].type !== 'weekNumber' )) {
-                 // Attempt to add a week number if it's the first cell in a new (visual) row for padding
                 const lastDayEntry = [...daysArray].reverse().find(d => d.type ==='day' && d.date);
                 if (lastDayEntry && lastDayEntry.date) {
                     const nextDayApprox = new Date(lastDayEntry.date);
@@ -139,7 +138,7 @@ export function CalendarView({ config }: CalendarViewProps) {
                      if (nextDayApprox.getMonth() === selectedMonth) {
                         daysArray.push({ type: 'weekNumber', number: getWeekNumber(nextDayApprox), date: null });
                      } else {
-                        daysArray.push({ type: 'day', day: null, isCurrentMonth: false, date: null }); // placeholder if week# not appropriate
+                        daysArray.push({ type: 'day', day: null, isCurrentMonth: false, date: null }); 
                      }
                 } else {
                      daysArray.push({ type: 'day', day: null, isCurrentMonth: false, date: null });
@@ -190,7 +189,7 @@ export function CalendarView({ config }: CalendarViewProps) {
     getTextTransformClass(weekdayHeaderTextTransform),
     dayHeaderStyle === 'bordered' && 'border-b border-border',
     dayHeaderStyle === 'pill' && 'bg-primary text-primary-foreground rounded-full m-1 py-1',
-    !showWeekends && (headerText.toLowerCase().startsWith("sun") || headerText.toLowerCase().startsWith("sat")) && 'hidden'
+    !showWeekends && (headerText.toLowerCase().includes("sun") || headerText.toLowerCase().includes("sat")) && 'hidden'
   );
 
   const weekNumberHeaderClass = cn(
@@ -213,7 +212,7 @@ export function CalendarView({ config }: CalendarViewProps) {
   const gridClasses = cn(
     "grid",
     ...gridLayoutClasses,
-    resizeRowsToFill ? "flex-grow" : "",
+    resizeRowsToFill ? "flex-grow auto-rows-fr" : "", // Added auto-rows-fr for dynamic row height
     (borderStyle !== 'none' && calendarStyle !== 'minimal') ? "gap-px bg-border" : "gap-0" 
   );
   
@@ -231,7 +230,9 @@ export function CalendarView({ config }: CalendarViewProps) {
       <div className={cn("grid", ...gridLayoutClasses)}>
         {showWeekNumbers && <div className={weekNumberHeaderClass}>Wk</div>}
         {activeDayHeaders.map(header => {
-          if (!showWeekends && (header.toLowerCase().startsWith("sun") || header.toLowerCase().startsWith("sat"))) {
+          // For filtering headers, check against the full, untruncated day names
+          const fullDayForCheck = dayHeadersFull[dayHeadersFull.map(d => d.toLowerCase().startsWith(header.toLowerCase().substring(0,3))).indexOf(true)] || "";
+          if (!showWeekends && (fullDayForCheck.toLowerCase() === "sunday" || fullDayForCheck.toLowerCase() === "saturday")) {
             return null; 
           }
           return (
@@ -255,12 +256,16 @@ export function CalendarView({ config }: CalendarViewProps) {
           const dayOfWeek = item.date ? item.date.getDay() : -1; // 0 for Sun, 6 for Sat
           let isWeekendDayForFiltering = false;
           if(startWeekOnMonday) {
-            isWeekendDayForFiltering = dayOfWeek === 0 || dayOfWeek === 6; // Sunday or Saturday
+            // If week starts on Monday, Saturday is 5 and Sunday is 6 in a 0-6 (Mon-Sun) system.
+            // Original getDay() is 0 (Sun) to 6 (Sat).
+            // So, Saturday (6) or Sunday (0) from original getDay() are weekends.
+            isWeekendDayForFiltering = dayOfWeek === 0 || dayOfWeek === 6;
           } else {
-            isWeekendDayForFiltering = dayOfWeek === 0 || dayOfWeek === 6; // Sunday or Saturday
+            // If week starts on Sunday, Saturday is 6 and Sunday is 0.
+            isWeekendDayForFiltering = dayOfWeek === 0 || dayOfWeek === 6; 
           }
 
-          if (!showWeekends && isWeekendDayForFiltering && item.isCurrentMonth) {
+          if (!showWeekends && isWeekendDayForFiltering && item.day !== null) { // Only hide actual weekend days
             return null; 
           }
           

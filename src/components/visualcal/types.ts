@@ -5,7 +5,10 @@ export type BorderWidth = 'thin' | 'medium' | 'thick'; // 1px, 2px, 3px
 export type DayHeaderStyle = 'simple' | 'bordered' | 'pill';
 export type NotesPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'under-image';
 export type DisplayLayout = 'default' | 'image-30-calendar-70' | 'landscape-banner';
-export type SupportedFont = "Roboto" | "Open Sans" | "Montserrat" | "Lato" | "Poppins";
+export type SupportedFont = 
+  "Roboto" | "Open Sans" | "Montserrat" | "Lato" | "Poppins" | 
+  "Arial" | "Verdana" | "Georgia" | "Times New Roman" | "Courier New" |
+  "Noto Sans" | "Source Sans Pro" | "Raleway" | "Oswald" | "Merriweather" | "Playfair Display";
 export type PaperOrientation = 'portrait' | 'landscape';
 export type AppTheme = 
   'default' | 
@@ -86,7 +89,11 @@ export interface CalendarConfig {
   dayNumberAlignment: DayNumberAlignment;
 }
 
-export const FONT_OPTIONS: SupportedFont[] = ["Roboto", "Open Sans", "Montserrat", "Lato", "Poppins"];
+export const FONT_OPTIONS: SupportedFont[] = [
+  "Roboto", "Open Sans", "Montserrat", "Lato", "Poppins", 
+  "Arial", "Verdana", "Georgia", "Times New Roman", "Courier New",
+  "Noto Sans", "Source Sans Pro", "Raleway", "Oswald", "Merriweather", "Playfair Display"
+];
 export const CALENDAR_STYLE_OPTIONS: CalendarStyle[] = ['modern', 'classic', 'minimal'];
 export const BORDER_STYLE_OPTIONS: BorderStyle[] = ['solid', 'rounded', 'none'];
 export const BORDER_WIDTH_OPTIONS: { label: string, value: BorderWidth }[] = [

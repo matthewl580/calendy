@@ -10,13 +10,29 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Roboto', 'sans-serif'],
-        headline: ['Poppins', 'sans-serif'],
+        body: ['Roboto', 'sans-serif'], // Default body font
+        headline: ['Poppins', 'sans-serif'], // Default headline font
+        
+        // Predefined Google Fonts
         roboto: ['Roboto', 'sans-serif'],
         opensans: ['Open Sans', 'sans-serif'],
         montserrat: ['Montserrat', 'sans-serif'],
         lato: ['Lato', 'sans-serif'],
         poppins: ['Poppins', 'sans-serif'],
+        notosans: ['Noto Sans', 'sans-serif'],
+        sourcesanspro: ['Source Sans Pro', 'sans-serif'],
+        raleway: ['Raleway', 'sans-serif'],
+        oswald: ['Oswald', 'sans-serif'],
+        merriweather: ['Merriweather', 'serif'],
+        playfairdisplay: ['Playfair Display', 'serif'],
+        
+        // Common System Fonts
+        arial: ['Arial', 'sans-serif'],
+        verdana: ['Verdana', 'sans-serif'],
+        georgia: ['Georgia', 'serif'],
+        timesnewroman: ['Times New Roman', 'serif'],
+        couriernew: ['Courier New', 'monospace'],
+        
         code: ['monospace'],
       },
       colors: {
@@ -98,6 +114,9 @@ export default {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
+      gridAutoRows: {
+        'fr': 'minmax(0, 1fr)',
+      }
     },
   },
   plugins: [require('tailwindcss-animate')],
