@@ -1,8 +1,8 @@
 
 "use client";
 
-import type { CalendarConfig, CalendarStyle, BorderStyle, BorderWidth, DayHeaderStyle, AppTheme, DayNumberFontSize, MonthYearHeaderAlignment, FontSizeOption, TextTransformOption, WeekdayHeaderLength, MonthYearDisplayOrder, DayCellPaddingOption } from '@/components/visualcal/types';
-import { CALENDAR_STYLE_OPTIONS, BORDER_STYLE_OPTIONS, BORDER_WIDTH_OPTIONS, DAY_HEADER_STYLE_OPTIONS, THEME_OPTIONS, DAY_NUMBER_FONT_SIZE_OPTIONS, MONTH_YEAR_HEADER_ALIGNMENT_OPTIONS, FONT_SIZE_OPTIONS, TEXT_TRANSFORM_OPTIONS, WEEKDAY_HEADER_LENGTH_OPTIONS, MONTH_YEAR_DISPLAY_ORDER_OPTIONS, DAY_CELL_PADDING_OPTIONS, WEEK_NUMBER_FONT_SIZE_OPTIONS } from '@/components/visualcal/types';
+import type { CalendarConfig, CalendarStyle, BorderStyle, BorderWidth, DayHeaderStyle, AppTheme, DayNumberFontSize, MonthYearHeaderAlignment, FontSizeOption, TextTransformOption, WeekdayHeaderLength, MonthYearDisplayOrder, DayCellPaddingOption, DayNumberAlignment } from '@/components/visualcal/types';
+import { CALENDAR_STYLE_OPTIONS, BORDER_STYLE_OPTIONS, BORDER_WIDTH_OPTIONS, DAY_HEADER_STYLE_OPTIONS, THEME_OPTIONS, DAY_NUMBER_FONT_SIZE_OPTIONS, MONTH_YEAR_HEADER_ALIGNMENT_OPTIONS, FONT_SIZE_OPTIONS, TEXT_TRANSFORM_OPTIONS, WEEKDAY_HEADER_LENGTH_OPTIONS, MONTH_YEAR_DISPLAY_ORDER_OPTIONS, DAY_CELL_PADDING_OPTIONS, WEEK_NUMBER_FONT_SIZE_OPTIONS, DAY_NUMBER_ALIGNMENT_OPTIONS } from '@/components/visualcal/types';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
@@ -16,6 +16,15 @@ interface AppearanceSettingsProps {
 export function AppearanceSettings({ config, onConfigChange }: AppearanceSettingsProps) {
   return (
     <div className="space-y-4 p-2">
+      <div className="flex items-center justify-between">
+        <Label htmlFor="dark-mode" className="text-sm">Dark Mode</Label>
+        <Switch
+          id="dark-mode"
+          checked={config.darkMode}
+          onCheckedChange={(checked) => onConfigChange('darkMode', checked)}
+          aria-label="Toggle dark mode"
+        />
+      </div>
       <div>
         <Label htmlFor="app-theme" className="mb-1 block">Theme</Label>
         <Select
@@ -117,7 +126,7 @@ export function AppearanceSettings({ config, onConfigChange }: AppearanceSetting
               <SelectValue placeholder="Select size" />
             </SelectTrigger>
             <SelectContent>
-              {FONT_SIZE_OPTIONS.filter(opt => !['2xl', '3xl'].includes(opt.value)).map(opt => ( // Slightly smaller range
+              {FONT_SIZE_OPTIONS.filter(opt => !['2xl', '3xl'].includes(opt.value)).map(opt => ( 
                 <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
               ))}
             </SelectContent>
@@ -207,6 +216,22 @@ export function AppearanceSettings({ config, onConfigChange }: AppearanceSetting
               ))}
             </SelectContent>
           </Select>
+        </div>
+        <div>
+            <Label htmlFor="day-number-alignment" className="mb-1 block text-xs">Day Number Alignment</Label>
+            <Select
+                value={config.dayNumberAlignment}
+                onValueChange={(value) => onConfigChange('dayNumberAlignment', value as DayNumberAlignment)}
+            >
+                <SelectTrigger id="day-number-alignment" aria-label="Day number alignment in cell">
+                    <SelectValue placeholder="Select alignment" />
+                </SelectTrigger>
+                <SelectContent>
+                    {DAY_NUMBER_ALIGNMENT_OPTIONS.map(opt => (
+                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
         </div>
       </div>
       

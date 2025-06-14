@@ -21,12 +21,12 @@ import { DisplaySettings } from '@/components/visualcal/settings/DisplaySettings
 import { CalendarView } from '@/components/visualcal/calendar/CalendarView';
 import { ImageDisplay } from '@/components/visualcal/calendar/ImageDisplay';
 import { NotesDisplay } from '@/components/visualcal/calendar/NotesDisplay';
-import type { CalendarConfig, FontSizeOption, TextTransformOption, WeekdayHeaderLength, MonthYearDisplayOrder, DayCellPaddingOption } from '@/components/visualcal/types';
+import type { CalendarConfig, FontSizeOption, TextTransformOption, WeekdayHeaderLength, MonthYearDisplayOrder, DayCellPaddingOption, DayNumberAlignment } from '@/components/visualcal/types';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import { Button } from '@/components/ui/button';
-import { Save, Share2, Printer, GripVertical } from 'lucide-react';
+import { Save, Share2, Printer } from 'lucide-react';
 
 const initialConfig: CalendarConfig = {
   selectedMonth: new Date().getMonth(),
@@ -52,8 +52,6 @@ const initialConfig: CalendarConfig = {
   theme: 'default',
   dayNumberFontSize: 'sm',
   monthYearHeaderAlignment: 'center',
-
-  // New Customization Options Defaults
   monthYearHeaderFontSize: 'xl' as FontSizeOption,
   monthYearDisplayOrder: 'month-year' as MonthYearDisplayOrder,
   showMonthName: true,
@@ -64,6 +62,8 @@ const initialConfig: CalendarConfig = {
   dayCellPadding: 'base' as DayCellPaddingOption,
   showWeekNumbers: false,
   weekNumberFontSize: 'xs' as FontSizeOption,
+  darkMode: false,
+  dayNumberAlignment: 'top-left' as DayNumberAlignment,
 };
 
 export default function VisualCalPage() {
@@ -92,7 +92,6 @@ export default function VisualCalPage() {
         mergedConfig.dayNumberFontSize = parsedConfig.dayNumberFontSize || initialConfig.dayNumberFontSize;
         mergedConfig.monthYearHeaderAlignment = parsedConfig.monthYearHeaderAlignment || initialConfig.monthYearHeaderAlignment;
         
-        // Ensure new fields have defaults if not in saved config
         mergedConfig.monthYearHeaderFontSize = parsedConfig.monthYearHeaderFontSize || initialConfig.monthYearHeaderFontSize;
         mergedConfig.monthYearDisplayOrder = parsedConfig.monthYearDisplayOrder || initialConfig.monthYearDisplayOrder;
         mergedConfig.showMonthName = typeof parsedConfig.showMonthName === 'boolean' ? parsedConfig.showMonthName : initialConfig.showMonthName;
@@ -103,6 +102,9 @@ export default function VisualCalPage() {
         mergedConfig.dayCellPadding = parsedConfig.dayCellPadding || initialConfig.dayCellPadding;
         mergedConfig.showWeekNumbers = typeof parsedConfig.showWeekNumbers === 'boolean' ? parsedConfig.showWeekNumbers : initialConfig.showWeekNumbers;
         mergedConfig.weekNumberFontSize = parsedConfig.weekNumberFontSize || initialConfig.weekNumberFontSize;
+        mergedConfig.darkMode = typeof parsedConfig.darkMode === 'boolean' ? parsedConfig.darkMode : initialConfig.darkMode;
+        mergedConfig.dayNumberAlignment = parsedConfig.dayNumberAlignment || initialConfig.dayNumberAlignment;
+
 
         setCalendarConfig(mergedConfig);
       } catch (error) {
@@ -165,6 +167,16 @@ export default function VisualCalPage() {
       document.documentElement.dataset.theme = calendarConfig.theme;
     }
   }, [calendarConfig.theme, isClient]);
+
+  useEffect(() => {
+    if (isClient) {
+      if (calendarConfig.darkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+  }, [calendarConfig.darkMode, isClient]);
 
 
   const handleConfigChange = useCallback(<K extends keyof CalendarConfig>(
@@ -371,13 +383,13 @@ export default function VisualCalPage() {
                 )}
               </div>
               <div 
-                className="visualcal-resizer hidden md:flex items-center justify-center w-2.5 bg-border/50 hover:bg-border cursor-col-resize group"
+                className="visualcal-resizer hidden md:flex items-center justify-center w-3 bg-transparent hover:bg-border/30 cursor-col-resize group"
                 onMouseDown={handleMouseDownResizer}
                 role="separator"
                 aria-orientation="vertical"
                 aria-label="Resize image panel"
               >
-                <GripVertical className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                {/* GripVertical icon removed for invisibility */}
               </div>
               <div 
                 className="flex-1 p-4 w-full visualcal-split-calendar-panel"

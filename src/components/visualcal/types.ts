@@ -40,6 +40,10 @@ export type TextTransformOption = 'none' | 'uppercase' | 'lowercase' | 'capitali
 export type WeekdayHeaderLength = 'short' | 'long'; // "Mon" vs "Monday"
 export type MonthYearDisplayOrder = 'month-year' | 'year-month';
 export type DayCellPaddingOption = 'xs' | 'sm' | 'base' | 'lg';
+export type DayNumberAlignment = 
+  'top-left' | 'top-center' | 'top-right' |
+  'center-left' | 'center' | 'center-right' |
+  'bottom-left' | 'bottom-center' | 'bottom-right';
 
 
 export interface CalendarConfig {
@@ -78,6 +82,8 @@ export interface CalendarConfig {
   dayCellPadding: DayCellPaddingOption;
   showWeekNumbers: boolean;
   weekNumberFontSize: FontSizeOption;
+  darkMode: boolean;
+  dayNumberAlignment: DayNumberAlignment;
 }
 
 export const FONT_OPTIONS: SupportedFont[] = ["Roboto", "Open Sans", "Montserrat", "Lato", "Poppins"];
@@ -174,4 +180,16 @@ export const WEEK_NUMBER_FONT_SIZE_OPTIONS: { label: string, value: FontSizeOpti
     { label: 'Small', value: 'sm' },
     { label: 'Base', value: 'base' },
     { label: 'Large', value: 'lg' },
+];
+
+export const DAY_NUMBER_ALIGNMENT_OPTIONS: {label: string, value: DayNumberAlignment}[] = [
+  {label: 'Top Left', value: 'top-left'},
+  {label: 'Top Center', value: 'top-center'},
+  {label: 'Top Right', value: 'top-right'},
+  {label: 'Center Left', value: 'center-left'},
+  {label: 'Center', value: 'center'},
+  {label: 'Center Right', value: 'center-right'},
+  {label: 'Bottom Left', value: 'bottom-left'},
+  {label: 'Bottom Center', value: 'bottom-center'},
+  {label: 'Bottom Right', value: 'bottom-right'},
 ];
