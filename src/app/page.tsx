@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   SidebarProvider,
   Sidebar,
@@ -26,7 +26,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 import { Button } from '@/components/ui/button';
-import { Save, Share2, Printer } from 'lucide-react';
+import { Save, Share2, Printer, GripVertical } from 'lucide-react';
 
 const initialConfig: CalendarConfig = {
   selectedMonth: new Date().getMonth(),
@@ -57,6 +57,13 @@ const initialConfig: CalendarConfig = {
 export default function VisualCalPage() {
   const [calendarConfig, setCalendarConfig] = useState<CalendarConfig>(initialConfig);
   const [isClient, setIsClient] = useState(false);
+
+  const [isResizing, setIsResizing] = useState(false);
+  const [dragStartX, setDragStartX] = useState(0);
+  const [initialDragDimension, setInitialDragDimension] = useState(0);
+  const [parentWidthAtDragStart, setParentWidthAtDragStart] = useState(0);
+  const splitLayoutContainerRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
     setIsClient(true);
@@ -104,7 +111,7 @@ export default function VisualCalPage() {
       "    -webkit-print-color-adjust: exact !important;\n" +
       "    print-color-adjust: exact !important;\n" +
       "  }\n" +
-      "  .visualcal-sidebar, .visualcal-print-button-group {\n" +
+      "  .visualcal-sidebar, .visualcal-print-button-group, .visualcal-resizer {\n" +
       "    display: none !important;\n" +
       "  }\n" +
       "  .visualcal-main-content {\n" + 
@@ -117,6 +124,9 @@ export default function VisualCalPage() {
       "    padding: 0 !important;\n" +
       "    margin: 0 !important;\n" +
       "    overflow: visible !important;\n" +
+      "  }\n" +
+      "  .visualcal-split-image-panel, .visualcal-split-calendar-panel {\n" +
+      "    height: auto !important; /* Ensure panels take full height in print */ \n" +
       "  }\n" +
       "}";
       
@@ -131,7 +141,7 @@ export default function VisualCalPage() {
   }, [calendarConfig.theme, isClient]);
 
 
-  const handleConfigChange = <K extends keyof CalendarConfig>(
+  const handleConfigChange = useCallback(<K extends keyof CalendarConfig>(
     key: K,
     value: CalendarConfig[K]
   ) => {
@@ -142,11 +152,57 @@ export default function VisualCalPage() {
       }
       return newConfig;
     });
-  };
+  }, [isClient]);
   
   const handlePrint = () => {
     window.print();
   };
+
+  const handleMouseDownResizer = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!splitLayoutContainerRef.current) return;
+
+    setIsResizing(true);
+    setDragStartX(e.clientX);
+    setInitialDragDimension(calendarConfig.imagePanelDimension);
+    setParentWidthAtDragStart(splitLayoutContainerRef.current.offsetWidth);
+    document.body.style.cursor = 'col-resize'; 
+  };
+
+  const handleGlobalMouseMove = useCallback((e: MouseEvent) => {
+    if (!isResizing || parentWidthAtDragStart === 0) return;
+
+    const dx = e.clientX - dragStartX;
+    const dPercentage = (dx / parentWidthAtDragStart) * 100;
+    
+    let newDimension = initialDragDimension + dPercentage;
+    newDimension = Math.max(20, Math.min(50, newDimension)); // Clamp to 20-50%
+
+    handleConfigChange('imagePanelDimension', parseFloat(newDimension.toFixed(1)));
+  }, [isResizing, dragStartX, initialDragDimension, parentWidthAtDragStart, handleConfigChange]);
+
+  const handleGlobalMouseUp = useCallback(() => {
+    if (isResizing) {
+      setIsResizing(false);
+      document.body.style.cursor = 'default';
+    }
+  }, [isResizing]);
+
+  useEffect(() => {
+    if (isResizing) {
+      document.addEventListener('mousemove', handleGlobalMouseMove);
+      document.addEventListener('mouseup', handleGlobalMouseUp);
+    } else {
+      document.removeEventListener('mousemove', handleGlobalMouseMove);
+      document.removeEventListener('mouseup', handleGlobalMouseUp);
+    }
+    return () => {
+      document.removeEventListener('mousemove', handleGlobalMouseMove);
+      document.removeEventListener('mouseup', handleGlobalMouseUp);
+      document.body.style.cursor = 'default'; // Ensure cursor resets
+    };
+  }, [isResizing, handleGlobalMouseMove, handleGlobalMouseUp]);
+
 
   const bodyFontClass = 'font-' + calendarConfig.bodyFont.toLowerCase().replace(/\s+/g, '');
 
@@ -160,8 +216,9 @@ export default function VisualCalPage() {
 
   const defaultLayoutImageHeight = String(100 + (calendarConfig.imagePanelDimension - 10) * 10) + 'px';
   const landscapeBannerHeight = String(10 + calendarConfig.imagePanelDimension / 2) + 'vh';
-  const splitImageWidthClass = "md:w-[" + String(calendarConfig.imagePanelDimension) + "%]";
-  const splitCalendarWidthClass = "md:w-[" + String(100 - calendarConfig.imagePanelDimension) + "%]";
+  
+  const splitImageWidthStyle = { width: `${calendarConfig.imagePanelDimension}%` };
+  const splitCalendarWidthStyle = { width: `${100 - calendarConfig.imagePanelDimension}%` };
 
 
   return (
@@ -238,8 +295,11 @@ export default function VisualCalPage() {
           )}
 
           {calendarConfig.displayLayout === 'image-30-calendar-70' && (
-            <div className="flex flex-col md:flex-row h-full visualcal-main-content">
-              <div className={cn(splitImageWidthClass, "w-full p-4 flex flex-col space-y-4")}>
+            <div ref={splitLayoutContainerRef} className="flex flex-col md:flex-row h-full visualcal-main-content">
+              <div 
+                className="w-full p-4 flex flex-col space-y-4 visualcal-split-image-panel" 
+                style={splitImageWidthStyle}
+              >
                 {calendarConfig.imageSrc && (
                   <div className="relative flex-grow bg-muted/30 p-2 rounded-lg shadow-inner min-h-[200px] md:min-h-0" data-ai-hint="custom background">
                     <ImageDisplay
@@ -259,7 +319,19 @@ export default function VisualCalPage() {
                   />
                 )}
               </div>
-              <div className={cn("flex-1 p-4 w-full", splitCalendarWidthClass)}>
+              <div 
+                className="visualcal-resizer hidden md:flex items-center justify-center w-2.5 bg-border/50 hover:bg-border cursor-col-resize group"
+                onMouseDown={handleMouseDownResizer}
+                role="separator"
+                aria-orientation="vertical"
+                aria-label="Resize image panel"
+              >
+                <GripVertical className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+              </div>
+              <div 
+                className="flex-1 p-4 w-full visualcal-split-calendar-panel"
+                style={splitCalendarWidthStyle}
+              >
                 <CalendarView config={calendarConfig} />
               </div>
             </div>
@@ -307,3 +379,4 @@ export default function VisualCalPage() {
     </SidebarProvider>
   );
 }
+
