@@ -39,11 +39,6 @@ export function CalendarView({ config }: CalendarViewProps) {
   const daysInMonth = getDaysInMonth(selectedYear, selectedMonth);
   const firstDayOfMonth = getFirstDayOfMonth(selectedYear, selectedMonth, startWeekOnMonday);
 
-  const today = new Date();
-  const currentDay = today.getDate();
-  const currentMonth = today.getMonth();
-  const currentYear = today.getFullYear();
-
   const dayHeaders = useMemo(() => {
     const baseHeaders = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     return startWeekOnMonday ? [...baseHeaders.slice(1), baseHeaders[0]] : baseHeaders;
@@ -51,33 +46,26 @@ export function CalendarView({ config }: CalendarViewProps) {
 
   const calendarDays = useMemo(() => {
     const daysArray = [];
+    // Add padding days from previous month
     for (let i = 0; i < firstDayOfMonth; i++) {
-      daysArray.push({ day: null, isCurrentMonth: false });
+      daysArray.push({ day: null, isCurrentMonth: false, date: null });
     }
+    // Add days of the current month
     for (let i = 1; i <= daysInMonth; i++) {
-      daysArray.push({ day: i, isCurrentMonth: true });
+      daysArray.push({ day: i, isCurrentMonth: true, date: new Date(selectedYear, selectedMonth, i) });
     }
-    const remainingCells = (showWeekends ? 7 : 5) - (daysArray.length % (showWeekends ? 7 : 5));
-
-    // Adjust total cells needed based on whether weekends are shown
-    let totalCellsTarget = 0;
-    const numWeeks = Math.ceil(daysArray.length / (showWeekends ? 7 : 5));
-    totalCellsTarget = numWeeks * (showWeekends ? 7 : 5);
     
+    // Calculate total cells needed for full weeks based on whether weekends are shown
+    const columns = showWeekends ? 7 : 5;
+    const numWeeks = Math.ceil(daysArray.length / columns);
+    const totalCellsTarget = numWeeks * columns;
+
+    // Add padding days for the next month
     const currentLength = daysArray.length;
     if (currentLength < totalCellsTarget) {
        for (let i = 0; i < (totalCellsTarget - currentLength) ; i++) {
-        daysArray.push({ day: null, isCurrentMonth: false });
+        daysArray.push({ day: null, isCurrentMonth: false, date: null });
       }
-    }
-
-
-    if (!showWeekends) {
-      // If not showing weekends, filter them out after initial construction.
-      // This is complex because it requires knowing the day of the week for each.
-      // A simpler approach is to handle it in rendering and grid column count.
-      // For now, this array will still contain data for weekends,
-      // but CalendarDay will hide them and grid columns will adjust.
     }
     return daysArray;
   }, [selectedYear, selectedMonth, startWeekOnMonday, daysInMonth, firstDayOfMonth, showWeekends]);
@@ -89,8 +77,8 @@ export function CalendarView({ config }: CalendarViewProps) {
     calendarStyle === 'classic' && borderStyle !== 'none' && 'border',
     borderStyle === 'rounded' && 'rounded-lg',
     borderStyle !== 'none' && {
-      'border-border': true, 
-      'border': borderWidth === 'thin', 
+      'border-border': true,
+      'border': borderWidth === 'thin',
       'border-2': borderWidth === 'medium',
       'border-[3px]': borderWidth === 'thick',
     },
@@ -99,17 +87,18 @@ export function CalendarView({ config }: CalendarViewProps) {
 
   const headerFontClass = 'font-' + headerFont.toLowerCase().replace(/\s+/g, '');
 
-  const dayHeaderClasses = (header: string) => cn(
+  const dayHeaderClasses = (headerText: string) => cn(
     'p-2 text-center font-medium text-muted-foreground',
     headerFontClass,
     dayHeaderStyle === 'bordered' && 'border-b border-border',
     dayHeaderStyle === 'pill' && 'bg-primary text-primary-foreground rounded-full m-1 py-1',
-    !showWeekends && (header === "Sun" || header === "Sat") && 'hidden'
+    // This condition ensures headers are hidden correctly
+    !showWeekends && (headerText.toLowerCase() === "sun" || headerText.toLowerCase() === "sat") && 'hidden'
   );
   
   const gridClasses = cn(
     "grid",
-    showWeekends ? "grid-cols-7" : "grid-cols-5", // Adjust grid columns
+    showWeekends ? "grid-cols-7" : "grid-cols-5",
     resizeRowsToFill ? "flex-grow" : "",
     (borderStyle !== 'none' && calendarStyle !== 'minimal') ? "gap-px bg-border" : "gap-0" 
   );
@@ -118,13 +107,13 @@ export function CalendarView({ config }: CalendarViewProps) {
      (borderStyle !== 'none' && calendarStyle !== 'minimal') ? "bg-card" : "" 
   );
 
-
   return (
     <div className={containerClasses}>
       <div className={cn("grid", showWeekends ? "grid-cols-7" : "grid-cols-5")}>
         {dayHeaders.map(header => {
-          if (!showWeekends && (header === "Sun" || header === "Sat")) {
-            return null; // Don't render weekend headers if not shown
+          // Filter out weekend headers if showWeekends is false
+          if (!showWeekends && (header.toLowerCase() === "sun" || header.toLowerCase() === "sat")) {
+            return null; 
           }
           return (
             <div key={header} className={dayHeaderClasses(header)}>
@@ -135,31 +124,23 @@ export function CalendarView({ config }: CalendarViewProps) {
       </div>
       <div className={gridClasses}>
         {calendarDays.map((item, index) => {
-          const dayDate = item.day ? new Date(selectedYear, selectedMonth, item.day) : null;
-          
-          // Determine original weekend status (0=Sun, 6=Sat)
-          const isOriginalWeekend = dayDate ? (dayDate.getDay() === 0 || dayDate.getDay() === 6) : false;
+          // Determine if the day is an actual weekend day (Sunday or Saturday)
+          // This uses the actual date object associated with the day item if available
+          const dayOfWeek = item.date ? item.date.getDay() : -1; // 0 for Sun, 6 for Sat
+          const isOriginalWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
+          // If showWeekends is false, and this day is an original weekend day, do not render it.
+          // This applies to actual numbered days of the month. Padding days (day: null) are handled by grid layout.
           if (!showWeekends && isOriginalWeekend && item.isCurrentMonth) {
-            return null; // Don't render cells for weekends if not showing weekends
+            return null; 
           }
           
-          // For the isWeekend prop passed to CalendarDay, it should reflect the visual weekend
-          // based on startWeekOnMonday if weekends *are* shown.
-          // If weekends are not shown, this prop's value for non-rendered days is irrelevant.
-          let displayIsWeekend = isOriginalWeekend;
-          if (showWeekends && startWeekOnMonday) {
-             displayIsWeekend = dayDate ? (dayDate.getDay() === 5 || dayDate.getDay() === 6) : false; // Adjusted for Mon start: Sat=5, Sun=6
-          }
-
-
+          // For cells that are not current month's weekends (or if weekends are shown), render CalendarDay
           return (
             <div key={index} className={cellWrapperClasses}>
               <CalendarDay
                 day={item.day}
                 isCurrentMonth={item.isCurrentMonth}
-                isToday={item.day === currentDay && selectedMonth === currentMonth && selectedYear === currentYear}
-                isWeekend={displayIsWeekend} // Pass the relevant weekend status
                 config={config}
               />
             </div>
