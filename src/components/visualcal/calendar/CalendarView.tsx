@@ -81,7 +81,6 @@ export function CalendarView({ config }: CalendarViewProps) {
     showWeekNumbers,
     weekNumberFontSize,
     showQuotes,
-    quotesContent,
     quotesPosition,
   } = config;
 
@@ -265,7 +264,7 @@ export function CalendarView({ config }: CalendarViewProps) {
         </div>
       )}
       {showQuotes && quotesPosition === 'header' && (
-        <QuotesDisplay content={quotesContent} className="text-center text-sm italic p-2 border-t border-border" />
+        <QuotesDisplay config={config} className="text-center text-sm italic p-2 border-t border-border" />
       )}
       <div className={cn("grid", ...gridLayoutClasses)}>
         {showWeekNumbers && <div className={weekNumberHeaderClass}>Wk</div>}
