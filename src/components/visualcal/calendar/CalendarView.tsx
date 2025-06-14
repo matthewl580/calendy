@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import type { CalendarConfig } from '../types';
 import { CalendarDay } from './CalendarDay';
 import { useMemo } from 'react';
+import { MONTH_NAMES } from '../types';
 
 interface CalendarViewProps {
   config: CalendarConfig;
@@ -33,7 +34,8 @@ export function CalendarView({ config }: CalendarViewProps) {
     borderWidth,
     dayHeaderStyle,
     headerFont,
-    resizeRowsToFill
+    resizeRowsToFill,
+    monthYearHeaderAlignment,
   } = config;
 
   const daysInMonth = getDaysInMonth(selectedYear, selectedMonth);
@@ -46,21 +48,17 @@ export function CalendarView({ config }: CalendarViewProps) {
 
   const calendarDays = useMemo(() => {
     const daysArray = [];
-    // Add padding days from previous month
     for (let i = 0; i < firstDayOfMonth; i++) {
       daysArray.push({ day: null, isCurrentMonth: false, date: null });
     }
-    // Add days of the current month
     for (let i = 1; i <= daysInMonth; i++) {
       daysArray.push({ day: i, isCurrentMonth: true, date: new Date(selectedYear, selectedMonth, i) });
     }
     
-    // Calculate total cells needed for full weeks based on whether weekends are shown
     const columns = showWeekends ? 7 : 5;
     const numWeeks = Math.ceil(daysArray.length / columns);
     const totalCellsTarget = numWeeks * columns;
 
-    // Add padding days for the next month
     const currentLength = daysArray.length;
     if (currentLength < totalCellsTarget) {
        for (let i = 0; i < (totalCellsTarget - currentLength) ; i++) {
@@ -86,13 +84,17 @@ export function CalendarView({ config }: CalendarViewProps) {
   );
 
   const headerFontClass = 'font-' + headerFont.toLowerCase().replace(/\s+/g, '');
+  
+  const monthYearHeaderBaseClass = 'text-xl md:text-2xl font-medium py-3 px-4';
+  const monthYearAlignmentClass = 
+    monthYearHeaderAlignment === 'left' ? 'text-left' :
+    monthYearHeaderAlignment === 'right' ? 'text-right' : 'text-center';
 
   const dayHeaderClasses = (headerText: string) => cn(
     'p-2 text-center font-medium text-muted-foreground',
-    headerFontClass,
+    headerFontClass, // Use headerFont for day headers as well
     dayHeaderStyle === 'bordered' && 'border-b border-border',
-    dayHeaderStyle === 'pill' && 'bg-primary text-primary-foreground rounded-full m-1 py-1',
-    // This condition ensures headers are hidden correctly
+    dayHeaderStyle === 'pill' && 'bg-primary text-primary-foreground rounded-full m-1 py-1 text-xs md:text-sm',
     !showWeekends && (headerText.toLowerCase() === "sun" || headerText.toLowerCase() === "sat") && 'hidden'
   );
   
@@ -109,9 +111,11 @@ export function CalendarView({ config }: CalendarViewProps) {
 
   return (
     <div className={containerClasses}>
+      <div className={cn(monthYearHeaderBaseClass, headerFontClass, monthYearAlignmentClass)}>
+        {MONTH_NAMES[selectedMonth]} {selectedYear}
+      </div>
       <div className={cn("grid", showWeekends ? "grid-cols-7" : "grid-cols-5")}>
         {dayHeaders.map(header => {
-          // Filter out weekend headers if showWeekends is false
           if (!showWeekends && (header.toLowerCase() === "sun" || header.toLowerCase() === "sat")) {
             return null; 
           }
@@ -124,18 +128,13 @@ export function CalendarView({ config }: CalendarViewProps) {
       </div>
       <div className={gridClasses}>
         {calendarDays.map((item, index) => {
-          // Determine if the day is an actual weekend day (Sunday or Saturday)
-          // This uses the actual date object associated with the day item if available
-          const dayOfWeek = item.date ? item.date.getDay() : -1; // 0 for Sun, 6 for Sat
+          const dayOfWeek = item.date ? item.date.getDay() : -1;
           const isOriginalWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
-          // If showWeekends is false, and this day is an original weekend day, do not render it.
-          // This applies to actual numbered days of the month. Padding days (day: null) are handled by grid layout.
           if (!showWeekends && isOriginalWeekend && item.isCurrentMonth) {
             return null; 
           }
           
-          // For cells that are not current month's weekends (or if weekends are shown), render CalendarDay
           return (
             <div key={index} className={cellWrapperClasses}>
               <CalendarDay

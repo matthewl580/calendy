@@ -1,8 +1,8 @@
 
 "use client";
 
-import type { CalendarConfig, CalendarStyle, BorderStyle, BorderWidth, DayHeaderStyle, AppTheme } from '@/components/visualcal/types';
-import { CALENDAR_STYLE_OPTIONS, BORDER_STYLE_OPTIONS, BORDER_WIDTH_OPTIONS, DAY_HEADER_STYLE_OPTIONS, THEME_OPTIONS } from '@/components/visualcal/types';
+import type { CalendarConfig, CalendarStyle, BorderStyle, BorderWidth, DayHeaderStyle, AppTheme, DayNumberFontSize, MonthYearHeaderAlignment } from '@/components/visualcal/types';
+import { CALENDAR_STYLE_OPTIONS, BORDER_STYLE_OPTIONS, BORDER_WIDTH_OPTIONS, DAY_HEADER_STYLE_OPTIONS, THEME_OPTIONS, DAY_NUMBER_FONT_SIZE_OPTIONS, MONTH_YEAR_HEADER_ALIGNMENT_OPTIONS } from '@/components/visualcal/types';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
@@ -34,6 +34,44 @@ export function AppearanceSettings({ config, onConfigChange }: AppearanceSetting
       </div>
 
       <Separator />
+      
+      <div>
+        <Label htmlFor="month-year-header-alignment" className="mb-1 block">Month/Year Header Alignment (on Calendar)</Label>
+        <Select
+          value={config.monthYearHeaderAlignment}
+          onValueChange={(value) => onConfigChange('monthYearHeaderAlignment', value as MonthYearHeaderAlignment)}
+        >
+          <SelectTrigger id="month-year-header-alignment" aria-label="Month/Year header alignment">
+            <SelectValue placeholder="Select alignment" />
+          </SelectTrigger>
+          <SelectContent>
+            {MONTH_YEAR_HEADER_ALIGNMENT_OPTIONS.map(opt => (
+              <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <Label htmlFor="day-number-font-size" className="mb-1 block">Day Number Font Size</Label>
+        <Select
+          value={config.dayNumberFontSize}
+          onValueChange={(value) => onConfigChange('dayNumberFontSize', value as DayNumberFontSize)}
+        >
+          <SelectTrigger id="day-number-font-size" aria-label="Day number font size">
+            <SelectValue placeholder="Select size" />
+          </SelectTrigger>
+          <SelectContent>
+            {DAY_NUMBER_FONT_SIZE_OPTIONS.map(opt => (
+              <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+
+      <Separator />
+
 
       <div>
         <Label htmlFor="calendar-style" className="mb-1 block">Calendar Style</Label>

@@ -8,6 +8,8 @@ export type DisplayLayout = 'default' | 'image-30-calendar-70' | 'landscape-bann
 export type SupportedFont = "Roboto" | "Open Sans" | "Montserrat" | "Lato" | "Poppins";
 export type PaperOrientation = 'portrait' | 'landscape';
 export type AppTheme = 'default' | 'oceanic';
+export type DayNumberFontSize = 'xs' | 'sm' | 'base' | 'lg' | 'xl';
+export type MonthYearHeaderAlignment = 'left' | 'center' | 'right';
 
 export interface CalendarConfig {
   selectedMonth: number; // 0-11
@@ -31,6 +33,8 @@ export interface CalendarConfig {
   displayLayout: DisplayLayout;
   paperOrientation: PaperOrientation;
   theme: AppTheme;
+  dayNumberFontSize: DayNumberFontSize;
+  monthYearHeaderAlignment: MonthYearHeaderAlignment;
 }
 
 export const FONT_OPTIONS: SupportedFont[] = ["Roboto", "Open Sans", "Montserrat", "Lato", "Poppins"];
@@ -48,6 +52,19 @@ export const THEME_OPTIONS: { label: string, value: AppTheme }[] = [
   { label: 'Default', value: 'default' },
   { label: 'Oceanic', value: 'oceanic' },
 ];
+export const DAY_NUMBER_FONT_SIZE_OPTIONS: {label: string, value: DayNumberFontSize}[] = [
+    {label: 'Extra Small', value: 'xs'},
+    {label: 'Small', value: 'sm'},
+    {label: 'Base', value: 'base'},
+    {label: 'Large', value: 'lg'},
+    {label: 'Extra Large', value: 'xl'}
+];
+export const MONTH_YEAR_HEADER_ALIGNMENT_OPTIONS: {label: string, value: MonthYearHeaderAlignment}[] = [
+    {label: 'Left', value: 'left'},
+    {label: 'Center', value: 'center'},
+    {label: 'Right', value: 'right'}
+];
+
 
 export const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",

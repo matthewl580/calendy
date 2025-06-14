@@ -50,6 +50,8 @@ const initialConfig: CalendarConfig = {
   displayLayout: 'default',
   paperOrientation: 'portrait',
   theme: 'default',
+  dayNumberFontSize: 'sm',
+  monthYearHeaderAlignment: 'center',
 };
 
 export default function VisualCalPage() {
@@ -67,6 +69,8 @@ export default function VisualCalPage() {
         mergedConfig.notesSize = { ...initialConfig.notesSize, ...(parsedConfig.notesSize || {}) };
         mergedConfig.imagePanelDimension = parsedConfig.imagePanelDimension || initialConfig.imagePanelDimension;
         mergedConfig.theme = parsedConfig.theme || initialConfig.theme;
+        mergedConfig.dayNumberFontSize = parsedConfig.dayNumberFontSize || initialConfig.dayNumberFontSize;
+        mergedConfig.monthYearHeaderAlignment = parsedConfig.monthYearHeaderAlignment || initialConfig.monthYearHeaderAlignment;
         setCalendarConfig(mergedConfig);
       } catch (error) {
         console.error("Failed to parse saved config:", error);
