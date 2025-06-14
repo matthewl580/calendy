@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -34,7 +35,7 @@ body {
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
 
-    /* Sidebar specific colors harmonized with the new theme */
+    /* Sidebar specific colors harmonized with the default theme */
     --sidebar-background: 208 80% 94%; /* Slightly darker than main background */
     --sidebar-foreground: 208 30% 25%;
     --sidebar-primary: 125 30% 60%; /* Darker primary for sidebar interactive elements */
@@ -42,34 +43,69 @@ body {
     --sidebar-accent: 262 40% 80%; /* Lighter accent for sidebar */
     --sidebar-accent-foreground: 262 40% 20%;
     --sidebar-border: 125 20% 70%;
-    --sidebar-ring: 262 40% 73%; /* Accent color for rings */
+    --sidebar-ring: 262 40% 73%;
   }
+
+  html[data-theme="oceanic"] {
+    --background: 190 50% 95%;
+    --foreground: 190 30% 20%;
+    --card: 190 50% 95%;
+    --card-foreground: 190 30% 20%;
+    --popover: 190 50% 95%;
+    --popover-foreground: 190 30% 20%;
+    --primary: 180 60% 45%; 
+    --primary-foreground: 180 60% 95%;
+    --secondary: 190 40% 88%;
+    --secondary-foreground: 190 30% 30%;
+    --muted: 190 30% 80%;
+    --muted-foreground: 190 20% 50%;
+    --accent: 210 70% 60%;
+    --accent-foreground: 210 70% 10%;
+    --destructive: 0 84.2% 60.2%; /* Kept from default for consistency in destructive actions */
+    --destructive-foreground: 0 0% 98%; /* Kept from default */
+    --border: 180 50% 70%;
+    --input: 180 40% 90%;
+    --ring: 210 70% 60%;
+
+    /* Sidebar specific colors for Oceanic theme */
+    --sidebar-background: 190 45% 90%;
+    --sidebar-foreground: 190 30% 15%;
+    --sidebar-primary: 180 60% 40%;
+    --sidebar-primary-foreground: 180 60% 90%;
+    --sidebar-accent: 210 70% 70%;
+    --sidebar-accent-foreground: 210 70% 15%;
+    --sidebar-border: 180 50% 60%;
+    --sidebar-ring: 210 70% 60%;
+  }
+
   .dark {
+    /* General Dark Theme - This will apply on top of any light theme when dark mode is active */
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 125 30% 70%; 
-    --primary-foreground: 125 30% 10%;
+    --primary: 125 30% 70%; /* Default theme's primary, adjust if oceanic dark needs different */
+    --primary-foreground: 125 30% 10%; /* Default theme's primary-fg */
     --secondary: 240 5% 14.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 5% 14.9%;
     --muted-foreground: 0 0% 63.9%;
-    --accent: 262 40% 73%;
-    --accent-foreground: 262 40% 15%;
+    --accent: 262 40% 73%; /* Default theme's accent, adjust if oceanic dark needs different */
+    --accent-foreground: 262 40% 15%; /* Default theme's accent-fg */
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 125 20% 40%;
+    --border: 125 20% 40%; /* Default theme's border */
     --input: 240 5% 20%;
-    --ring: 262 40% 73%;
+    --ring: 262 40% 73%; /* Default theme's ring */
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
 
+    /* Sidebar specific colors for dark mode */
     --sidebar-background: 240 8% 10%; 
     --sidebar-foreground: 0 0% 95%;
     --sidebar-primary: 125 30% 60%; 
@@ -79,6 +115,15 @@ body {
     --sidebar-border: 125 20% 30%;
     --sidebar-ring: 262 40% 73%;
   }
+
+  /* If Oceanic needs a specific dark variant, you can define it like this:
+  html[data-theme="oceanic"].dark {
+     --primary: 180 70% 50%; 
+     --primary-foreground: 180 70% 5%;
+     ... etc. for oceanic dark specifics ...
+  }
+  For now, the generic .dark will apply over html[data-theme="oceanic"] too.
+  */
 }
 
 @layer base {

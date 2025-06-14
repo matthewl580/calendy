@@ -1,10 +1,12 @@
+
 "use client";
 
-import type { CalendarConfig, CalendarStyle, BorderStyle, BorderWidth, DayHeaderStyle } from '@/components/visualcal/types';
-import { CALENDAR_STYLE_OPTIONS, BORDER_STYLE_OPTIONS, BORDER_WIDTH_OPTIONS, DAY_HEADER_STYLE_OPTIONS } from '@/components/visualcal/types';
+import type { CalendarConfig, CalendarStyle, BorderStyle, BorderWidth, DayHeaderStyle, AppTheme } from '@/components/visualcal/types';
+import { CALENDAR_STYLE_OPTIONS, BORDER_STYLE_OPTIONS, BORDER_WIDTH_OPTIONS, DAY_HEADER_STYLE_OPTIONS, THEME_OPTIONS } from '@/components/visualcal/types';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { Separator } from '@/components/ui/separator';
 
 interface AppearanceSettingsProps {
   config: CalendarConfig;
@@ -14,6 +16,25 @@ interface AppearanceSettingsProps {
 export function AppearanceSettings({ config, onConfigChange }: AppearanceSettingsProps) {
   return (
     <div className="space-y-4 p-2">
+      <div>
+        <Label htmlFor="app-theme" className="mb-1 block">Theme</Label>
+        <Select
+          value={config.theme}
+          onValueChange={(value) => onConfigChange('theme', value as AppTheme)}
+        >
+          <SelectTrigger id="app-theme" aria-label="Application theme">
+            <SelectValue placeholder="Select theme" />
+          </SelectTrigger>
+          <SelectContent>
+            {THEME_OPTIONS.map(themeOpt => (
+              <SelectItem key={themeOpt.value} value={themeOpt.value}>{themeOpt.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <Separator />
+
       <div>
         <Label htmlFor="calendar-style" className="mb-1 block">Calendar Style</Label>
         <Select

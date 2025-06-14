@@ -34,7 +34,7 @@ const initialConfig: CalendarConfig = {
   imageSrc: 'https://placehold.co/800x600.png', 
   imagePosition: { x: 50, y: 50 }, 
   imageSize: 100, 
-  imagePanelDimension: 30, // Default dimension (e.g., 30% width for split, scaled for px/vh height)
+  imagePanelDimension: 30,
   notesContent: 'Your notes here...',
   notesPosition: 'bottom-right',
   notesSize: { width: 250, height: 120 },
@@ -49,6 +49,7 @@ const initialConfig: CalendarConfig = {
   resizeRowsToFill: false,
   displayLayout: 'default',
   paperOrientation: 'portrait',
+  theme: 'default',
 };
 
 export default function VisualCalPage() {
@@ -64,8 +65,8 @@ export default function VisualCalPage() {
         const mergedConfig = { ...initialConfig, ...parsedConfig };
         mergedConfig.imagePosition = { ...initialConfig.imagePosition, ...(parsedConfig.imagePosition || {}) };
         mergedConfig.notesSize = { ...initialConfig.notesSize, ...(parsedConfig.notesSize || {}) };
-        // Ensure imagePanelDimension has a default if missing from older saved configs
         mergedConfig.imagePanelDimension = parsedConfig.imagePanelDimension || initialConfig.imagePanelDimension;
+        mergedConfig.theme = parsedConfig.theme || initialConfig.theme;
         setCalendarConfig(mergedConfig);
       } catch (error) {
         console.error("Failed to parse saved config:", error);
@@ -119,6 +120,12 @@ export default function VisualCalPage() {
 
   }, [calendarConfig.paperOrientation, isClient]);
 
+  useEffect(() => {
+    if (isClient && calendarConfig.theme) {
+      document.documentElement.dataset.theme = calendarConfig.theme;
+    }
+  }, [calendarConfig.theme, isClient]);
+
 
   const handleConfigChange = <K extends keyof CalendarConfig>(
     key: K,
@@ -147,7 +154,6 @@ export default function VisualCalPage() {
     );
   }
 
-  // Calculate dynamic dimensions based on layout and imagePanelDimension
   const defaultLayoutImageHeight = String(100 + (calendarConfig.imagePanelDimension - 10) * 10) + 'px';
   const landscapeBannerHeight = String(10 + calendarConfig.imagePanelDimension / 2) + 'vh';
   const splitImageWidthClass = "md:w-[" + String(calendarConfig.imagePanelDimension) + "%]";
@@ -197,20 +203,19 @@ export default function VisualCalPage() {
         </Sidebar>
 
         <SidebarInset className="flex-1 overflow-auto bg-background visualcal-sidebar-inset">
-          {/* Default Layout: Stacked */}
           {calendarConfig.displayLayout === 'default' && (
             <div className="flex flex-col h-full p-4 space-y-4 visualcal-main-content">
               {calendarConfig.imageSrc && (
                 <div 
                   className="relative w-full bg-muted/30 p-2 rounded-lg shadow-inner"
                   style={{ height: defaultLayoutImageHeight }}
+                  data-ai-hint="decorative feature" 
                 >
                   <ImageDisplay
                     src={calendarConfig.imageSrc}
                     alt="Calendar visual"
                     position={calendarConfig.imagePosition}
                     size={calendarConfig.imageSize}
-                    data-ai-hint="decorative feature" 
                   />
                 </div>
               )}
@@ -228,18 +233,16 @@ export default function VisualCalPage() {
             </div>
           )}
 
-          {/* Split Layout: Image / Calendar */}
           {calendarConfig.displayLayout === 'image-30-calendar-70' && (
             <div className="flex flex-col md:flex-row h-full visualcal-main-content">
               <div className={cn(splitImageWidthClass, "w-full p-4 flex flex-col space-y-4")}>
                 {calendarConfig.imageSrc && (
-                  <div className="relative flex-grow bg-muted/30 p-2 rounded-lg shadow-inner min-h-[200px] md:min-h-0">
+                  <div className="relative flex-grow bg-muted/30 p-2 rounded-lg shadow-inner min-h-[200px] md:min-h-0" data-ai-hint="custom background">
                     <ImageDisplay
                       src={calendarConfig.imageSrc}
                       alt="Calendar visual"
                       position={calendarConfig.imagePosition}
                       size={calendarConfig.imageSize}
-                      data-ai-hint="custom background" 
                     />
                   </div>
                 )}
@@ -258,20 +261,19 @@ export default function VisualCalPage() {
             </div>
           )}
           
-          {/* Landscape Banner Layout */}
           {calendarConfig.displayLayout === 'landscape-banner' && (
             <div className="flex flex-col h-full p-4 space-y-4 visualcal-main-content">
               {calendarConfig.imageSrc && (
                 <div 
                   className="relative w-full bg-muted/30 p-2 rounded-lg shadow-inner"
                   style={{ height: landscapeBannerHeight }}
+                  data-ai-hint="top banner"
                 >
                   <ImageDisplay
                     src={calendarConfig.imageSrc}
                     alt="Calendar banner"
                     position={calendarConfig.imagePosition}
                     size={calendarConfig.imageSize}
-                    data-ai-hint="top banner" 
                   />
                 </div>
               )}
@@ -289,7 +291,6 @@ export default function VisualCalPage() {
             </div>
           )}
 
-          {/* Floating Notes Display (Common for all layouts if not 'under-image') */}
           {calendarConfig.notesPosition !== 'under-image' && (
             <NotesDisplay
               config={calendarConfig}

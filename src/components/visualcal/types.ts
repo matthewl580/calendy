@@ -7,6 +7,7 @@ export type NotesPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-r
 export type DisplayLayout = 'default' | 'image-30-calendar-70' | 'landscape-banner';
 export type SupportedFont = "Roboto" | "Open Sans" | "Montserrat" | "Lato" | "Poppins";
 export type PaperOrientation = 'portrait' | 'landscape';
+export type AppTheme = 'default' | 'oceanic';
 
 export interface CalendarConfig {
   selectedMonth: number; // 0-11
@@ -29,6 +30,7 @@ export interface CalendarConfig {
   resizeRowsToFill: boolean;
   displayLayout: DisplayLayout;
   paperOrientation: PaperOrientation;
+  theme: AppTheme;
 }
 
 export const FONT_OPTIONS: SupportedFont[] = ["Roboto", "Open Sans", "Montserrat", "Lato", "Poppins"];
@@ -42,7 +44,10 @@ export const BORDER_WIDTH_OPTIONS: { label: string, value: BorderWidth }[] = [
 export const DAY_HEADER_STYLE_OPTIONS: DayHeaderStyle[] = ['simple', 'bordered', 'pill'];
 export const NOTES_POSITION_OPTIONS: NotesPosition[] = ['top-left', 'top-right', 'bottom-left', 'bottom-right', 'under-image'];
 export const PAPER_ORIENTATION_OPTIONS: PaperOrientation[] = ['portrait', 'landscape'];
-// No explicit DISPLAY_LAYOUT_OPTIONS needed here as they are managed in DisplaySettings component
+export const THEME_OPTIONS: { label: string, value: AppTheme }[] = [
+  { label: 'Default', value: 'default' },
+  { label: 'Oceanic', value: 'oceanic' },
+];
 
 export const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
