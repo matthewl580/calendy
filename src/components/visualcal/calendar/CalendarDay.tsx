@@ -2,7 +2,7 @@
 "use client";
 
 import { cn } from '@/lib/utils';
-import type { CalendarConfig } from '../types';
+import type { CalendarConfig, DayCellPaddingOption } from '../types';
 
 interface CalendarDayProps {
   day: number | null;
@@ -10,8 +10,18 @@ interface CalendarDayProps {
   config: CalendarConfig;
 }
 
+const getPaddingClass = (paddingOption: DayCellPaddingOption): string => {
+  switch (paddingOption) {
+    case 'xs': return 'p-0.5';
+    case 'sm': return 'p-1';
+    case 'base': return 'p-2';
+    case 'lg': return 'p-3';
+    default: return 'p-2';
+  }
+};
+
 export function CalendarDay({ day, isCurrentMonth, config }: CalendarDayProps) {
-  const { bodyFont, dayNumberFontSize } = config;
+  const { bodyFont, dayNumberFontSize, dayCellPadding } = config;
   const fontClass = 'font-' + bodyFont.toLowerCase().replace(/\s+/g, '');
   
   let fontSizeClass = '';
@@ -24,12 +34,15 @@ export function CalendarDay({ day, isCurrentMonth, config }: CalendarDayProps) {
     default: fontSizeClass = 'text-sm';
   }
 
+  const paddingClass = getPaddingClass(dayCellPadding);
+
   return (
     <div
       className={cn(
-        'calendar-day-cell p-2 border border-transparent aspect-square flex items-center justify-center transition-colors duration-150 ease-in-out',
+        'calendar-day-cell aspect-square flex items-center justify-center transition-colors duration-150 ease-in-out',
         fontClass,
         fontSizeClass,
+        paddingClass,
         !isCurrentMonth && 'text-muted-foreground/50',
         isCurrentMonth && 'hover:bg-accent/20',
         day === null && 'bg-transparent pointer-events-none'

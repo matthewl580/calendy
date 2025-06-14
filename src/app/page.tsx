@@ -21,10 +21,10 @@ import { DisplaySettings } from '@/components/visualcal/settings/DisplaySettings
 import { CalendarView } from '@/components/visualcal/calendar/CalendarView';
 import { ImageDisplay } from '@/components/visualcal/calendar/ImageDisplay';
 import { NotesDisplay } from '@/components/visualcal/calendar/NotesDisplay';
-import type { CalendarConfig } from '@/components/visualcal/types';
+import type { CalendarConfig, FontSizeOption, TextTransformOption, WeekdayHeaderLength, MonthYearDisplayOrder, DayCellPaddingOption } from '@/components/visualcal/types';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { Toaster } from '@/components/ui/toaster';
+import { useToast } from "@/hooks/use-toast";
 import { Button } from '@/components/ui/button';
 import { Save, Share2, Printer, GripVertical } from 'lucide-react';
 
@@ -52,11 +52,24 @@ const initialConfig: CalendarConfig = {
   theme: 'default',
   dayNumberFontSize: 'sm',
   monthYearHeaderAlignment: 'center',
+
+  // New Customization Options Defaults
+  monthYearHeaderFontSize: 'xl' as FontSizeOption,
+  monthYearDisplayOrder: 'month-year' as MonthYearDisplayOrder,
+  showMonthName: true,
+  showYear: true,
+  weekdayHeaderFontSize: 'sm' as FontSizeOption,
+  weekdayHeaderTextTransform: 'capitalize' as TextTransformOption,
+  weekdayHeaderLength: 'short' as WeekdayHeaderLength,
+  dayCellPadding: 'base' as DayCellPaddingOption,
+  showWeekNumbers: false,
+  weekNumberFontSize: 'xs' as FontSizeOption,
 };
 
 export default function VisualCalPage() {
   const [calendarConfig, setCalendarConfig] = useState<CalendarConfig>(initialConfig);
   const [isClient, setIsClient] = useState(false);
+  const { toast } = useToast();
 
   const [isResizing, setIsResizing] = useState(false);
   const [dragStartX, setDragStartX] = useState(0);
@@ -78,6 +91,19 @@ export default function VisualCalPage() {
         mergedConfig.theme = parsedConfig.theme || initialConfig.theme;
         mergedConfig.dayNumberFontSize = parsedConfig.dayNumberFontSize || initialConfig.dayNumberFontSize;
         mergedConfig.monthYearHeaderAlignment = parsedConfig.monthYearHeaderAlignment || initialConfig.monthYearHeaderAlignment;
+        
+        // Ensure new fields have defaults if not in saved config
+        mergedConfig.monthYearHeaderFontSize = parsedConfig.monthYearHeaderFontSize || initialConfig.monthYearHeaderFontSize;
+        mergedConfig.monthYearDisplayOrder = parsedConfig.monthYearDisplayOrder || initialConfig.monthYearDisplayOrder;
+        mergedConfig.showMonthName = typeof parsedConfig.showMonthName === 'boolean' ? parsedConfig.showMonthName : initialConfig.showMonthName;
+        mergedConfig.showYear = typeof parsedConfig.showYear === 'boolean' ? parsedConfig.showYear : initialConfig.showYear;
+        mergedConfig.weekdayHeaderFontSize = parsedConfig.weekdayHeaderFontSize || initialConfig.weekdayHeaderFontSize;
+        mergedConfig.weekdayHeaderTextTransform = parsedConfig.weekdayHeaderTextTransform || initialConfig.weekdayHeaderTextTransform;
+        mergedConfig.weekdayHeaderLength = parsedConfig.weekdayHeaderLength || initialConfig.weekdayHeaderLength;
+        mergedConfig.dayCellPadding = parsedConfig.dayCellPadding || initialConfig.dayCellPadding;
+        mergedConfig.showWeekNumbers = typeof parsedConfig.showWeekNumbers === 'boolean' ? parsedConfig.showWeekNumbers : initialConfig.showWeekNumbers;
+        mergedConfig.weekNumberFontSize = parsedConfig.weekNumberFontSize || initialConfig.weekNumberFontSize;
+
         setCalendarConfig(mergedConfig);
       } catch (error) {
         console.error("Failed to parse saved config:", error);
@@ -126,7 +152,7 @@ export default function VisualCalPage() {
       "    overflow: visible !important;\n" +
       "  }\n" +
       "  .visualcal-split-image-panel, .visualcal-split-calendar-panel {\n" +
-      "    height: auto !important; /* Ensure panels take full height in print */ \n" +
+      "    height: auto !important; \n" +
       "  }\n" +
       "}";
       
@@ -158,6 +184,31 @@ export default function VisualCalPage() {
     window.print();
   };
 
+  const handleSaveConfig = () => {
+    toast({
+      title: "Configuration Saved",
+      description: "Your settings are automatically saved to your browser.",
+    });
+  };
+
+  const handleShareConfig = () => {
+    try {
+      navigator.clipboard.writeText(JSON.stringify(calendarConfig, null, 2));
+      toast({
+        title: "Configuration Copied!",
+        description: "Calendar settings copied to clipboard.",
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to Copy",
+        description: "Could not copy settings to clipboard. Your browser might not support this feature or permissions might be denied.",
+        variant: "destructive",
+      });
+      console.error("Failed to copy config to clipboard:", error);
+    }
+  };
+
+
   const handleMouseDownResizer = (e: React.MouseEvent) => {
     e.preventDefault();
     if (!splitLayoutContainerRef.current) return;
@@ -176,7 +227,7 @@ export default function VisualCalPage() {
     const dPercentage = (dx / parentWidthAtDragStart) * 100;
     
     let newDimension = initialDragDimension + dPercentage;
-    newDimension = Math.max(20, Math.min(50, newDimension)); // Clamp to 20-50%
+    newDimension = Math.max(20, Math.min(50, newDimension)); 
 
     handleConfigChange('imagePanelDimension', parseFloat(newDimension.toFixed(1)));
   }, [isResizing, dragStartX, initialDragDimension, parentWidthAtDragStart, handleConfigChange]);
@@ -199,7 +250,7 @@ export default function VisualCalPage() {
     return () => {
       document.removeEventListener('mousemove', handleGlobalMouseMove);
       document.removeEventListener('mouseup', handleGlobalMouseUp);
-      document.body.style.cursor = 'default'; // Ensure cursor resets
+      document.body.style.cursor = 'default'; 
     };
   }, [isResizing, handleGlobalMouseMove, handleGlobalMouseUp]);
 
@@ -217,8 +268,8 @@ export default function VisualCalPage() {
   const defaultLayoutImageHeight = String(100 + (calendarConfig.imagePanelDimension - 10) * 10) + 'px';
   const landscapeBannerHeight = String(10 + calendarConfig.imagePanelDimension / 2) + 'vh';
   
-  const splitImageWidthStyle = { width: `${calendarConfig.imagePanelDimension}%` };
-  const splitCalendarWidthStyle = { width: `${100 - calendarConfig.imagePanelDimension}%` };
+  const splitImageWidthStyle = { width: String(calendarConfig.imagePanelDimension + '%') };
+  const splitCalendarWidthStyle = { width: String((100 - calendarConfig.imagePanelDimension) + '%') };
 
 
   return (
@@ -247,7 +298,7 @@ export default function VisualCalPage() {
                 <FontSettings config={calendarConfig} onConfigChange={handleConfigChange} />
               </SidebarGroup>
               <SidebarGroup>
-                <SidebarGroupLabel className="px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">Appearance</SidebarGroupLabel>
+                <SidebarGroupLabel className="px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">Appearance & Style</SidebarGroupLabel>
                 <AppearanceSettings config={calendarConfig} onConfigChange={handleConfigChange} />
               </SidebarGroup>
               <SidebarGroup>
@@ -257,8 +308,8 @@ export default function VisualCalPage() {
             </SidebarContent>
           </ScrollArea>
            <div className="p-4 border-t border-sidebar-border space-y-2 visualcal-print-button-group">
-              <Button className="w-full" variant="outline" onClick={() => alert("Save feature coming soon!")}><Save className="mr-2 h-4 w-4" /> Save Configuration</Button>
-              <Button className="w-full" variant="outline" onClick={() => alert("Share feature coming soon!")}><Share2 className="mr-2 h-4 w-4" /> Share Calendar</Button>
+              <Button className="w-full" variant="outline" onClick={handleSaveConfig}><Save className="mr-2 h-4 w-4" /> Save Configuration</Button>
+              <Button className="w-full" variant="outline" onClick={handleShareConfig}><Share2 className="mr-2 h-4 w-4" /> Share Calendar</Button>
               <Button className="w-full" onClick={handlePrint}><Printer className="mr-2 h-4 w-4" /> Print Calendar</Button>
             </div>
         </Sidebar>
@@ -375,8 +426,6 @@ export default function VisualCalPage() {
           )}
         </SidebarInset>
       </div>
-      <Toaster />
     </SidebarProvider>
   );
 }
-

@@ -34,6 +34,14 @@ export type AppTheme =
 export type DayNumberFontSize = 'xs' | 'sm' | 'base' | 'lg' | 'xl';
 export type MonthYearHeaderAlignment = 'left' | 'center' | 'right';
 
+// New Types for Customization
+export type FontSizeOption = 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl';
+export type TextTransformOption = 'none' | 'uppercase' | 'lowercase' | 'capitalize';
+export type WeekdayHeaderLength = 'short' | 'long'; // "Mon" vs "Monday"
+export type MonthYearDisplayOrder = 'month-year' | 'year-month';
+export type DayCellPaddingOption = 'xs' | 'sm' | 'base' | 'lg';
+
+
 export interface CalendarConfig {
   selectedMonth: number; // 0-11
   selectedYear: number;
@@ -58,6 +66,18 @@ export interface CalendarConfig {
   theme: AppTheme;
   dayNumberFontSize: DayNumberFontSize;
   monthYearHeaderAlignment: MonthYearHeaderAlignment;
+
+  // New Customization Options
+  monthYearHeaderFontSize: FontSizeOption;
+  monthYearDisplayOrder: MonthYearDisplayOrder;
+  showMonthName: boolean;
+  showYear: boolean;
+  weekdayHeaderFontSize: FontSizeOption;
+  weekdayHeaderTextTransform: TextTransformOption;
+  weekdayHeaderLength: WeekdayHeaderLength;
+  dayCellPadding: DayCellPaddingOption;
+  showWeekNumbers: boolean;
+  weekNumberFontSize: FontSizeOption;
 }
 
 export const FONT_OPTIONS: SupportedFont[] = ["Roboto", "Open Sans", "Montserrat", "Lato", "Poppins"];
@@ -112,4 +132,46 @@ export const MONTH_YEAR_HEADER_ALIGNMENT_OPTIONS: {label: string, value: MonthYe
 export const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
+];
+
+// New Consts for Customization Options
+export const FONT_SIZE_OPTIONS: { label: string, value: FontSizeOption }[] = [
+  { label: 'XS', value: 'xs' },
+  { label: 'Small', value: 'sm' },
+  { label: 'Base', value: 'base' },
+  { label: 'Large', value: 'lg' },
+  { label: 'XL', value: 'xl' },
+  { label: '2XL', value: '2xl' },
+  { label: '3XL', value: '3xl' },
+];
+
+export const TEXT_TRANSFORM_OPTIONS: { label: string, value: TextTransformOption }[] = [
+  { label: 'None', value: 'none' },
+  { label: 'Uppercase', value: 'uppercase' },
+  { label: 'Lowercase', value: 'lowercase' },
+  { label: 'Capitalize', value: 'capitalize' },
+];
+
+export const WEEKDAY_HEADER_LENGTH_OPTIONS: { label: string, value: WeekdayHeaderLength }[] = [
+  { label: 'Short (Mon)', value: 'short' },
+  { label: 'Long (Monday)', value: 'long' },
+];
+
+export const MONTH_YEAR_DISPLAY_ORDER_OPTIONS: { label: string, value: MonthYearDisplayOrder }[] = [
+  { label: 'Month Year (January 2024)', value: 'month-year' },
+  { label: 'Year Month (2024 January)', value: 'year-month' },
+];
+
+export const DAY_CELL_PADDING_OPTIONS: { label: string, value: DayCellPaddingOption }[] = [
+  { label: 'Extra Small', value: 'xs' },
+  { label: 'Small', value: 'sm' },
+  { label: 'Base', value: 'base' },
+  { label: 'Large', value: 'lg' },
+];
+
+export const WEEK_NUMBER_FONT_SIZE_OPTIONS: { label: string, value: FontSizeOption }[] = [
+    { label: 'Extra Small', value: 'xs' },
+    { label: 'Small', value: 'sm' },
+    { label: 'Base', value: 'base' },
+    { label: 'Large', value: 'lg' },
 ];

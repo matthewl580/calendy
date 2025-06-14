@@ -2,7 +2,7 @@
 "use client";
 
 import { cn } from '@/lib/utils';
-import type { CalendarConfig } from '../types';
+import type { CalendarConfig, FontSizeOption } from '../types';
 import { CalendarDay } from './CalendarDay';
 import { useMemo } from 'react';
 import { MONTH_NAMES } from '../types';
@@ -23,6 +23,38 @@ const getFirstDayOfMonth = (year: number, month: number, startOnMonday: boolean)
   return firstDay;
 };
 
+const getWeekNumber = (date: Date): number => {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+};
+
+const getFontSizeClass = (size: FontSizeOption | undefined): string => {
+  if (!size) return 'text-base';
+  switch (size) {
+    case 'xs': return 'text-xs';
+    case 'sm': return 'text-sm';
+    case 'base': return 'text-base';
+    case 'lg': return 'text-lg';
+    case 'xl': return 'text-xl';
+    case '2xl': return 'text-2xl';
+    case '3xl': return 'text-3xl';
+    default: return 'text-base';
+  }
+};
+
+const getTextTransformClass = (transform: string | undefined): string => {
+  if (!transform) return '';
+  switch (transform) {
+    case 'uppercase': return 'uppercase';
+    case 'lowercase': return 'lowercase';
+    case 'capitalize': return 'capitalize';
+    default: return '';
+  }
+}
+
 export function CalendarView({ config }: CalendarViewProps) {
   const {
     selectedMonth,
@@ -36,37 +68,89 @@ export function CalendarView({ config }: CalendarViewProps) {
     headerFont,
     resizeRowsToFill,
     monthYearHeaderAlignment,
+    monthYearHeaderFontSize,
+    monthYearDisplayOrder,
+    showMonthName,
+    showYear,
+    weekdayHeaderFontSize,
+    weekdayHeaderTextTransform,
+    weekdayHeaderLength,
+    showWeekNumbers,
+    weekNumberFontSize,
   } = config;
 
   const daysInMonth = getDaysInMonth(selectedYear, selectedMonth);
   const firstDayOfMonth = getFirstDayOfMonth(selectedYear, selectedMonth, startWeekOnMonday);
 
-  const dayHeaders = useMemo(() => {
+  const dayHeadersFull = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  
+  const dayHeadersShort = useMemo(() => {
     const baseHeaders = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     return startWeekOnMonday ? [...baseHeaders.slice(1), baseHeaders[0]] : baseHeaders;
   }, [startWeekOnMonday]);
 
+  const dayHeadersLong = useMemo(() => {
+    return startWeekOnMonday ? [...dayHeadersFull.slice(1), dayHeadersFull[0]] : dayHeadersFull;
+  }, [startWeekOnMonday]);
+
+  const activeDayHeaders = weekdayHeaderLength === 'long' ? dayHeadersLong : dayHeadersShort;
+  
   const calendarDays = useMemo(() => {
     const daysArray = [];
-    for (let i = 0; i < firstDayOfMonth; i++) {
-      daysArray.push({ day: null, isCurrentMonth: false, date: null });
+    const firstDateOfMonth = new Date(selectedYear, selectedMonth, 1);
+
+    // Add week number cell if showWeekNumbers is true
+    if (showWeekNumbers && daysArray.length % (showWeekends ? 8 : 6) === 0) {
+         const weekNum = getWeekNumber(new Date(selectedYear, selectedMonth, 1));
+         daysArray.push({ type: 'weekNumber', number: weekNum, date: null });
     }
+
+    for (let i = 0; i < firstDayOfMonth; i++) {
+       daysArray.push({ type: 'day', day: null, isCurrentMonth: false, date: null });
+    }
+
     for (let i = 1; i <= daysInMonth; i++) {
-      daysArray.push({ day: i, isCurrentMonth: true, date: new Date(selectedYear, selectedMonth, i) });
+      const currentDate = new Date(selectedYear, selectedMonth, i);
+      if (showWeekNumbers && (currentDate.getDay() === (startWeekOnMonday ? 1 : 0) || i === 1 && firstDayOfMonth === 0) && daysArray.length > 0) {
+          const weekNum = getWeekNumber(currentDate);
+          const lastItem = daysArray[daysArray.length-1];
+          if(lastItem.type !== 'weekNumber' || lastItem.number !== weekNum) {
+             daysArray.push({ type: 'weekNumber', number: weekNum, date: null });
+          }
+      }
+      daysArray.push({ type: 'day', day: i, isCurrentMonth: true, date: currentDate });
     }
     
-    const columns = showWeekends ? 7 : 5;
-    const numWeeks = Math.ceil(daysArray.length / columns);
-    const totalCellsTarget = numWeeks * columns;
+    const columns = (showWeekends ? 7 : 5) + (showWeekNumbers ? 1 : 0);
+    let numCellsFilledThisRow = daysArray.length % columns;
+    if (numCellsFilledThisRow === 0 && daysArray.length > 0) numCellsFilledThisRow = columns;
 
-    const currentLength = daysArray.length;
-    if (currentLength < totalCellsTarget) {
-       for (let i = 0; i < (totalCellsTarget - currentLength) ; i++) {
-        daysArray.push({ day: null, isCurrentMonth: false, date: null });
-      }
+
+    const cellsInLastRow = daysArray.length % columns;
+    if (cellsInLastRow !== 0) {
+        const cellsToAdd = columns - cellsInLastRow;
+        for (let i = 0; i < cellsToAdd; i++) {
+            if (showWeekNumbers && (daysArray.length % columns === 0) && (daysArray.length > 0 && daysArray[daysArray.length -1].type !== 'weekNumber' )) {
+                 // Attempt to add a week number if it's the first cell in a new (visual) row for padding
+                const lastDayEntry = [...daysArray].reverse().find(d => d.type ==='day' && d.date);
+                if (lastDayEntry && lastDayEntry.date) {
+                    const nextDayApprox = new Date(lastDayEntry.date);
+                    nextDayApprox.setDate(nextDayApprox.getDate() + (columns - (daysArray.length % columns)));
+                     if (nextDayApprox.getMonth() === selectedMonth) {
+                        daysArray.push({ type: 'weekNumber', number: getWeekNumber(nextDayApprox), date: null });
+                     } else {
+                        daysArray.push({ type: 'day', day: null, isCurrentMonth: false, date: null }); // placeholder if week# not appropriate
+                     }
+                } else {
+                     daysArray.push({ type: 'day', day: null, isCurrentMonth: false, date: null });
+                }
+            } else {
+                daysArray.push({ type: 'day', day: null, isCurrentMonth: false, date: null });
+            }
+        }
     }
     return daysArray;
-  }, [selectedYear, selectedMonth, startWeekOnMonday, daysInMonth, firstDayOfMonth, showWeekends]);
+  }, [selectedYear, selectedMonth, startWeekOnMonday, daysInMonth, firstDayOfMonth, showWeekends, showWeekNumbers]);
 
 
   const containerClasses = cn(
@@ -85,22 +169,50 @@ export function CalendarView({ config }: CalendarViewProps) {
 
   const headerFontClass = 'font-' + headerFont.toLowerCase().replace(/\s+/g, '');
   
-  const monthYearHeaderBaseClass = 'text-xl md:text-2xl font-medium py-3 px-4';
-  const monthYearAlignmentClass = 
-    monthYearHeaderAlignment === 'left' ? 'text-left' :
-    monthYearHeaderAlignment === 'right' ? 'text-right' : 'text-center';
+  const monthYearTextArray = [];
+  if (showMonthName) monthYearTextArray.push(MONTH_NAMES[selectedMonth]);
+  if (showYear) monthYearTextArray.push(selectedYear);
+  
+  const monthYearDisplayString = monthYearDisplayOrder === 'year-month' ? monthYearTextArray.reverse().join(' ') : monthYearTextArray.join(' ');
 
+  const monthYearHeaderBaseClass = cn(
+    'font-medium py-3 px-4',
+    headerFontClass,
+    getFontSizeClass(monthYearHeaderFontSize),
+    monthYearHeaderAlignment === 'left' ? 'text-left' :
+    monthYearHeaderAlignment === 'right' ? 'text-right' : 'text-center'
+  );
+  
   const dayHeaderClasses = (headerText: string) => cn(
     'p-2 text-center font-medium text-muted-foreground',
-    headerFontClass, // Use headerFont for day headers as well
+    headerFontClass, 
+    getFontSizeClass(weekdayHeaderFontSize),
+    getTextTransformClass(weekdayHeaderTextTransform),
     dayHeaderStyle === 'bordered' && 'border-b border-border',
-    dayHeaderStyle === 'pill' && 'bg-primary text-primary-foreground rounded-full m-1 py-1 text-xs md:text-sm',
-    !showWeekends && (headerText.toLowerCase() === "sun" || headerText.toLowerCase() === "sat") && 'hidden'
+    dayHeaderStyle === 'pill' && 'bg-primary text-primary-foreground rounded-full m-1 py-1',
+    !showWeekends && (headerText.toLowerCase().startsWith("sun") || headerText.toLowerCase().startsWith("sat")) && 'hidden'
   );
+
+  const weekNumberHeaderClass = cn(
+    'p-2 text-center font-medium text-muted-foreground italic',
+    headerFontClass,
+    getFontSizeClass(weekNumberFontSize || 'xs'),
+     dayHeaderStyle === 'bordered' && 'border-b border-border',
+  );
+
+  const weekNumberCellClass = cn(
+    'flex items-center justify-center text-muted-foreground italic aspect-square',
+    getFontSizeClass(weekNumberFontSize || 'xs'),
+    config.bodyFont ? 'font-' + config.bodyFont.toLowerCase().replace(/\s+/g, '') : '',
+  );
+  
+  const gridLayoutClasses = [
+    showWeekNumbers ? "grid-cols-[auto_repeat(" + (showWeekends ? 7 : 5) + ",minmax(0,1fr))]" : (showWeekends ? "grid-cols-7" : "grid-cols-5")
+  ];
   
   const gridClasses = cn(
     "grid",
-    showWeekends ? "grid-cols-7" : "grid-cols-5",
+    ...gridLayoutClasses,
     resizeRowsToFill ? "flex-grow" : "",
     (borderStyle !== 'none' && calendarStyle !== 'minimal') ? "gap-px bg-border" : "gap-0" 
   );
@@ -111,32 +223,49 @@ export function CalendarView({ config }: CalendarViewProps) {
 
   return (
     <div className={containerClasses}>
-      <div className={cn(monthYearHeaderBaseClass, headerFontClass, monthYearAlignmentClass)}>
-        {MONTH_NAMES[selectedMonth]} {selectedYear}
-      </div>
-      <div className={cn("grid", showWeekends ? "grid-cols-7" : "grid-cols-5")}>
-        {dayHeaders.map(header => {
-          if (!showWeekends && (header.toLowerCase() === "sun" || header.toLowerCase() === "sat")) {
+      {(showMonthName || showYear) && (
+        <div className={monthYearHeaderBaseClass}>
+          {monthYearDisplayString}
+        </div>
+      )}
+      <div className={cn("grid", ...gridLayoutClasses)}>
+        {showWeekNumbers && <div className={weekNumberHeaderClass}>Wk</div>}
+        {activeDayHeaders.map(header => {
+          if (!showWeekends && (header.toLowerCase().startsWith("sun") || header.toLowerCase().startsWith("sat"))) {
             return null; 
           }
           return (
             <div key={header} className={dayHeaderClasses(header)}>
-              {header.substring(0,3)}
+              {header}
             </div>
           );
         })}
       </div>
       <div className={gridClasses}>
         {calendarDays.map((item, index) => {
-          const dayOfWeek = item.date ? item.date.getDay() : -1;
-          const isOriginalWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+          if (item.type === 'weekNumber') {
+            return (
+              <div key={String('wn-' + index)} className={cn(cellWrapperClasses, weekNumberCellClass)}>
+                {item.number}
+              </div>
+            );
+          }
+          
+          // Item is a day cell
+          const dayOfWeek = item.date ? item.date.getDay() : -1; // 0 for Sun, 6 for Sat
+          let isWeekendDayForFiltering = false;
+          if(startWeekOnMonday) {
+            isWeekendDayForFiltering = dayOfWeek === 0 || dayOfWeek === 6; // Sunday or Saturday
+          } else {
+            isWeekendDayForFiltering = dayOfWeek === 0 || dayOfWeek === 6; // Sunday or Saturday
+          }
 
-          if (!showWeekends && isOriginalWeekend && item.isCurrentMonth) {
+          if (!showWeekends && isWeekendDayForFiltering && item.isCurrentMonth) {
             return null; 
           }
           
           return (
-            <div key={index} className={cellWrapperClasses}>
+            <div key={String('day-' + index)} className={cellWrapperClasses}>
               <CalendarDay
                 day={item.day}
                 isCurrentMonth={item.isCurrentMonth}
