@@ -91,8 +91,6 @@ export default function VisualCalPage() {
     if (savedConfig) {
       try {
         const parsedConfig = JSON.parse(savedConfig);
-        // Merge selectively, ensuring all keys from initialConfig are present
-        // and type-specific nested objects are handled
         const mergedConfig = { 
           ...initialConfig, 
           ...parsedConfig,
@@ -102,11 +100,11 @@ export default function VisualCalPage() {
         setCalendarConfig(mergedConfig);
       } catch (error) {
         console.error("Failed to parse saved config:", error);
-        localStorage.removeItem('visualCalConfig'); // Clear corrupted config
-        setCalendarConfig(initialConfig); // Fallback to initial
+        localStorage.removeItem('visualCalConfig'); 
+        setCalendarConfig(initialConfig); 
       }
     } else {
-      setCalendarConfig(initialConfig); // No saved config, use initial
+      setCalendarConfig(initialConfig); 
     }
   }, []);
 
@@ -233,7 +231,7 @@ export default function VisualCalPage() {
     const dPercentage = (dx / parentWidthAtDragStart) * 100;
     
     let newDimension = initialDragDimension + dPercentage;
-    newDimension = Math.max(20, Math.min(80, newDimension)); 
+    newDimension = Math.max(20, Math.min(50, newDimension)); 
 
     handleConfigChange('imagePanelDimension', parseFloat(newDimension.toFixed(1)));
   }, [isResizing, dragStartX, initialDragDimension, parentWidthAtDragStart, handleConfigChange]);
@@ -390,7 +388,7 @@ export default function VisualCalPage() {
                 >
                   {renderQuotes('above-image')}
                   {calendarConfig.imageSrc && (
-                    <div className="relative flex-grow bg-muted/30 p-2 rounded-lg shadow-inner min-h-[200px] md:min-h-0" data-ai-hint="custom background">
+                    <div className="relative flex-grow bg-muted/30 p-2 md:p-0 md:pr-1 rounded-lg shadow-inner min-h-[200px] md:min-h-0" data-ai-hint="custom background">
                       <ImageDisplay
                         src={calendarConfig.imageSrc}
                         alt="Calendar visual"
@@ -464,3 +462,6 @@ export default function VisualCalPage() {
     </SidebarProvider>
   );
 }
+
+
+    
