@@ -91,43 +91,22 @@ export default function VisualCalPage() {
     if (savedConfig) {
       try {
         const parsedConfig = JSON.parse(savedConfig);
-        const mergedConfig = { ...initialConfig, ...parsedConfig };
-        mergedConfig.imagePosition = { ...initialConfig.imagePosition, ...(parsedConfig.imagePosition || {}) };
-        mergedConfig.notesSize = { ...initialConfig.notesSize, ...(parsedConfig.notesSize || {}) };
-        mergedConfig.imagePanelDimension = parsedConfig.imagePanelDimension || initialConfig.imagePanelDimension;
-        mergedConfig.theme = parsedConfig.theme || initialConfig.theme;
-        mergedConfig.dayNumberFontSize = parsedConfig.dayNumberFontSize || initialConfig.dayNumberFontSize;
-        mergedConfig.monthYearHeaderAlignment = parsedConfig.monthYearHeaderAlignment || initialConfig.monthYearHeaderAlignment;
-        
-        mergedConfig.monthYearHeaderFontSize = parsedConfig.monthYearHeaderFontSize || initialConfig.monthYearHeaderFontSize;
-        mergedConfig.monthYearDisplayOrder = parsedConfig.monthYearDisplayOrder || initialConfig.monthYearDisplayOrder;
-        mergedConfig.showMonthName = typeof parsedConfig.showMonthName === 'boolean' ? parsedConfig.showMonthName : initialConfig.showMonthName;
-        mergedConfig.showYear = typeof parsedConfig.showYear === 'boolean' ? parsedConfig.showYear : initialConfig.showYear;
-        mergedConfig.monthYearHeaderFullWidth = typeof parsedConfig.monthYearHeaderFullWidth === 'boolean' ? parsedConfig.monthYearHeaderFullWidth : initialConfig.monthYearHeaderFullWidth;
-        mergedConfig.weekdayHeaderFontSize = parsedConfig.weekdayHeaderFontSize || initialConfig.weekdayHeaderFontSize;
-        mergedConfig.weekdayHeaderTextTransform = parsedConfig.weekdayHeaderTextTransform || initialConfig.weekdayHeaderTextTransform;
-        mergedConfig.weekdayHeaderLength = parsedConfig.weekdayHeaderLength || initialConfig.weekdayHeaderLength;
-        mergedConfig.dayCellPadding = parsedConfig.dayCellPadding || initialConfig.dayCellPadding;
-        mergedConfig.showWeekNumbers = typeof parsedConfig.showWeekNumbers === 'boolean' ? parsedConfig.showWeekNumbers : initialConfig.showWeekNumbers;
-        mergedConfig.weekNumberFontSize = parsedConfig.weekNumberFontSize || initialConfig.weekNumberFontSize;
-        mergedConfig.darkMode = typeof parsedConfig.darkMode === 'boolean' ? parsedConfig.darkMode : initialConfig.darkMode;
-        mergedConfig.dayNumberAlignment = parsedConfig.dayNumberAlignment || initialConfig.dayNumberAlignment;
-        mergedConfig.showQuotes = typeof parsedConfig.showQuotes === 'boolean' ? parsedConfig.showQuotes : initialConfig.showQuotes;
-        mergedConfig.quotesContent = parsedConfig.quotesContent || initialConfig.quotesContent;
-        mergedConfig.quotesPosition = parsedConfig.quotesPosition || initialConfig.quotesPosition;
-        mergedConfig.showNotes = typeof parsedConfig.showNotes === 'boolean' ? parsedConfig.showNotes : initialConfig.showNotes;
-        mergedConfig.headerFont = parsedConfig.headerFont || initialConfig.headerFont;
-        mergedConfig.bodyFont = parsedConfig.bodyFont || initialConfig.bodyFont;
-
-
+        // Merge selectively, ensuring all keys from initialConfig are present
+        // and type-specific nested objects are handled
+        const mergedConfig = { 
+          ...initialConfig, 
+          ...parsedConfig,
+          imagePosition: { ...initialConfig.imagePosition, ...(parsedConfig.imagePosition || {}) },
+          notesSize: { ...initialConfig.notesSize, ...(parsedConfig.notesSize || {}) },
+        };
         setCalendarConfig(mergedConfig);
       } catch (error) {
         console.error("Failed to parse saved config:", error);
-        localStorage.removeItem('visualCalConfig');
-        setCalendarConfig(initialConfig);
+        localStorage.removeItem('visualCalConfig'); // Clear corrupted config
+        setCalendarConfig(initialConfig); // Fallback to initial
       }
     } else {
-      setCalendarConfig(initialConfig);
+      setCalendarConfig(initialConfig); // No saved config, use initial
     }
   }, []);
 
@@ -329,7 +308,7 @@ export default function VisualCalPage() {
       <div className={cn("flex h-screen w-full", bodyFontClass)}>
         <Sidebar side="left" collapsible="icon" className={cn("shadow-lg visualcal-sidebar", bodyFontClass)}>
           <SidebarHeader className={cn("p-4 border-b border-sidebar-border")}>
-            <h1 className={cn("font-headline text-2xl font-bold text-sidebar-primary", headerFontClass)}>VisualCal</h1>
+            <h1 className={cn("text-2xl font-bold text-sidebar-primary", headerFontClass)}>VisualCal</h1>
             <p className={cn("text-sm text-sidebar-foreground/80", bodyFontClass)}>Customize your calendar</p>
           </SidebarHeader>
           <ScrollArea className="flex-1">
@@ -485,4 +464,3 @@ export default function VisualCalPage() {
     </SidebarProvider>
   );
 }
-
