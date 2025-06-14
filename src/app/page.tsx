@@ -360,7 +360,10 @@ export default function VisualCalPage() {
           {calendarConfig.displayLayout === 'image-30-calendar-70' && (
             <div ref={splitLayoutContainerRef} className="flex flex-col md:flex-row h-full visualcal-main-content">
               <div 
-                className="w-full p-4 flex flex-col space-y-4 visualcal-split-image-panel" 
+                className={cn(
+                  "w-full flex flex-col space-y-4 visualcal-split-image-panel",
+                  "p-4 md:pr-0" 
+                )}
                 style={splitImageWidthStyle}
               >
                 {calendarConfig.imageSrc && (
@@ -389,10 +392,12 @@ export default function VisualCalPage() {
                 aria-orientation="vertical"
                 aria-label="Resize image panel"
               >
-                {/* GripVertical icon removed for invisibility */}
               </div>
               <div 
-                className="flex-1 p-4 w-full visualcal-split-calendar-panel"
+                className={cn(
+                  "flex-1 w-full visualcal-split-calendar-panel",
+                  "p-4 md:pl-0"
+                )}
                 style={splitCalendarWidthStyle}
               >
                 <CalendarView config={calendarConfig} />

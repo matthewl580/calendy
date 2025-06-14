@@ -66,6 +66,7 @@ export function CalendarView({ config }: CalendarViewProps) {
     borderWidth,
     dayHeaderStyle,
     headerFont,
+    bodyFont,
     resizeRowsToFill,
     monthYearHeaderAlignment,
     monthYearHeaderFontSize,
@@ -82,7 +83,7 @@ export function CalendarView({ config }: CalendarViewProps) {
   const daysInMonth = getDaysInMonth(selectedYear, selectedMonth);
   const firstDayOfMonth = getFirstDayOfMonth(selectedYear, selectedMonth, startWeekOnMonday);
 
-  const dayHeadersFull = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const dayHeadersFullOriginal = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   
   const dayHeadersShort = useMemo(() => {
     const baseHeaders = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -90,63 +91,75 @@ export function CalendarView({ config }: CalendarViewProps) {
   }, [startWeekOnMonday]);
 
   const dayHeadersLong = useMemo(() => {
-    return startWeekOnMonday ? [...dayHeadersFull.slice(1), dayHeadersFull[0]] : dayHeadersFull;
+    const baseHeaders = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    return startWeekOnMonday ? [...baseHeaders.slice(1), baseHeaders[0]] : baseHeaders;
   }, [startWeekOnMonday]);
 
   const activeDayHeaders = weekdayHeaderLength === 'long' ? dayHeadersLong : dayHeadersShort;
   
   const calendarDays = useMemo(() => {
     const daysArray = [];
-    const firstDateOfMonth = new Date(selectedYear, selectedMonth, 1);
+    const columns = (showWeekends ? 7 : 5) + (showWeekNumbers ? 1 : 0);
 
-    // Add week number cell if showWeekNumbers is true
-    if (showWeekNumbers && daysArray.length % (showWeekends ? 8 : 6) === 0) {
-         const weekNum = getWeekNumber(new Date(selectedYear, selectedMonth, 1));
-         daysArray.push({ type: 'weekNumber', number: weekNum, date: null });
+    if (showWeekNumbers) {
+         const firstDateOfMonth = new Date(selectedYear, selectedMonth, 1);
+         let dateForWeekNum = firstDateOfMonth;
+         if (startWeekOnMonday && firstDayOfMonth !== 0) { 
+            // If week starts Monday and 1st isn't Monday, find the previous Monday for the week number
+            const tempDate = new Date(firstDateOfMonth);
+            tempDate.setDate(tempDate.getDate() - firstDayOfMonth);
+            dateForWeekNum = tempDate;
+         } else if (!startWeekOnMonday && firstDayOfMonth !==0) {
+            const tempDate = new Date(firstDateOfMonth);
+            tempDate.setDate(tempDate.getDate() - firstDayOfMonth);
+            dateForWeekNum = tempDate;
+         }
+         daysArray.push({ type: 'weekNumber', number: getWeekNumber(dateForWeekNum), date: null });
     }
 
     for (let i = 0; i < firstDayOfMonth; i++) {
-       daysArray.push({ type: 'day', day: null, isCurrentMonth: false, date: null });
+       if (showWeekends || (!showWeekends && !((startWeekOnMonday ? (i === 5 || i === 6) : (i === 0 || i === 6))))) {
+         daysArray.push({ type: 'day', day: null, isCurrentMonth: false, date: null });
+       }
     }
 
     for (let i = 1; i <= daysInMonth; i++) {
       const currentDate = new Date(selectedYear, selectedMonth, i);
-      if (showWeekNumbers && (currentDate.getDay() === (startWeekOnMonday ? 1 : 0) || i === 1 && firstDayOfMonth === 0) && daysArray.length > 0) {
+      const dayOfWeek = currentDate.getDay(); // 0 for Sunday, 6 for Saturday
+
+      if (showWeekNumbers && 
+         ( (startWeekOnMonday && dayOfWeek === 1) || (!startWeekOnMonday && dayOfWeek === 0) ) && 
+         (daysArray.length % columns !== 0 || daysArray.length === 0 ) // ensure it's start of a new row in grid logic
+        ) {
           const weekNum = getWeekNumber(currentDate);
-          const lastItem = daysArray[daysArray.length-1];
-          if(lastItem.type !== 'weekNumber' || lastItem.number !== weekNum) {
-             daysArray.push({ type: 'weekNumber', number: weekNum, date: null });
-          }
+          daysArray.push({ type: 'weekNumber', number: weekNum, date: null });
       }
-      daysArray.push({ type: 'day', day: i, isCurrentMonth: true, date: currentDate });
+      
+      if (showWeekends || (!showWeekends && !(dayOfWeek === 0 || dayOfWeek === 6))) {
+        daysArray.push({ type: 'day', day: i, isCurrentMonth: true, date: currentDate });
+      }
     }
     
-    const columns = (showWeekends ? 7 : 5) + (showWeekNumbers ? 1 : 0);
-    let numCellsFilledThisRow = daysArray.length % columns;
-    if (numCellsFilledThisRow === 0 && daysArray.length > 0) numCellsFilledThisRow = columns;
+    const totalCellsBeforeAddingSuffix = daysArray.length;
+    const numRows = Math.ceil(totalCellsBeforeAddingSuffix / columns);
+    const expectedTotalCells = numRows * columns;
+    const cellsToAdd = expectedTotalCells - totalCellsBeforeAddingSuffix;
 
-
-    const cellsInLastRow = daysArray.length % columns;
-    if (cellsInLastRow !== 0) {
-        const cellsToAdd = columns - cellsInLastRow;
-        for (let i = 0; i < cellsToAdd; i++) {
-            if (showWeekNumbers && (daysArray.length % columns === 0) && (daysArray.length > 0 && daysArray[daysArray.length -1].type !== 'weekNumber' )) {
-                const lastDayEntry = [...daysArray].reverse().find(d => d.type ==='day' && d.date);
-                if (lastDayEntry && lastDayEntry.date) {
-                    const nextDayApprox = new Date(lastDayEntry.date);
-                    nextDayApprox.setDate(nextDayApprox.getDate() + (columns - (daysArray.length % columns)));
-                     if (nextDayApprox.getMonth() === selectedMonth) {
-                        daysArray.push({ type: 'weekNumber', number: getWeekNumber(nextDayApprox), date: null });
-                     } else {
-                        daysArray.push({ type: 'day', day: null, isCurrentMonth: false, date: null }); 
-                     }
-                } else {
-                     daysArray.push({ type: 'day', day: null, isCurrentMonth: false, date: null });
-                }
-            } else {
-                daysArray.push({ type: 'day', day: null, isCurrentMonth: false, date: null });
-            }
-        }
+    for (let i = 0; i < cellsToAdd; i++) {
+      const currentPosInRow = (totalCellsBeforeAddingSuffix + i) % columns;
+      if (showWeekNumbers && currentPosInRow === 0) {
+          const lastDayEntry = [...daysArray].reverse().find(d => d.type ==='day' && d.date);
+          if(lastDayEntry && lastDayEntry.date) {
+            const nextPotentialDay = new Date(lastDayEntry.date);
+            nextPotentialDay.setDate(nextPotentialDay.getDate() + 1 + i); // Approximate next day
+            daysArray.push({ type: 'weekNumber', number: getWeekNumber(nextPotentialDay), date: null });
+          } else {
+            // fallback if no last day entry, though unlikely if grid is being filled
+            daysArray.push({ type: 'day', day: null, isCurrentMonth: false, date: null });
+          }
+      } else {
+        daysArray.push({ type: 'day', day: null, isCurrentMonth: false, date: null });
+      }
     }
     return daysArray;
   }, [selectedYear, selectedMonth, startWeekOnMonday, daysInMonth, firstDayOfMonth, showWeekends, showWeekNumbers]);
@@ -167,6 +180,7 @@ export function CalendarView({ config }: CalendarViewProps) {
   );
 
   const headerFontClass = 'font-' + headerFont.toLowerCase().replace(/\s+/g, '');
+  const bodyFontClass = 'font-' + bodyFont.toLowerCase().replace(/\s+/g, '');
   
   const monthYearTextArray = [];
   if (showMonthName) monthYearTextArray.push(MONTH_NAMES[selectedMonth]);
@@ -188,21 +202,20 @@ export function CalendarView({ config }: CalendarViewProps) {
     getFontSizeClass(weekdayHeaderFontSize),
     getTextTransformClass(weekdayHeaderTextTransform),
     dayHeaderStyle === 'bordered' && 'border-b border-border',
-    dayHeaderStyle === 'pill' && 'bg-primary text-primary-foreground rounded-full m-1 py-1',
-    !showWeekends && (headerText.toLowerCase().includes("sun") || headerText.toLowerCase().includes("sat")) && 'hidden'
+    dayHeaderStyle === 'pill' && 'bg-primary text-primary-foreground rounded-full m-1 py-1'
   );
 
   const weekNumberHeaderClass = cn(
     'p-2 text-center font-medium text-muted-foreground italic',
-    headerFontClass,
+    headerFontClass, // Week numbers header also uses headerFont
     getFontSizeClass(weekNumberFontSize || 'xs'),
      dayHeaderStyle === 'bordered' && 'border-b border-border',
   );
 
   const weekNumberCellClass = cn(
     'flex items-center justify-center text-muted-foreground italic aspect-square',
+    bodyFontClass, // Week numbers themselves use bodyFont
     getFontSizeClass(weekNumberFontSize || 'xs'),
-    config.bodyFont ? 'font-' + config.bodyFont.toLowerCase().replace(/\s+/g, '') : '',
   );
   
   const gridLayoutClasses = [
@@ -212,13 +225,36 @@ export function CalendarView({ config }: CalendarViewProps) {
   const gridClasses = cn(
     "grid",
     ...gridLayoutClasses,
-    resizeRowsToFill ? "flex-grow auto-rows-fr" : "", // Added auto-rows-fr for dynamic row height
+    resizeRowsToFill ? "flex-grow auto-rows-fr" : "", 
     (borderStyle !== 'none' && calendarStyle !== 'minimal') ? "gap-px bg-border" : "gap-0" 
   );
   
   const cellWrapperClasses = cn(
      (borderStyle !== 'none' && calendarStyle !== 'minimal') ? "bg-card" : "" 
   );
+
+  // Determine which day headers to show based on startWeekOnMonday and showWeekends
+  let displayDayHeaders = activeDayHeaders;
+  if (!showWeekends) {
+    if (startWeekOnMonday) {
+      // Mon, Tue, Wed, Thu, Fri
+      displayDayHeaders = activeDayHeaders.filter(h => !h.toLowerCase().includes("sat") && !h.toLowerCase().includes("sun"));
+    } else {
+      // Sun, Mon, Tue, Wed, Thu, Fri, Sat -> filter out Sun, Sat, but they are at ends
+      // This needs to check the original non-shifted headers
+      displayDayHeaders = dayHeadersFullOriginal
+        .filter(h => !(h.toLowerCase() === "sunday" || h.toLowerCase() === "saturday"))
+        .map(h => { // Truncate if necessary
+            if(weekdayHeaderLength === 'short') return h.substring(0,3);
+            return h;
+        });
+       if(startWeekOnMonday){ // if startWeekOnMonday is true, but showWeekends is false, we have an edge case
+         const mondayIndex = displayDayHeaders.findIndex(h => h.toLowerCase().startsWith("mon"));
+         displayDayHeaders = [...displayDayHeaders.slice(mondayIndex), ...displayDayHeaders.slice(0, mondayIndex)];
+       }
+    }
+  }
+
 
   return (
     <div className={containerClasses}>
@@ -229,18 +265,12 @@ export function CalendarView({ config }: CalendarViewProps) {
       )}
       <div className={cn("grid", ...gridLayoutClasses)}>
         {showWeekNumbers && <div className={weekNumberHeaderClass}>Wk</div>}
-        {activeDayHeaders.map(header => {
-          // For filtering headers, check against the full, untruncated day names
-          const fullDayForCheck = dayHeadersFull[dayHeadersFull.map(d => d.toLowerCase().startsWith(header.toLowerCase().substring(0,3))).indexOf(true)] || "";
-          if (!showWeekends && (fullDayForCheck.toLowerCase() === "sunday" || fullDayForCheck.toLowerCase() === "saturday")) {
-            return null; 
-          }
-          return (
+        {displayDayHeaders.map(header => (
             <div key={header} className={dayHeaderClasses(header)}>
               {header}
             </div>
-          );
-        })}
+          )
+        )}
       </div>
       <div className={gridClasses}>
         {calendarDays.map((item, index) => {
@@ -250,23 +280,6 @@ export function CalendarView({ config }: CalendarViewProps) {
                 {item.number}
               </div>
             );
-          }
-          
-          // Item is a day cell
-          const dayOfWeek = item.date ? item.date.getDay() : -1; // 0 for Sun, 6 for Sat
-          let isWeekendDayForFiltering = false;
-          if(startWeekOnMonday) {
-            // If week starts on Monday, Saturday is 5 and Sunday is 6 in a 0-6 (Mon-Sun) system.
-            // Original getDay() is 0 (Sun) to 6 (Sat).
-            // So, Saturday (6) or Sunday (0) from original getDay() are weekends.
-            isWeekendDayForFiltering = dayOfWeek === 0 || dayOfWeek === 6;
-          } else {
-            // If week starts on Sunday, Saturday is 6 and Sunday is 0.
-            isWeekendDayForFiltering = dayOfWeek === 0 || dayOfWeek === 6; 
-          }
-
-          if (!showWeekends && isWeekendDayForFiltering && item.day !== null) { // Only hide actual weekend days
-            return null; 
           }
           
           return (

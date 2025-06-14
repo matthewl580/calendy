@@ -62,7 +62,7 @@ export function CalendarDay({ day, isCurrentMonth, config }: CalendarDayProps) {
         alignmentClass,
         !isCurrentMonth && 'text-muted-foreground/50',
         isCurrentMonth && 'hover:bg-accent/20',
-        day === null && 'bg-transparent pointer-events-none'
+        day === null && 'bg-transparent pointer-events-none' // Makes empty cells non-interactive and transparent
       )}
       aria-label={day ? String('Date ' + day) : 'Empty cell'}
     >
