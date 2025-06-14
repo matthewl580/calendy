@@ -7,7 +7,30 @@ export type NotesPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-r
 export type DisplayLayout = 'default' | 'image-30-calendar-70' | 'landscape-banner';
 export type SupportedFont = "Roboto" | "Open Sans" | "Montserrat" | "Lato" | "Poppins";
 export type PaperOrientation = 'portrait' | 'landscape';
-export type AppTheme = 'default' | 'oceanic';
+export type AppTheme = 
+  'default' | 
+  'oceanic' |
+  'forest-canopy' |
+  'sunset-glow' |
+  'arctic-dawn' |
+  'desert-mirage' |
+  'vintage-paper' |
+  'cyberpunk-neon' |
+  'coral-reef' |
+  'monochrome-classic' |
+  'earthy-tones' |
+  'lavender-fields' |
+  'cosmic-dark' |
+  'spring-bloom' |
+  'autumn-leaves' |
+  'minimalist-white' |
+  'minimalist-dark' |
+  'tropical-paradise' |
+  'royal-velvet' |
+  'industrial-chic' |
+  'candy-pop' |
+  'zen-garden';
+
 export type DayNumberFontSize = 'xs' | 'sm' | 'base' | 'lg' | 'xl';
 export type MonthYearHeaderAlignment = 'left' | 'center' | 'right';
 
@@ -51,6 +74,26 @@ export const PAPER_ORIENTATION_OPTIONS: PaperOrientation[] = ['portrait', 'lands
 export const THEME_OPTIONS: { label: string, value: AppTheme }[] = [
   { label: 'Default', value: 'default' },
   { label: 'Oceanic', value: 'oceanic' },
+  { label: 'Forest Canopy', value: 'forest-canopy' },
+  { label: 'Sunset Glow', value: 'sunset-glow' },
+  { label: 'Arctic Dawn', value: 'arctic-dawn' },
+  { label: 'Desert Mirage', value: 'desert-mirage' },
+  { label: 'Vintage Paper', value: 'vintage-paper' },
+  { label: 'Cyberpunk Neon', value: 'cyberpunk-neon' },
+  { label: 'Coral Reef', value: 'coral-reef' },
+  { label: 'Monochrome Classic', value: 'monochrome-classic' },
+  { label: 'Earthy Tones', value: 'earthy-tones' },
+  { label: 'Lavender Fields', value: 'lavender-fields' },
+  { label: 'Cosmic Dark', value: 'cosmic-dark' },
+  { label: 'Spring Bloom', value: 'spring-bloom' },
+  { label: 'Autumn Leaves', value: 'autumn-leaves' },
+  { label: 'Minimalist White', value: 'minimalist-white' },
+  { label: 'Minimalist Dark', value: 'minimalist-dark' },
+  { label: 'Tropical Paradise', value: 'tropical-paradise' },
+  { label: 'Royal Velvet', value: 'royal-velvet' },
+  { label: 'Industrial Chic', value: 'industrial-chic' },
+  { label: 'Candy Pop', value: 'candy-pop' },
+  { label: 'Zen Garden', value: 'zen-garden' },
 ];
 export const DAY_NUMBER_FONT_SIZE_OPTIONS: {label: string, value: DayNumberFontSize}[] = [
     {label: 'Extra Small', value: 'xs'},

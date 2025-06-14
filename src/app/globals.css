@@ -61,13 +61,16 @@ body {
     --muted-foreground: 190 20% 50%;
     --accent: 210 70% 60%;
     --accent-foreground: 210 70% 10%;
-    --destructive: 0 84.2% 60.2%; /* Kept from default for consistency in destructive actions */
-    --destructive-foreground: 0 0% 98%; /* Kept from default */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
     --border: 180 50% 70%;
     --input: 180 40% 90%;
     --ring: 210 70% 60%;
-
-    /* Sidebar specific colors for Oceanic theme */
+    --chart-1: 180 70% 50%;
+    --chart-2: 190 60% 45%;
+    --chart-3: 200 50% 40%;
+    --chart-4: 210 75% 55%;
+    --chart-5: 220 65% 60%;
     --sidebar-background: 190 45% 90%;
     --sidebar-foreground: 190 30% 15%;
     --sidebar-primary: 180 60% 40%;
@@ -76,6 +79,666 @@ body {
     --sidebar-accent-foreground: 210 70% 15%;
     --sidebar-border: 180 50% 60%;
     --sidebar-ring: 210 70% 60%;
+  }
+
+  html[data-theme="forest-canopy"] {
+    --background: 120 25% 95%; /* Very light green */
+    --foreground: 120 60% 10%; /* Dark forest green */
+    --card: 120 25% 95%;
+    --card-foreground: 120 60% 10%;
+    --popover: 120 25% 95%;
+    --popover-foreground: 120 60% 10%;
+    --primary: 120 40% 40%; /* Medium forest green */
+    --primary-foreground: 120 40% 90%; /* Light green for text on primary */
+    --secondary: 90 30% 85%; /* Light olive/moss green */
+    --secondary-foreground: 90 30% 25%;
+    --muted: 40 30% 80%; /* Light brown/beige */
+    --muted-foreground: 40 30% 40%;
+    --accent: 30 60% 60%; /* Warm brown (like tree bark) */
+    --accent-foreground: 30 60% 10%;
+    --border: 120 20% 60%; /* Desaturated green */
+    --input: 90 20% 75%;
+    --ring: 30 60% 60%;
+    --chart-1: 120 50% 50%;
+    --chart-2: 90 40% 45%;
+    --chart-3: 30 50% 55%;
+    --chart-4: 110 45% 60%;
+    --chart-5: 45 35% 50%;
+    --sidebar-background: 120 20% 92%;
+    --sidebar-foreground: 120 50% 15%;
+    --sidebar-primary: 120 40% 35%;
+    --sidebar-primary-foreground: 120 40% 85%;
+    --sidebar-accent: 30 55% 70%;
+    --sidebar-accent-foreground: 30 55% 15%;
+    --sidebar-border: 120 20% 55%;
+    --sidebar-ring: 30 60% 60%;
+  }
+
+  html[data-theme="sunset-glow"] {
+    --background: 30 100% 97%; /* Very light orange/peach */
+    --foreground: 20 80% 15%; /* Dark reddish-brown */
+    --card: 30 100% 97%;
+    --card-foreground: 20 80% 15%;
+    --popover: 30 100% 97%;
+    --popover-foreground: 20 80% 15%;
+    --primary: 15 80% 60%; /* Vibrant orange */
+    --primary-foreground: 15 80% 98%; /* Almost white for text */
+    --secondary: 330 70% 90%; /* Light pink */
+    --secondary-foreground: 330 70% 30%;
+    --muted: 300 50% 85%; /* Muted purple */
+    --muted-foreground: 300 50% 40%;
+    --accent: 50 90% 65%; /* Bright yellow */
+    --accent-foreground: 50 90% 10%;
+    --border: 15 50% 70%; /* Desaturated orange */
+    --input: 30 60% 88%;
+    --ring: 50 90% 65%;
+    --chart-1: 15 85% 55%;
+    --chart-2: 330 75% 65%;
+    --chart-3: 300 60% 50%;
+    --chart-4: 50 95% 60%;
+    --chart-5: 25 70% 70%;
+    --sidebar-background: 30 90% 94%;
+    --sidebar-foreground: 20 70% 20%;
+    --sidebar-primary: 15 75% 55%;
+    --sidebar-primary-foreground: 15 75% 95%;
+    --sidebar-accent: 50 85% 70%;
+    --sidebar-accent-foreground: 50 85% 15%;
+    --sidebar-border: 15 40% 65%;
+    --sidebar-ring: 50 90% 65%;
+  }
+  
+  html[data-theme="arctic-dawn"] {
+    --background: 200 100% 98%; /* Very light, almost white-blue */
+    --foreground: 220 30% 20%; /* Dark desaturated blue */
+    --card: 200 100% 98%;
+    --card-foreground: 220 30% 20%;
+    --popover: 200 100% 98%;
+    --popover-foreground: 220 30% 20%;
+    --primary: 190 60% 65%; /* Icy light blue */
+    --primary-foreground: 190 60% 10%; /* Dark blue for contrast */
+    --secondary: 210 50% 90%; /* Very light desaturated blue */
+    --secondary-foreground: 210 50% 30%;
+    --muted: 60 70% 90%; /* Pale yellow (sun glimpse) */
+    --muted-foreground: 60 70% 45%;
+    --accent: 180 40% 75%; /* Soft teal */
+    --accent-foreground: 180 40% 15%;
+    --border: 190 40% 75%; /* Muted icy blue */
+    --input: 200 50% 92%;
+    --ring: 180 40% 75%;
+    --chart-1: 190 65% 60%;
+    --chart-2: 180 45% 70%;
+    --chart-3: 210 55% 65%;
+    --chart-4: 60 75% 80%;
+    --chart-5: 200 50% 70%;
+    --sidebar-background: 200 90% 95%;
+    --sidebar-foreground: 220 30% 25%;
+    --sidebar-primary: 190 55% 60%;
+    --sidebar-primary-foreground: 190 55% 15%;
+    --sidebar-accent: 180 45% 80%;
+    --sidebar-accent-foreground: 180 45% 20%;
+    --sidebar-border: 190 35% 70%;
+    --sidebar-ring: 180 40% 75%;
+  }
+
+  html[data-theme="desert-mirage"] {
+    --background: 40 60% 95%; /* Sandy beige */
+    --foreground: 30 50% 15%; /* Dark brown */
+    --card: 40 60% 95%;
+    --card-foreground: 30 50% 15%;
+    --popover: 40 60% 95%;
+    --popover-foreground: 30 50% 15%;
+    --primary: 25 70% 55%; /* Terracotta */
+    --primary-foreground: 25 70% 95%; /* Light sand */
+    --secondary: 210 40% 80%; /* Pale sky blue */
+    --secondary-foreground: 210 40% 25%;
+    --muted: 50 30% 88%; /* Light sandstone */
+    --muted-foreground: 50 30% 40%;
+    --accent: 200 60% 50%; /* Oasis blue */
+    --accent-foreground: 200 60% 90%;
+    --border: 25 40% 70%; /* Muted terracotta */
+    --input: 40 40% 90%;
+    --ring: 200 60% 50%;
+    --chart-1: 25 75% 50%;
+    --chart-2: 200 65% 45%;
+    --chart-3: 35 60% 60%;
+    --chart-4: 210 45% 70%;
+    --chart-5: 45 50% 75%;
+    --sidebar-background: 40 55% 92%;
+    --sidebar-foreground: 30 45% 20%;
+    --sidebar-primary: 25 65% 50%;
+    --sidebar-primary-foreground: 25 65% 90%;
+    --sidebar-accent: 200 55% 60%;
+    --sidebar-accent-foreground: 200 55% 95%;
+    --sidebar-border: 25 35% 65%;
+    --sidebar-ring: 200 60% 50%;
+  }
+
+  html[data-theme="vintage-paper"] {
+    --background: 45 30% 96%; /* Aged paper cream */
+    --foreground: 40 60% 20%; /* Dark sepia */
+    --card: 45 30% 96%;
+    --card-foreground: 40 60% 20%;
+    --popover: 45 30% 96%;
+    --popover-foreground: 40 60% 20%;
+    --primary: 140 25% 45%; /* Muted green (old ink) */
+    --primary-foreground: 140 25% 90%; /* Light cream */
+    --secondary: 30 20% 88%; /* Faded brown */
+    --secondary-foreground: 30 20% 30%;
+    --muted: 200 15% 85%; /* Faded blue-gray */
+    --muted-foreground: 200 15% 40%;
+    --accent: 0 40% 55%; /* Muted red (seal wax) */
+    --accent-foreground: 0 40% 95%;
+    --border: 40 25% 75%; /* Light sepia border */
+    --input: 45 20% 90%;
+    --ring: 0 40% 55%;
+    --chart-1: 140 30% 40%;
+    --chart-2: 0 45% 50%;
+    --chart-3: 30 25% 55%;
+    --chart-4: 200 20% 60%;
+    --chart-5: 40 40% 65%;
+    --sidebar-background: 45 28% 93%;
+    --sidebar-foreground: 40 50% 25%;
+    --sidebar-primary: 140 25% 40%;
+    --sidebar-primary-foreground: 140 25% 85%;
+    --sidebar-accent: 0 35% 65%;
+    --sidebar-accent-foreground: 0 35% 90%;
+    --sidebar-border: 40 20% 70%;
+    --sidebar-ring: 0 40% 55%;
+  }
+
+  html[data-theme="cyberpunk-neon"] {
+    --background: 260 50% 10%; /* Very dark blue/purple */
+    --foreground: 200 100% 90%; /* Bright cyan */
+    --card: 260 50% 15%;
+    --card-foreground: 200 100% 90%;
+    --popover: 260 50% 15%;
+    --popover-foreground: 200 100% 90%;
+    --primary: 320 100% 60%; /* Neon pink */
+    --primary-foreground: 320 100% 95%; /* Very light pink */
+    --secondary: 240 60% 25%; /* Dark electric blue */
+    --secondary-foreground: 240 60% 80%;
+    --muted: 280 40% 30%; /* Muted dark purple */
+    --muted-foreground: 280 40% 70%;
+    --accent: 180 100% 50%; /* Bright teal/cyan */
+    --accent-foreground: 180 100% 5%; /* Almost black for text on accent */
+    --border: 320 50% 40%; /* Pinkish border */
+    --input: 260 40% 20%;
+    --ring: 180 100% 50%;
+    --chart-1: 320 90% 65%;
+    --chart-2: 180 95% 55%;
+    --chart-3: 200 80% 70%;
+    --chart-4: 280 70% 60%;
+    --chart-5: 340 85% 50%;
+    --sidebar-background: 260 45% 12%;
+    --sidebar-foreground: 200 90% 85%;
+    --sidebar-primary: 320 90% 55%;
+    --sidebar-primary-foreground: 320 90% 90%;
+    --sidebar-accent: 180 95% 60%;
+    --sidebar-accent-foreground: 180 95% 10%;
+    --sidebar-border: 320 40% 35%;
+    --sidebar-ring: 180 100% 50%;
+  }
+
+  html[data-theme="coral-reef"] {
+    --background: 180 70% 95%; /* Light aqua */
+    --foreground: 190 60% 20%; /* Deep teal */
+    --card: 180 70% 95%;
+    --card-foreground: 190 60% 20%;
+    --popover: 180 70% 95%;
+    --popover-foreground: 190 60% 20%;
+    --primary: 0 80% 65%; /* Bright coral red */
+    --primary-foreground: 0 80% 98%; /* White */
+    --secondary: 50 90% 85%; /* Sunny yellow */
+    --secondary-foreground: 50 90% 30%;
+    --muted: 200 50% 90%; /* Light seafoam green */
+    --muted-foreground: 200 50% 40%;
+    --accent: 270 70% 70%; /* Lavender */
+    --accent-foreground: 270 70% 15%;
+    --border: 0 50% 75%; /* Light coral */
+    --input: 180 50% 90%;
+    --ring: 270 70% 70%;
+    --chart-1: 0 85% 60%;
+    --chart-2: 50 95% 70%;
+    --chart-3: 200 55% 65%;
+    --chart-4: 270 75% 60%;
+    --chart-5: 170 60% 75%;
+    --sidebar-background: 180 65% 92%;
+    --sidebar-foreground: 190 55% 25%;
+    --sidebar-primary: 0 75% 60%;
+    --sidebar-primary-foreground: 0 75% 95%;
+    --sidebar-accent: 270 65% 75%;
+    --sidebar-accent-foreground: 270 65% 20%;
+    --sidebar-border: 0 40% 70%;
+    --sidebar-ring: 270 70% 70%;
+  }
+
+  html[data-theme="monochrome-classic"] {
+    --background: 0 0% 97%; /* Very light gray */
+    --foreground: 0 0% 10%; /* Near black */
+    --card: 0 0% 97%;
+    --card-foreground: 0 0% 10%;
+    --popover: 0 0% 97%;
+    --popover-foreground: 0 0% 10%;
+    --primary: 0 0% 30%; /* Medium gray */
+    --primary-foreground: 0 0% 95%; /* Light gray for text on primary */
+    --secondary: 0 0% 90%; /* Light gray */
+    --secondary-foreground: 0 0% 20%;
+    --muted: 0 0% 80%; /* Slightly darker light gray */
+    --muted-foreground: 0 0% 40%;
+    --accent: 0 0% 50%; /* Mid-gray accent */
+    --accent-foreground: 0 0% 98%;
+    --border: 0 0% 70%; /* Gray border */
+    --input: 0 0% 92%;
+    --ring: 0 0% 50%;
+    --chart-1: 0 0% 40%;
+    --chart-2: 0 0% 60%;
+    --chart-3: 0 0% 20%;
+    --chart-4: 0 0% 50%;
+    --chart-5: 0 0% 30%;
+    --sidebar-background: 0 0% 94%;
+    --sidebar-foreground: 0 0% 15%;
+    --sidebar-primary: 0 0% 25%;
+    --sidebar-primary-foreground: 0 0% 90%;
+    --sidebar-accent: 0 0% 55%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 0 0% 65%;
+    --sidebar-ring: 0 0% 50%;
+  }
+
+  html[data-theme="earthy-tones"] {
+    --background: 35 40% 95%; /* Pale terracotta/beige */
+    --foreground: 25 60% 15%; /* Dark earth brown */
+    --card: 35 40% 95%;
+    --card-foreground: 25 60% 15%;
+    --popover: 35 40% 95%;
+    --popover-foreground: 25 60% 15%;
+    --primary: 30 50% 45%; /* Clay brown */
+    --primary-foreground: 30 50% 90%; /* Light beige */
+    --secondary: 80 25% 80%; /* Muted olive green */
+    --secondary-foreground: 80 25% 25%;
+    --muted: 40 30% 85%; /* Light ochre */
+    --muted-foreground: 40 30% 35%;
+    --accent: 20 70% 60%; /* Burnt orange */
+    --accent-foreground: 20 70% 10%;
+    --border: 30 30% 65%; /* Desaturated brown */
+    --input: 35 30% 88%;
+    --ring: 20 70% 60%;
+    --chart-1: 30 55% 40%;
+    --chart-2: 20 75% 55%;
+    --chart-3: 80 30% 50%;
+    --chart-4: 40 35% 60%;
+    --chart-5: 25 40% 50%;
+    --sidebar-background: 35 35% 92%;
+    --sidebar-foreground: 25 50% 20%;
+    --sidebar-primary: 30 45% 40%;
+    --sidebar-primary-foreground: 30 45% 85%;
+    --sidebar-accent: 20 65% 70%;
+    --sidebar-accent-foreground: 20 65% 15%;
+    --sidebar-border: 30 25% 60%;
+    --sidebar-ring: 20 70% 60%;
+  }
+
+  html[data-theme="lavender-fields"] {
+    --background: 270 60% 97%; /* Very light lavender */
+    --foreground: 260 40% 15%; /* Deep purple */
+    --card: 270 60% 97%;
+    --card-foreground: 260 40% 15%;
+    --popover: 270 60% 97%;
+    --popover-foreground: 260 40% 15%;
+    --primary: 265 50% 60%; /* Medium lavender */
+    --primary-foreground: 265 50% 98%; /* Almost white */
+    --secondary: 100 40% 90%; /* Pale sage green */
+    --secondary-foreground: 100 40% 30%;
+    --muted: 60 50% 92%; /* Soft pale yellow */
+    --muted-foreground: 60 50% 45%;
+    --accent: 280 60% 75%; /* Brighter lilac */
+    --accent-foreground: 280 60% 10%;
+    --border: 265 30% 75%; /* Muted lavender border */
+    --input: 270 40% 90%;
+    --ring: 280 60% 75%;
+    --chart-1: 265 55% 55%;
+    --chart-2: 280 65% 70%;
+    --chart-3: 100 45% 60%;
+    --chart-4: 60 55% 80%;
+    --chart-5: 275 40% 65%;
+    --sidebar-background: 270 55% 94%;
+    --sidebar-foreground: 260 35% 20%;
+    --sidebar-primary: 265 45% 55%;
+    --sidebar-primary-foreground: 265 45% 95%;
+    --sidebar-accent: 280 55% 80%;
+    --sidebar-accent-foreground: 280 55% 15%;
+    --sidebar-border: 265 25% 70%;
+    --sidebar-ring: 280 60% 75%;
+  }
+
+  html[data-theme="cosmic-dark"] {
+    --background: 240 30% 8%; /* Deep space blue-black */
+    --foreground: 210 100% 90%; /* Starlight blue */
+    --card: 240 30% 12%;
+    --card-foreground: 210 100% 90%;
+    --popover: 240 30% 12%;
+    --popover-foreground: 210 100% 90%;
+    --primary: 280 70% 60%; /* Nebula purple */
+    --primary-foreground: 280 70% 95%; /* Light lilac */
+    --secondary: 220 50% 25%; /* Darker blue */
+    --secondary-foreground: 220 50% 75%;
+    --muted: 300 40% 30%; /* Faint magenta */
+    --muted-foreground: 300 40% 70%;
+    --accent: 190 100% 50%; /* Bright cyan comet tail */
+    --accent-foreground: 190 100% 5%; /* Dark for accent text */
+    --border: 280 40% 35%; /* Purple border */
+    --input: 240 20% 18%;
+    --ring: 190 100% 50%;
+    --chart-1: 280 75% 55%;
+    --chart-2: 190 95% 55%;
+    --chart-3: 220 55% 60%;
+    --chart-4: 300 45% 50%;
+    --chart-5: 210 80% 70%;
+    --sidebar-background: 240 28% 10%;
+    --sidebar-foreground: 210 90% 85%;
+    --sidebar-primary: 280 65% 55%;
+    --sidebar-primary-foreground: 280 65% 90%;
+    --sidebar-accent: 190 95% 60%;
+    --sidebar-accent-foreground: 190 95% 10%;
+    --sidebar-border: 280 30% 30%;
+    --sidebar-ring: 190 100% 50%;
+  }
+
+  html[data-theme="spring-bloom"] {
+    --background: 90 70% 97%; /* Very light spring green */
+    --foreground: 140 50% 20%; /* Dark leaf green */
+    --card: 90 70% 97%;
+    --card-foreground: 140 50% 20%;
+    --popover: 90 70% 97%;
+    --popover-foreground: 140 50% 20%;
+    --primary: 330 80% 70%; /* Cherry blossom pink */
+    --primary-foreground: 330 80% 98%; /* White */
+    --secondary: 60 90% 88%; /* Daffodil yellow */
+    --secondary-foreground: 60 90% 30%;
+    --muted: 200 60% 90%; /* Sky blue */
+    --muted-foreground: 200 60% 40%;
+    --accent: 120 50% 65%; /* Fresh green */
+    --accent-foreground: 120 50% 10%;
+    --border: 330 50% 80%; /* Light pink border */
+    --input: 90 50% 92%;
+    --ring: 120 50% 65%;
+    --chart-1: 330 85% 65%;
+    --chart-2: 120 55% 60%;
+    --chart-3: 60 95% 75%;
+    --chart-4: 200 65% 70%;
+    --chart-5: 350 70% 80%;
+    --sidebar-background: 90 65% 94%;
+    --sidebar-foreground: 140 45% 25%;
+    --sidebar-primary: 330 75% 65%;
+    --sidebar-primary-foreground: 330 75% 95%;
+    --sidebar-accent: 120 55% 70%;
+    --sidebar-accent-foreground: 120 55% 15%;
+    --sidebar-border: 330 40% 75%;
+    --sidebar-ring: 120 50% 65%;
+  }
+
+  html[data-theme="autumn-leaves"] {
+    --background: 30 60% 96%; /* Pale orange/yellow */
+    --foreground: 20 70% 20%; /* Deep russet brown */
+    --card: 30 60% 96%;
+    --card-foreground: 20 70% 20%;
+    --popover: 30 60% 96%;
+    --popover-foreground: 20 70% 20%;
+    --primary: 0 70% 55%; /* Rich red */
+    --primary-foreground: 0 70% 95%; /* Off-white */
+    --secondary: 40 80% 60%; /* Golden yellow */
+    --secondary-foreground: 40 80% 15%;
+    --muted: 25 40% 75%; /* Muted brown */
+    --muted-foreground: 25 40% 30%;
+    --accent: 30 90% 50%; /* Burnt orange */
+    --accent-foreground: 30 90% 5%;
+    --border: 0 40% 65%; /* Muted red border */
+    --input: 30 40% 90%;
+    --ring: 30 90% 50%;
+    --chart-1: 0 75% 50%;
+    --chart-2: 30 95% 45%;
+    --chart-3: 40 85% 55%;
+    --chart-4: 25 45% 60%;
+    --chart-5: 15 60% 65%;
+    --sidebar-background: 30 55% 93%;
+    --sidebar-foreground: 20 60% 25%;
+    --sidebar-primary: 0 65% 50%;
+    --sidebar-primary-foreground: 0 65% 90%;
+    --sidebar-accent: 30 85% 60%;
+    --sidebar-accent-foreground: 30 85% 10%;
+    --sidebar-border: 0 30% 60%;
+    --sidebar-ring: 30 90% 50%;
+  }
+
+  html[data-theme="minimalist-white"] {
+    --background: 0 0% 100%; /* Pure white */
+    --foreground: 0 0% 20%; /* Dark gray */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 20%;
+    --primary: 220 20% 50%; /* Subtle blue-gray */
+    --primary-foreground: 0 0% 98%; /* White */
+    --secondary: 0 0% 96%; /* Very light gray */
+    --secondary-foreground: 0 0% 30%;
+    --muted: 0 0% 92%; /* Light gray */
+    --muted-foreground: 0 0% 50%;
+    --accent: 180 30% 60%; /* Soft teal accent */
+    --accent-foreground: 0 0% 10%;
+    --border: 0 0% 88%; /* Light gray border */
+    --input: 0 0% 97%;
+    --ring: 180 30% 60%;
+    --chart-1: 220 25% 55%;
+    --chart-2: 180 35% 65%;
+    --chart-3: 0 0% 40%;
+    --chart-4: 0 0% 60%;
+    --chart-5: 200 20% 70%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 0 0% 25%;
+    --sidebar-primary: 220 20% 45%;
+    --sidebar-primary-foreground: 0 0% 95%;
+    --sidebar-accent: 180 30% 70%;
+    --sidebar-accent-foreground: 0 0% 15%;
+    --sidebar-border: 0 0% 85%;
+    --sidebar-ring: 180 30% 60%;
+  }
+
+  html[data-theme="minimalist-dark"] {
+    --background: 240 10% 5%; /* Very dark charcoal */
+    --foreground: 0 0% 90%; /* Light gray */
+    --card: 240 10% 8%;
+    --card-foreground: 0 0% 90%;
+    --popover: 240 10% 8%;
+    --popover-foreground: 0 0% 90%;
+    --primary: 210 20% 70%; /* Subtle light blue-gray */
+    --primary-foreground: 240 10% 10%; /* Dark gray for text on primary */
+    --secondary: 240 8% 15%; /* Dark gray */
+    --secondary-foreground: 0 0% 80%;
+    --muted: 240 5% 20%; /* Slightly lighter dark gray */
+    --muted-foreground: 0 0% 60%;
+    --accent: 30 60% 65%; /* Muted gold/orange accent */
+    --accent-foreground: 240 10% 5%;
+    --border: 240 5% 25%; /* Dark gray border */
+    --input: 240 8% 12%;
+    --ring: 30 60% 65%;
+    --chart-1: 210 25% 65%;
+    --chart-2: 30 65% 60%;
+    --chart-3: 0 0% 70%;
+    --chart-4: 0 0% 50%;
+    --chart-5: 220 15% 55%;
+    --sidebar-background: 240 9% 7%;
+    --sidebar-foreground: 0 0% 85%;
+    --sidebar-primary: 210 20% 75%;
+    --sidebar-primary-foreground: 240 10% 15%;
+    --sidebar-accent: 30 55% 70%;
+    --sidebar-accent-foreground: 240 10% 10%;
+    --sidebar-border: 240 5% 22%;
+    --sidebar-ring: 30 60% 65%;
+  }
+
+  html[data-theme="tropical-paradise"] {
+    --background: 160 70% 95%; /* Light turquoise */
+    --foreground: 180 80% 15%; /* Deep jungle green */
+    --card: 160 70% 95%;
+    --card-foreground: 180 80% 15%;
+    --popover: 160 70% 95%;
+    --popover-foreground: 180 80% 15%;
+    --primary: 130 60% 50%; /* Vibrant lime green */
+    --primary-foreground: 130 60% 95%; /* Almost white */
+    --secondary: 40 100% 70%; /* Bright mango orange */
+    --secondary-foreground: 40 100% 10%;
+    --muted: 320 80% 90%; /* Plumeria pink */
+    --muted-foreground: 320 80% 40%;
+    --accent: 200 90% 60%; /* Ocean blue */
+    --accent-foreground: 200 90% 98%;
+    --border: 130 40% 70%; /* Light lime green border */
+    --input: 160 50% 90%;
+    --ring: 200 90% 60%;
+    --chart-1: 130 65% 45%;
+    --chart-2: 40 95% 65%;
+    --chart-3: 200 85% 55%;
+    --chart-4: 320 75% 75%;
+    --chart-5: 170 70% 60%;
+    --sidebar-background: 160 65% 92%;
+    --sidebar-foreground: 180 70% 20%;
+    --sidebar-primary: 130 55% 45%;
+    --sidebar-primary-foreground: 130 55% 90%;
+    --sidebar-accent: 200 85% 70%;
+    --sidebar-accent-foreground: 200 85% 95%;
+    --sidebar-border: 130 30% 65%;
+    --sidebar-ring: 200 90% 60%;
+  }
+
+  html[data-theme="royal-velvet"] {
+    --background: 300 30% 95%; /* Very light plum */
+    --foreground: 300 60% 10%; /* Deepest purple */
+    --card: 300 30% 95%;
+    --card-foreground: 300 60% 10%;
+    --popover: 300 30% 95%;
+    --popover-foreground: 300 60% 10%;
+    --primary: 0 60% 50%; /* Rich crimson red */
+    --primary-foreground: 0 60% 95%; /* Pale pink */
+    --secondary: 45 80% 60%; /* Gold */
+    --secondary-foreground: 45 80% 10%;
+    --muted: 280 30% 80%; /* Muted violet */
+    --muted-foreground: 280 30% 30%;
+    --accent: 270 50% 40%; /* Royal purple */
+    --accent-foreground: 270 50% 90%;
+    --border: 0 30% 60%; /* Muted red border */
+    --input: 300 20% 90%;
+    --ring: 45 80% 60%;
+    --chart-1: 0 65% 45%;
+    --chart-2: 45 85% 55%;
+    --chart-3: 270 55% 45%;
+    --chart-4: 280 35% 65%;
+    --chart-5: 330 40% 70%;
+    --sidebar-background: 300 28% 92%;
+    --sidebar-foreground: 300 50% 15%;
+    --sidebar-primary: 0 55% 45%;
+    --sidebar-primary-foreground: 0 55% 90%;
+    --sidebar-accent: 45 75% 70%;
+    --sidebar-accent-foreground: 45 75% 15%;
+    --sidebar-border: 0 25% 55%;
+    --sidebar-ring: 45 80% 60%;
+  }
+
+  html[data-theme="industrial-chic"] {
+    --background: 210 10% 95%; /* Light concrete gray */
+    --foreground: 220 15% 15%; /* Dark steel gray */
+    --card: 210 10% 95%;
+    --card-foreground: 220 15% 15%;
+    --popover: 210 10% 95%;
+    --popover-foreground: 220 15% 15%;
+    --primary: 0 0% 40%; /* Medium gray (metal) */
+    --primary-foreground: 0 0% 95%; /* Off-white */
+    --secondary: 20 60% 70%; /* Rusted orange/brown */
+    --secondary-foreground: 20 60% 10%;
+    --muted: 10 20% 85%; /* Faded brick red */
+    --muted-foreground: 10 20% 35%;
+    --accent: 190 30% 50%; /* Tarnished teal */
+    --accent-foreground: 190 30% 90%;
+    --border: 0 0% 60%; /* Gray border */
+    --input: 210 8% 90%;
+    --ring: 190 30% 50%;
+    --chart-1: 0 0% 45%;
+    --chart-2: 20 65% 65%;
+    --chart-3: 190 35% 55%;
+    --chart-4: 10 25% 70%;
+    --chart-5: 220 10% 50%;
+    --sidebar-background: 210 9% 92%;
+    --sidebar-foreground: 220 12% 20%;
+    --sidebar-primary: 0 0% 35%;
+    --sidebar-primary-foreground: 0 0% 90%;
+    --sidebar-accent: 20 55% 75%;
+    --sidebar-accent-foreground: 20 55% 15%;
+    --sidebar-border: 0 0% 55%;
+    --sidebar-ring: 190 30% 50%;
+  }
+
+  html[data-theme="candy-pop"] {
+    --background: 300 100% 97%; /* Very light pink/purple */
+    --foreground: 240 70% 20%; /* Deep blue */
+    --card: 300 100% 97%;
+    --card-foreground: 240 70% 20%;
+    --popover: 300 100% 97%;
+    --popover-foreground: 240 70% 20%;
+    --primary: 330 100% 70%; /* Bright bubblegum pink */
+    --primary-foreground: 330 100% 98%; /* White */
+    --secondary: 180 100% 80%; /* Bright cyan */
+    --secondary-foreground: 180 100% 15%;
+    --muted: 60 100% 85%; /* Lemon yellow */
+    --muted-foreground: 60 100% 30%;
+    --accent: 120 80% 60%; /* Lime green */
+    --accent-foreground: 120 80% 10%;
+    --border: 330 70% 80%; /* Light pink border */
+    --input: 300 70% 92%;
+    --ring: 120 80% 60%;
+    --chart-1: 330 95% 65%;
+    --chart-2: 120 85% 55%;
+    --chart-3: 180 90% 70%;
+    --chart-4: 60 95% 75%;
+    --chart-5: 270 80% 80%;
+    --sidebar-background: 300 90% 94%;
+    --sidebar-foreground: 240 60% 25%;
+    --sidebar-primary: 330 90% 65%;
+    --sidebar-primary-foreground: 330 90% 95%;
+    --sidebar-accent: 120 75% 70%;
+    --sidebar-accent-foreground: 120 75% 15%;
+    --sidebar-border: 330 60% 75%;
+    --sidebar-ring: 120 80% 60%;
+  }
+
+  html[data-theme="zen-garden"] {
+    --background: 100 30% 97%; /* Very light, soft green */
+    --foreground: 120 25% 15%; /* Dark, calm green */
+    --card: 100 30% 97%;
+    --card-foreground: 120 25% 15%;
+    --popover: 100 30% 97%;
+    --popover-foreground: 120 25% 15%;
+    --primary: 80 35% 60%; /* Moss green */
+    --primary-foreground: 80 35% 95%; /* Lightest green/white */
+    --secondary: 40 20% 90%; /* Bamboo beige */
+    --secondary-foreground: 40 20% 30%;
+    --muted: 210 15% 88%; /* Stone gray-blue */
+    --muted-foreground: 210 15% 40%;
+    --accent: 180 20% 70%; /* Water teal */
+    --accent-foreground: 180 20% 10%;
+    --border: 80 20% 75%; /* Soft green border */
+    --input: 100 20% 92%;
+    --ring: 180 20% 70%;
+    --chart-1: 80 40% 55%;
+    --chart-2: 180 25% 65%;
+    --chart-3: 40 25% 70%;
+    --chart-4: 120 20% 60%;
+    --chart-5: 210 18% 75%;
+    --sidebar-background: 100 28% 94%;
+    --sidebar-foreground: 120 22% 20%;
+    --sidebar-primary: 80 30% 55%;
+    --sidebar-primary-foreground: 80 30% 90%;
+    --sidebar-accent: 180 25% 75%;
+    --sidebar-accent-foreground: 180 25% 15%;
+    --sidebar-border: 80 15% 70%;
+    --sidebar-ring: 180 20% 70%;
   }
 
   .dark {
@@ -115,15 +778,6 @@ body {
     --sidebar-border: 125 20% 30%;
     --sidebar-ring: 262 40% 73%;
   }
-
-  /* If Oceanic needs a specific dark variant, you can define it like this:
-  html[data-theme="oceanic"].dark {
-     --primary: 180 70% 50%; 
-     --primary-foreground: 180 70% 5%;
-     ... etc. for oceanic dark specifics ...
-  }
-  For now, the generic .dark will apply over html[data-theme="oceanic"] too.
-  */
 }
 
 @layer base {
