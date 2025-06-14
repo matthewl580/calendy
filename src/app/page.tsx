@@ -15,13 +15,15 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { MonthYearSelector } from '@/components/visualcal/settings/MonthYearSelector';
 import { ImageSettings } from '@/components/visualcal/settings/ImageSettings';
 import { NotesSettings } from '@/components/visualcal/settings/NotesSettings';
+import { QuotesSettings } from '@/components/visualcal/settings/QuotesSettings';
 import { FontSettings } from '@/components/visualcal/settings/FontSettings';
 import { AppearanceSettings } from '@/components/visualcal/settings/AppearanceSettings';
 import { DisplaySettings } from '@/components/visualcal/settings/DisplaySettings';
 import { CalendarView } from '@/components/visualcal/calendar/CalendarView';
 import { ImageDisplay } from '@/components/visualcal/calendar/ImageDisplay';
 import { NotesDisplay } from '@/components/visualcal/calendar/NotesDisplay';
-import type { CalendarConfig, FontSizeOption, TextTransformOption, WeekdayHeaderLength, MonthYearDisplayOrder, DayCellPaddingOption, DayNumberAlignment } from '@/components/visualcal/types';
+import { QuotesDisplay } from '@/components/visualcal/calendar/QuotesDisplay';
+import type { CalendarConfig, FontSizeOption, TextTransformOption, WeekdayHeaderLength, MonthYearDisplayOrder, DayCellPaddingOption, DayNumberAlignment, QuotesPosition } from '@/components/visualcal/types';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
@@ -38,6 +40,9 @@ const initialConfig: CalendarConfig = {
   notesContent: 'Your notes here...',
   notesPosition: 'bottom-right',
   notesSize: { width: 250, height: 120 },
+  showQuotes: false,
+  quotesContent: 'A wise quote for the day.',
+  quotesPosition: 'header' as QuotesPosition,
   headerFont: 'Poppins',
   bodyFont: 'Roboto',
   calendarStyle: 'modern',
@@ -56,6 +61,7 @@ const initialConfig: CalendarConfig = {
   monthYearDisplayOrder: 'month-year' as MonthYearDisplayOrder,
   showMonthName: true,
   showYear: true,
+  monthYearHeaderFullWidth: false,
   weekdayHeaderFontSize: 'sm' as FontSizeOption,
   weekdayHeaderTextTransform: 'capitalize' as TextTransformOption,
   weekdayHeaderLength: 'short' as WeekdayHeaderLength,
@@ -96,6 +102,7 @@ export default function VisualCalPage() {
         mergedConfig.monthYearDisplayOrder = parsedConfig.monthYearDisplayOrder || initialConfig.monthYearDisplayOrder;
         mergedConfig.showMonthName = typeof parsedConfig.showMonthName === 'boolean' ? parsedConfig.showMonthName : initialConfig.showMonthName;
         mergedConfig.showYear = typeof parsedConfig.showYear === 'boolean' ? parsedConfig.showYear : initialConfig.showYear;
+        mergedConfig.monthYearHeaderFullWidth = typeof parsedConfig.monthYearHeaderFullWidth === 'boolean' ? parsedConfig.monthYearHeaderFullWidth : initialConfig.monthYearHeaderFullWidth;
         mergedConfig.weekdayHeaderFontSize = parsedConfig.weekdayHeaderFontSize || initialConfig.weekdayHeaderFontSize;
         mergedConfig.weekdayHeaderTextTransform = parsedConfig.weekdayHeaderTextTransform || initialConfig.weekdayHeaderTextTransform;
         mergedConfig.weekdayHeaderLength = parsedConfig.weekdayHeaderLength || initialConfig.weekdayHeaderLength;
@@ -104,6 +111,9 @@ export default function VisualCalPage() {
         mergedConfig.weekNumberFontSize = parsedConfig.weekNumberFontSize || initialConfig.weekNumberFontSize;
         mergedConfig.darkMode = typeof parsedConfig.darkMode === 'boolean' ? parsedConfig.darkMode : initialConfig.darkMode;
         mergedConfig.dayNumberAlignment = parsedConfig.dayNumberAlignment || initialConfig.dayNumberAlignment;
+        mergedConfig.showQuotes = typeof parsedConfig.showQuotes === 'boolean' ? parsedConfig.showQuotes : initialConfig.showQuotes;
+        mergedConfig.quotesContent = parsedConfig.quotesContent || initialConfig.quotesContent;
+        mergedConfig.quotesPosition = parsedConfig.quotesPosition || initialConfig.quotesPosition;
 
 
         setCalendarConfig(mergedConfig);
@@ -155,6 +165,7 @@ export default function VisualCalPage() {
       "  }\n" +
       "  .visualcal-split-image-panel, .visualcal-split-calendar-panel {\n" +
       "    height: auto !important; \n" +
+      "    padding: 0 !important; \n" +
       "  }\n" +
       "}";
       
@@ -239,7 +250,7 @@ export default function VisualCalPage() {
     const dPercentage = (dx / parentWidthAtDragStart) * 100;
     
     let newDimension = initialDragDimension + dPercentage;
-    newDimension = Math.max(20, Math.min(50, newDimension)); 
+    newDimension = Math.max(20, Math.min(80, newDimension)); // Allow wider range for image panel
 
     handleConfigChange('imagePanelDimension', parseFloat(newDimension.toFixed(1)));
   }, [isResizing, dragStartX, initialDragDimension, parentWidthAtDragStart, handleConfigChange]);
@@ -283,6 +294,26 @@ export default function VisualCalPage() {
   const splitImageWidthStyle = { width: String(calendarConfig.imagePanelDimension + '%') };
   const splitCalendarWidthStyle = { width: String((100 - calendarConfig.imagePanelDimension) + '%') };
 
+  const renderQuotes = (position: QuotesPosition) => {
+    if (calendarConfig.showQuotes && calendarConfig.quotesPosition === position) {
+      return <QuotesDisplay content={calendarConfig.quotesContent} className={position === 'page-bottom' ? 'w-full mt-4' : 'my-2'} />;
+    }
+    return null;
+  };
+
+  const renderNotesUnderImage = () => {
+     if (calendarConfig.notesPosition === 'under-image') {
+       return (
+        <Textarea
+            value={calendarConfig.notesContent}
+            onChange={(e) => handleConfigChange('notesContent', e.target.value)}
+            placeholder="Notes..."
+            className="w-full h-24 resize-none bg-card p-2 shadow-md rounded-md border-border my-2"
+        />
+       );
+     }
+     return null;
+  }
 
   return (
     <SidebarProvider defaultOpen>
@@ -306,6 +337,10 @@ export default function VisualCalPage() {
                 <NotesSettings config={calendarConfig} onConfigChange={handleConfigChange} />
               </SidebarGroup>
               <SidebarGroup>
+                <SidebarGroupLabel className="px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">Quotes</SidebarGroupLabel>
+                <QuotesSettings config={calendarConfig} onConfigChange={handleConfigChange} />
+              </SidebarGroup>
+              <SidebarGroup>
                 <SidebarGroupLabel className="px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">Fonts</SidebarGroupLabel>
                 <FontSettings config={calendarConfig} onConfigChange={handleConfigChange} />
               </SidebarGroup>
@@ -327,47 +362,16 @@ export default function VisualCalPage() {
         </Sidebar>
 
         <SidebarInset className="flex-1 overflow-auto bg-background visualcal-sidebar-inset">
-          {calendarConfig.displayLayout === 'default' && (
-            <div className="flex flex-col h-full p-4 space-y-4 visualcal-main-content">
-              {calendarConfig.imageSrc && (
-                <div 
-                  className="relative w-full bg-muted/30 p-2 rounded-lg shadow-inner"
-                  style={{ height: defaultLayoutImageHeight }}
-                  data-ai-hint="decorative feature" 
-                >
-                  <ImageDisplay
-                    src={calendarConfig.imageSrc}
-                    alt="Calendar visual"
-                    position={calendarConfig.imagePosition}
-                    size={calendarConfig.imageSize}
-                  />
-                </div>
-              )}
-              {calendarConfig.imageSrc && calendarConfig.notesPosition === 'under-image' && (
-                  <Textarea
-                    value={calendarConfig.notesContent}
-                    onChange={(e) => handleConfigChange('notesContent', e.target.value)}
-                    placeholder="Notes..."
-                    className="w-full h-24 resize-none bg-card p-2 shadow-md rounded-md border-border"
-                  />
-              )}
-              <div className="flex-grow">
-                <CalendarView config={calendarConfig} />
-              </div>
-            </div>
-          )}
-
-          {calendarConfig.displayLayout === 'image-30-calendar-70' && (
-            <div ref={splitLayoutContainerRef} className="flex flex-col md:flex-row h-full visualcal-main-content">
-              <div 
-                className={cn(
-                  "w-full flex flex-col space-y-4 visualcal-split-image-panel",
-                  "p-4 md:pr-0" 
-                )}
-                style={splitImageWidthStyle}
-              >
+          <div className="flex flex-col h-full p-4 visualcal-main-content">
+            {calendarConfig.displayLayout === 'default' && (
+              <>
+                {renderQuotes('above-image')}
                 {calendarConfig.imageSrc && (
-                  <div className="relative flex-grow bg-muted/30 p-2 rounded-lg shadow-inner min-h-[200px] md:min-h-0" data-ai-hint="custom background">
+                  <div 
+                    className="relative w-full bg-muted/30 p-2 rounded-lg shadow-inner"
+                    style={{ height: defaultLayoutImageHeight }}
+                    data-ai-hint="decorative feature" 
+                  >
                     <ImageDisplay
                       src={calendarConfig.imageSrc}
                       alt="Calendar visual"
@@ -376,64 +380,90 @@ export default function VisualCalPage() {
                     />
                   </div>
                 )}
-                {calendarConfig.notesPosition === 'under-image' && (
-                  <Textarea
-                    value={calendarConfig.notesContent}
-                    onChange={(e) => handleConfigChange('notesContent', e.target.value)}
-                    placeholder="Notes..."
-                    className="w-full h-24 resize-none bg-card p-2 shadow-md rounded-md border-border"
-                  />
-                )}
-              </div>
-              <div 
-                className="visualcal-resizer hidden md:flex items-center justify-center w-3 bg-transparent hover:bg-border/30 cursor-col-resize group"
-                onMouseDown={handleMouseDownResizer}
-                role="separator"
-                aria-orientation="vertical"
-                aria-label="Resize image panel"
-              >
-              </div>
-              <div 
-                className={cn(
-                  "flex-1 w-full visualcal-split-calendar-panel",
-                  "p-4 md:pl-0"
-                )}
-                style={splitCalendarWidthStyle}
-              >
-                <CalendarView config={calendarConfig} />
-              </div>
-            </div>
-          )}
-          
-          {calendarConfig.displayLayout === 'landscape-banner' && (
-            <div className="flex flex-col h-full p-4 space-y-4 visualcal-main-content">
-              {calendarConfig.imageSrc && (
-                <div 
-                  className="relative w-full bg-muted/30 p-2 rounded-lg shadow-inner"
-                  style={{ height: landscapeBannerHeight }}
-                  data-ai-hint="top banner"
-                >
-                  <ImageDisplay
-                    src={calendarConfig.imageSrc}
-                    alt="Calendar banner"
-                    position={calendarConfig.imagePosition}
-                    size={calendarConfig.imageSize}
-                  />
+                {renderQuotes('below-image')}
+                {renderNotesUnderImage()}
+                {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition === 'under-image' && renderQuotes('below-notes-module')}
+                
+                <div className="flex-grow">
+                  <CalendarView config={calendarConfig} />
                 </div>
-              )}
-              {calendarConfig.imageSrc && calendarConfig.notesPosition === 'under-image' && (
-                  <Textarea
-                    value={calendarConfig.notesContent}
-                    onChange={(e) => handleConfigChange('notesContent', e.target.value)}
-                    placeholder="Notes..."
-                    className="w-full h-24 resize-none bg-card p-2 shadow-md rounded-md border-border"
-                  />
-              )}
-              <div className="flex-grow">
-                <CalendarView config={calendarConfig} />
+                {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition !== 'under-image' && renderQuotes('below-notes-module')}
+              </>
+            )}
+
+            {calendarConfig.displayLayout === 'image-30-calendar-70' && (
+              <div ref={splitLayoutContainerRef} className="flex flex-col md:flex-row h-full">
+                <div 
+                  className={cn(
+                    "w-full flex flex-col md:pr-0", 
+                    "visualcal-split-image-panel" 
+                  )}
+                  style={splitImageWidthStyle}
+                >
+                  {renderQuotes('above-image')}
+                  {calendarConfig.imageSrc && (
+                    <div className="relative flex-grow bg-muted/30 p-2 rounded-lg shadow-inner min-h-[200px] md:min-h-0" data-ai-hint="custom background">
+                      <ImageDisplay
+                        src={calendarConfig.imageSrc}
+                        alt="Calendar visual"
+                        position={calendarConfig.imagePosition}
+                        size={calendarConfig.imageSize}
+                      />
+                    </div>
+                  )}
+                  {renderQuotes('below-image')}
+                  {renderNotesUnderImage()}
+                  {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition === 'under-image' && renderQuotes('below-notes-module')}
+                </div>
+                <div 
+                  className="visualcal-resizer hidden md:flex items-center justify-center w-3 bg-transparent hover:bg-border/50 cursor-col-resize group"
+                  onMouseDown={handleMouseDownResizer}
+                  role="separator"
+                  aria-orientation="vertical"
+                  aria-label="Resize image panel"
+                >
+                </div>
+                <div 
+                  className={cn(
+                    "flex-1 w-full md:pl-0", 
+                    "visualcal-split-calendar-panel" 
+                  )}
+                  style={splitCalendarWidthStyle}
+                >
+                  <CalendarView config={calendarConfig} />
+                </div>
+                 {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition !== 'under-image' && renderQuotes('below-notes-module')}
               </div>
-            </div>
-          )}
+            )}
+            
+            {calendarConfig.displayLayout === 'landscape-banner' && (
+              <>
+                {renderQuotes('above-image')}
+                {calendarConfig.imageSrc && (
+                  <div 
+                    className="relative w-full bg-muted/30 p-2 rounded-lg shadow-inner"
+                    style={{ height: landscapeBannerHeight }}
+                    data-ai-hint="top banner"
+                  >
+                    <ImageDisplay
+                      src={calendarConfig.imageSrc}
+                      alt="Calendar banner"
+                      position={calendarConfig.imagePosition}
+                      size={calendarConfig.imageSize}
+                    />
+                  </div>
+                )}
+                {renderQuotes('below-image')}
+                {renderNotesUnderImage()}
+                {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition === 'under-image' && renderQuotes('below-notes-module')}
+                <div className="flex-grow">
+                  <CalendarView config={calendarConfig} />
+                </div>
+                {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition !== 'under-image' && renderQuotes('below-notes-module')}
+              </>
+            )}
+             {renderQuotes('page-bottom')}
+          </div>
 
           {calendarConfig.notesPosition !== 'under-image' && (
             <NotesDisplay

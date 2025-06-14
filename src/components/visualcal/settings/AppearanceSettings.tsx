@@ -45,11 +45,21 @@ export function AppearanceSettings({ config, onConfigChange }: AppearanceSetting
       <Separator />
       <Label className="text-sm font-medium text-sidebar-foreground/90">Month & Year Header (on Calendar)</Label>
       <div className="space-y-3 pl-2 border-l-2 border-sidebar-border ml-1">
+        <div className="flex items-center justify-between pt-1">
+          <Label htmlFor="month-year-header-full-width" className="text-xs">Full Width Header</Label>
+          <Switch
+            id="month-year-header-full-width"
+            checked={config.monthYearHeaderFullWidth}
+            onCheckedChange={(checked) => onConfigChange('monthYearHeaderFullWidth', checked)}
+            aria-label="Toggle full width month/year header"
+          />
+        </div>
         <div>
           <Label htmlFor="month-year-header-alignment" className="mb-1 block text-xs">Alignment</Label>
           <Select
             value={config.monthYearHeaderAlignment}
             onValueChange={(value) => onConfigChange('monthYearHeaderAlignment', value as MonthYearHeaderAlignment)}
+            disabled={config.monthYearHeaderFullWidth}
           >
             <SelectTrigger id="month-year-header-alignment" aria-label="Month/Year header alignment">
               <SelectValue placeholder="Select alignment" />

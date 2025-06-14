@@ -4,6 +4,7 @@
 import { cn } from '@/lib/utils';
 import type { CalendarConfig, FontSizeOption } from '../types';
 import { CalendarDay } from './CalendarDay';
+import { QuotesDisplay } from './QuotesDisplay';
 import { useMemo } from 'react';
 import { MONTH_NAMES } from '../types';
 
@@ -73,11 +74,15 @@ export function CalendarView({ config }: CalendarViewProps) {
     monthYearDisplayOrder,
     showMonthName,
     showYear,
+    monthYearHeaderFullWidth,
     weekdayHeaderFontSize,
     weekdayHeaderTextTransform,
     weekdayHeaderLength,
     showWeekNumbers,
     weekNumberFontSize,
+    showQuotes,
+    quotesContent,
+    quotesPosition,
   } = config;
 
   const daysInMonth = getDaysInMonth(selectedYear, selectedMonth);
@@ -105,7 +110,6 @@ export function CalendarView({ config }: CalendarViewProps) {
          const firstDateOfMonth = new Date(selectedYear, selectedMonth, 1);
          let dateForWeekNum = firstDateOfMonth;
          if (startWeekOnMonday && firstDayOfMonth !== 0) { 
-            // If week starts Monday and 1st isn't Monday, find the previous Monday for the week number
             const tempDate = new Date(firstDateOfMonth);
             tempDate.setDate(tempDate.getDate() - firstDayOfMonth);
             dateForWeekNum = tempDate;
@@ -125,11 +129,11 @@ export function CalendarView({ config }: CalendarViewProps) {
 
     for (let i = 1; i <= daysInMonth; i++) {
       const currentDate = new Date(selectedYear, selectedMonth, i);
-      const dayOfWeek = currentDate.getDay(); // 0 for Sunday, 6 for Saturday
+      const dayOfWeek = currentDate.getDay(); 
 
       if (showWeekNumbers && 
          ( (startWeekOnMonday && dayOfWeek === 1) || (!startWeekOnMonday && dayOfWeek === 0) ) && 
-         (daysArray.length % columns !== 0 || daysArray.length === 0 ) // ensure it's start of a new row in grid logic
+         (daysArray.length % columns !== 0 || daysArray.length === 0 ) 
         ) {
           const weekNum = getWeekNumber(currentDate);
           daysArray.push({ type: 'weekNumber', number: weekNum, date: null });
@@ -151,10 +155,9 @@ export function CalendarView({ config }: CalendarViewProps) {
           const lastDayEntry = [...daysArray].reverse().find(d => d.type ==='day' && d.date);
           if(lastDayEntry && lastDayEntry.date) {
             const nextPotentialDay = new Date(lastDayEntry.date);
-            nextPotentialDay.setDate(nextPotentialDay.getDate() + 1 + i); // Approximate next day
+            nextPotentialDay.setDate(nextPotentialDay.getDate() + 1 + i); 
             daysArray.push({ type: 'weekNumber', number: getWeekNumber(nextPotentialDay), date: null });
           } else {
-            // fallback if no last day entry, though unlikely if grid is being filled
             daysArray.push({ type: 'day', day: null, isCurrentMonth: false, date: null });
           }
       } else {
@@ -192,8 +195,10 @@ export function CalendarView({ config }: CalendarViewProps) {
     'font-medium py-3 px-4',
     headerFontClass,
     getFontSizeClass(monthYearHeaderFontSize),
-    monthYearHeaderAlignment === 'left' ? 'text-left' :
-    monthYearHeaderAlignment === 'right' ? 'text-right' : 'text-center'
+    monthYearHeaderFullWidth ? 'w-full text-center' : (
+      monthYearHeaderAlignment === 'left' ? 'text-left' :
+      monthYearHeaderAlignment === 'right' ? 'text-right' : 'text-center'
+    )
   );
   
   const dayHeaderClasses = (headerText: string) => cn(
@@ -207,14 +212,14 @@ export function CalendarView({ config }: CalendarViewProps) {
 
   const weekNumberHeaderClass = cn(
     'p-2 text-center font-medium text-muted-foreground italic',
-    headerFontClass, // Week numbers header also uses headerFont
+    headerFontClass, 
     getFontSizeClass(weekNumberFontSize || 'xs'),
      dayHeaderStyle === 'bordered' && 'border-b border-border',
   );
 
   const weekNumberCellClass = cn(
     'flex items-center justify-center text-muted-foreground italic aspect-square',
-    bodyFontClass, // Week numbers themselves use bodyFont
+    bodyFontClass, 
     getFontSizeClass(weekNumberFontSize || 'xs'),
   );
   
@@ -233,22 +238,18 @@ export function CalendarView({ config }: CalendarViewProps) {
      (borderStyle !== 'none' && calendarStyle !== 'minimal') ? "bg-card" : "" 
   );
 
-  // Determine which day headers to show based on startWeekOnMonday and showWeekends
   let displayDayHeaders = activeDayHeaders;
   if (!showWeekends) {
     if (startWeekOnMonday) {
-      // Mon, Tue, Wed, Thu, Fri
       displayDayHeaders = activeDayHeaders.filter(h => !h.toLowerCase().includes("sat") && !h.toLowerCase().includes("sun"));
     } else {
-      // Sun, Mon, Tue, Wed, Thu, Fri, Sat -> filter out Sun, Sat, but they are at ends
-      // This needs to check the original non-shifted headers
       displayDayHeaders = dayHeadersFullOriginal
         .filter(h => !(h.toLowerCase() === "sunday" || h.toLowerCase() === "saturday"))
-        .map(h => { // Truncate if necessary
+        .map(h => { 
             if(weekdayHeaderLength === 'short') return h.substring(0,3);
             return h;
         });
-       if(startWeekOnMonday){ // if startWeekOnMonday is true, but showWeekends is false, we have an edge case
+       if(startWeekOnMonday){
          const mondayIndex = displayDayHeaders.findIndex(h => h.toLowerCase().startsWith("mon"));
          displayDayHeaders = [...displayDayHeaders.slice(mondayIndex), ...displayDayHeaders.slice(0, mondayIndex)];
        }
@@ -262,6 +263,9 @@ export function CalendarView({ config }: CalendarViewProps) {
         <div className={monthYearHeaderBaseClass}>
           {monthYearDisplayString}
         </div>
+      )}
+      {showQuotes && quotesPosition === 'header' && (
+        <QuotesDisplay content={quotesContent} className="text-center text-sm italic p-2 border-t border-border" />
       )}
       <div className={cn("grid", ...gridLayoutClasses)}>
         {showWeekNumbers && <div className={weekNumberHeaderClass}>Wk</div>}

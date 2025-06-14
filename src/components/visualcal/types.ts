@@ -4,6 +4,7 @@ export type BorderStyle = 'solid' | 'rounded' | 'none';
 export type BorderWidth = 'thin' | 'medium' | 'thick'; // 1px, 2px, 3px
 export type DayHeaderStyle = 'simple' | 'bordered' | 'pill';
 export type NotesPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'under-image';
+export type QuotesPosition = 'header' | 'above-image' | 'below-image' | 'below-notes-module' | 'page-bottom';
 export type DisplayLayout = 'default' | 'image-30-calendar-70' | 'landscape-banner';
 export type SupportedFont = 
   "Roboto" | "Open Sans" | "Montserrat" | "Lato" | "Poppins" | 
@@ -59,6 +60,11 @@ export interface CalendarConfig {
   notesContent: string;
   notesPosition: NotesPosition;
   notesSize: { width: number; height: number }; // pixels or percentage for absolutely positioned notes
+  
+  showQuotes: boolean;
+  quotesContent: string;
+  quotesPosition: QuotesPosition;
+
   headerFont: SupportedFont;
   bodyFont: SupportedFont;
   calendarStyle: CalendarStyle;
@@ -79,6 +85,7 @@ export interface CalendarConfig {
   monthYearDisplayOrder: MonthYearDisplayOrder;
   showMonthName: boolean;
   showYear: boolean;
+  monthYearHeaderFullWidth: boolean;
   weekdayHeaderFontSize: FontSizeOption;
   weekdayHeaderTextTransform: TextTransformOption;
   weekdayHeaderLength: WeekdayHeaderLength;
@@ -103,6 +110,13 @@ export const BORDER_WIDTH_OPTIONS: { label: string, value: BorderWidth }[] = [
 ];
 export const DAY_HEADER_STYLE_OPTIONS: DayHeaderStyle[] = ['simple', 'bordered', 'pill'];
 export const NOTES_POSITION_OPTIONS: NotesPosition[] = ['top-left', 'top-right', 'bottom-left', 'bottom-right', 'under-image'];
+export const QUOTES_POSITION_OPTIONS: {label: string, value: QuotesPosition}[] = [
+  {label: 'In Calendar Header', value: 'header'},
+  {label: 'Above Image', value: 'above-image'},
+  {label: 'Below Image', value: 'below-image'},
+  {label: 'Below Notes Area', value: 'below-notes-module'},
+  {label: 'Bottom of Page (Full Width)', value: 'page-bottom'}
+];
 export const PAPER_ORIENTATION_OPTIONS: PaperOrientation[] = ['portrait', 'landscape'];
 export const THEME_OPTIONS: { label: string, value: AppTheme }[] = [
   { label: 'Default', value: 'default' },
@@ -200,3 +214,4 @@ export const DAY_NUMBER_ALIGNMENT_OPTIONS: {label: string, value: DayNumberAlign
   {label: 'Bottom Center', value: 'bottom-center'},
   {label: 'Bottom Right', value: 'bottom-right'},
 ];
+
