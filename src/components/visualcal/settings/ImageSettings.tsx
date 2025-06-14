@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { CalendarConfig } from '@/components/visualcal/types';
@@ -20,6 +21,19 @@ export function ImageSettings({ config, onConfigChange }: ImageSettingsProps) {
     }
   };
 
+  const getImagePanelSizeUnit = () => {
+    switch (config.displayLayout) {
+      case 'image-30-calendar-70':
+        return '% (width)';
+      case 'landscape-banner':
+        return 'vh (height approx)';
+      case 'default':
+      default:
+        return 'px (height approx)';
+    }
+  };
+
+
   return (
     <div className="space-y-4 p-2">
       <div>
@@ -33,7 +47,21 @@ export function ImageSettings({ config, onConfigChange }: ImageSettingsProps) {
       )}
 
       <div>
-        <Label htmlFor="image-pos-x" className="mb-1 block">Position X: {config.imagePosition.x}%</Label>
+        <Label htmlFor="image-panel-dimension" className="mb-1 block">
+          Image Panel Size: {config.imagePanelDimension} {getImagePanelSizeUnit()}
+        </Label>
+        <Slider
+          id="image-panel-dimension"
+          min={20}
+          max={50}
+          step={1}
+          value={[config.imagePanelDimension]}
+          onValueChange={([value]) => onConfigChange('imagePanelDimension', value)}
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="image-pos-x" className="mb-1 block">Image Position X (within panel): {config.imagePosition.x}%</Label>
         <Slider
           id="image-pos-x"
           min={0}
@@ -44,7 +72,7 @@ export function ImageSettings({ config, onConfigChange }: ImageSettingsProps) {
         />
       </div>
       <div>
-        <Label htmlFor="image-pos-y" className="mb-1 block">Position Y: {config.imagePosition.y}%</Label>
+        <Label htmlFor="image-pos-y" className="mb-1 block">Image Position Y (within panel): {config.imagePosition.y}%</Label>
         <Slider
           id="image-pos-y"
           min={0}
@@ -55,7 +83,7 @@ export function ImageSettings({ config, onConfigChange }: ImageSettingsProps) {
         />
       </div>
       <div>
-        <Label htmlFor="image-size" className="mb-1 block">Size: {config.imageSize}%</Label>
+        <Label htmlFor="image-size" className="mb-1 block">Image Zoom (within panel): {config.imageSize}%</Label>
         <Slider
           id="image-size"
           min={10}

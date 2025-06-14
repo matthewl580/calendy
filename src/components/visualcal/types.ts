@@ -14,6 +14,7 @@ export interface CalendarConfig {
   imageSrc: string | null;
   imagePosition: { x: number; y: number }; // percentages for transform translate
   imageSize: number; // percentage for transform scale
+  imagePanelDimension: number; // General dimension (20-50), interpreted by layout
   notesContent: string;
   notesPosition: NotesPosition;
   notesSize: { width: number; height: number }; // pixels or percentage for absolutely positioned notes

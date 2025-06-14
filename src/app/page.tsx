@@ -34,6 +34,7 @@ const initialConfig: CalendarConfig = {
   imageSrc: 'https://placehold.co/800x600.png', 
   imagePosition: { x: 50, y: 50 }, 
   imageSize: 100, 
+  imagePanelDimension: 30, // Default dimension (e.g., 30% width for split, scaled for px/vh height)
   notesContent: 'Your notes here...',
   notesPosition: 'bottom-right',
   notesSize: { width: 250, height: 120 },
@@ -60,11 +61,11 @@ export default function VisualCalPage() {
     if (savedConfig) {
       try {
         const parsedConfig = JSON.parse(savedConfig);
-        // Ensure all keys from initialConfig are present, otherwise defaults might be missed
         const mergedConfig = { ...initialConfig, ...parsedConfig };
-        // Specifically handle potentially missing nested objects to avoid errors
         mergedConfig.imagePosition = { ...initialConfig.imagePosition, ...(parsedConfig.imagePosition || {}) };
         mergedConfig.notesSize = { ...initialConfig.notesSize, ...(parsedConfig.notesSize || {}) };
+        // Ensure imagePanelDimension has a default if missing from older saved configs
+        mergedConfig.imagePanelDimension = parsedConfig.imagePanelDimension || initialConfig.imagePanelDimension;
         setCalendarConfig(mergedConfig);
       } catch (error) {
         console.error("Failed to parse saved config:", error);
@@ -101,13 +102,13 @@ export default function VisualCalPage() {
       "  .visualcal-sidebar, .visualcal-print-button-group {\n" +
       "    display: none !important;\n" +
       "  }\n" +
-      "  .visualcal-main-content {\n" + // Ensure this class is applied to the correct element
+      "  .visualcal-main-content {\n" + 
       "    width: 100% !important;\n" +
       "    height: auto !important;\n" +
       "    overflow: visible !important;\n" +
-      "    padding: 0 !important;\n" + // Remove padding for print
+      "    padding: 0 !important;\n" + 
       "  }\n" +
-      "  .visualcal-sidebar-inset {\n" + // This is the parent of visualcal-main-content
+      "  .visualcal-sidebar-inset {\n" + 
       "    padding: 0 !important;\n" +
       "    margin: 0 !important;\n" +
       "    overflow: visible !important;\n" +
@@ -145,6 +146,13 @@ export default function VisualCalPage() {
       </div>
     );
   }
+
+  // Calculate dynamic dimensions based on layout and imagePanelDimension
+  const defaultLayoutImageHeight = String(100 + (calendarConfig.imagePanelDimension - 10) * 10) + 'px';
+  const landscapeBannerHeight = String(10 + calendarConfig.imagePanelDimension / 2) + 'vh';
+  const splitImageWidthClass = "md:w-[" + String(calendarConfig.imagePanelDimension) + "%]";
+  const splitCalendarWidthClass = "md:w-[" + String(100 - calendarConfig.imagePanelDimension) + "%]";
+
 
   return (
     <SidebarProvider defaultOpen>
@@ -193,7 +201,10 @@ export default function VisualCalPage() {
           {calendarConfig.displayLayout === 'default' && (
             <div className="flex flex-col h-full p-4 space-y-4 visualcal-main-content">
               {calendarConfig.imageSrc && (
-                <div className="relative w-full h-[200px] bg-muted/30 p-2 rounded-lg shadow-inner">
+                <div 
+                  className="relative w-full bg-muted/30 p-2 rounded-lg shadow-inner"
+                  style={{ height: defaultLayoutImageHeight }}
+                >
                   <ImageDisplay
                     src={calendarConfig.imageSrc}
                     alt="Calendar visual"
@@ -217,10 +228,10 @@ export default function VisualCalPage() {
             </div>
           )}
 
-          {/* Split Layout: Image 30% / Calendar 70% */}
+          {/* Split Layout: Image / Calendar */}
           {calendarConfig.displayLayout === 'image-30-calendar-70' && (
             <div className="flex flex-col md:flex-row h-full visualcal-main-content">
-              <div className="md:w-[30%] w-full p-4 flex flex-col space-y-4">
+              <div className={cn(splitImageWidthClass, "w-full p-4 flex flex-col space-y-4")}>
                 {calendarConfig.imageSrc && (
                   <div className="relative flex-grow bg-muted/30 p-2 rounded-lg shadow-inner min-h-[200px] md:min-h-0">
                     <ImageDisplay
@@ -241,7 +252,7 @@ export default function VisualCalPage() {
                   />
                 )}
               </div>
-              <div className="flex-1 p-4 md:w-[70%] w-full">
+              <div className={cn("flex-1 p-4 w-full", splitCalendarWidthClass)}>
                 <CalendarView config={calendarConfig} />
               </div>
             </div>
@@ -251,7 +262,10 @@ export default function VisualCalPage() {
           {calendarConfig.displayLayout === 'landscape-banner' && (
             <div className="flex flex-col h-full p-4 space-y-4 visualcal-main-content">
               {calendarConfig.imageSrc && (
-                <div className="relative w-full h-[25vh] bg-muted/30 p-2 rounded-lg shadow-inner">
+                <div 
+                  className="relative w-full bg-muted/30 p-2 rounded-lg shadow-inner"
+                  style={{ height: landscapeBannerHeight }}
+                >
                   <ImageDisplay
                     src={calendarConfig.imageSrc}
                     alt="Calendar banner"
