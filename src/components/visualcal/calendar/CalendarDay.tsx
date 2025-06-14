@@ -56,13 +56,13 @@ export function CalendarDay({ day, isCurrentMonth, config }: CalendarDayProps) {
     <div
       className={cn(
         'calendar-day-cell aspect-square flex transition-colors duration-150 ease-in-out',
-        fontClass,
+        fontClass, // Explicitly apply bodyFont derived class here
         fontSizeClass,
         paddingClass,
         alignmentClass,
         !isCurrentMonth && 'text-muted-foreground/50',
         isCurrentMonth && 'hover:bg-accent/20',
-        day === null && 'bg-transparent pointer-events-none' // Makes empty cells non-interactive and transparent
+        day === null && 'bg-transparent pointer-events-none' 
       )}
       aria-label={day ? String('Date ' + day) : 'Empty cell'}
     >
@@ -70,3 +70,4 @@ export function CalendarDay({ day, isCurrentMonth, config }: CalendarDayProps) {
     </div>
   );
 }
+

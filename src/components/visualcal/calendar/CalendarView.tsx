@@ -84,6 +84,9 @@ export function CalendarView({ config }: CalendarViewProps) {
     quotesPosition,
   } = config;
 
+  const headerFontClass = 'font-' + headerFont.toLowerCase().replace(/\s+/g, '');
+  const bodyFontClass = 'font-' + bodyFont.toLowerCase().replace(/\s+/g, '');
+
   const daysInMonth = getDaysInMonth(selectedYear, selectedMonth);
   const firstDayOfMonth = getFirstDayOfMonth(selectedYear, selectedMonth, startWeekOnMonday);
 
@@ -108,7 +111,7 @@ export function CalendarView({ config }: CalendarViewProps) {
     if (showWeekNumbers) {
          const firstDateOfMonth = new Date(selectedYear, selectedMonth, 1);
          let dateForWeekNum = firstDateOfMonth;
-         if (startWeekOnMonday && firstDayOfMonth !== 0) { 
+         if (startWeekOnMonday && firstDayOfMonth !== 0) {
             const tempDate = new Date(firstDateOfMonth);
             tempDate.setDate(tempDate.getDate() - firstDayOfMonth);
             dateForWeekNum = tempDate;
@@ -128,11 +131,11 @@ export function CalendarView({ config }: CalendarViewProps) {
 
     for (let i = 1; i <= daysInMonth; i++) {
       const currentDate = new Date(selectedYear, selectedMonth, i);
-      const dayOfWeek = currentDate.getDay(); 
+      const dayOfWeek = currentDate.getDay();
 
-      if (showWeekNumbers && 
-         ( (startWeekOnMonday && dayOfWeek === 1) || (!startWeekOnMonday && dayOfWeek === 0) ) && 
-         (daysArray.length % columns !== 0 || daysArray.length === 0 ) 
+      if (showWeekNumbers &&
+         ( (startWeekOnMonday && dayOfWeek === 1) || (!startWeekOnMonday && dayOfWeek === 0) ) &&
+         (daysArray.length % columns !== 0 || daysArray.length === 0 )
         ) {
           const weekNum = getWeekNumber(currentDate);
           daysArray.push({ type: 'weekNumber', number: weekNum, date: null });
@@ -154,7 +157,7 @@ export function CalendarView({ config }: CalendarViewProps) {
           const lastDayEntry = [...daysArray].reverse().find(d => d.type ==='day' && d.date);
           if(lastDayEntry && lastDayEntry.date) {
             const nextPotentialDay = new Date(lastDayEntry.date);
-            nextPotentialDay.setDate(nextPotentialDay.getDate() + 1 + i); 
+            nextPotentialDay.setDate(nextPotentialDay.getDate() + 1 + i);
             daysArray.push({ type: 'weekNumber', number: getWeekNumber(nextPotentialDay), date: null });
           } else {
             daysArray.push({ type: 'day', day: null, isCurrentMonth: false, date: null });
@@ -169,6 +172,7 @@ export function CalendarView({ config }: CalendarViewProps) {
 
   const containerClasses = cn(
     'calendar-view bg-card text-card-foreground overflow-hidden h-full flex flex-col',
+    bodyFontClass, // Apply bodyFont to the whole calendar view as a base
     calendarStyle === 'modern' && 'rounded-lg shadow-xl',
     calendarStyle === 'classic' && borderStyle !== 'none' && 'border',
     borderStyle === 'rounded' && 'rounded-lg',
@@ -180,9 +184,6 @@ export function CalendarView({ config }: CalendarViewProps) {
     },
     borderStyle === 'none' && 'border-0'
   );
-
-  const headerFontClass = 'font-' + headerFont.toLowerCase().replace(/\s+/g, '');
-  const bodyFontClass = 'font-' + bodyFont.toLowerCase().replace(/\s+/g, '');
   
   const monthYearTextArray = [];
   if (showMonthName) monthYearTextArray.push(MONTH_NAMES[selectedMonth]);
@@ -192,7 +193,7 @@ export function CalendarView({ config }: CalendarViewProps) {
 
   const monthYearHeaderBaseClass = cn(
     'font-medium py-3 px-4',
-    headerFontClass,
+    headerFontClass, // Apply headerFont specifically to this header
     getFontSizeClass(monthYearHeaderFontSize),
     monthYearHeaderFullWidth ? 'w-full text-center' : (
       monthYearHeaderAlignment === 'left' ? 'text-left' :
@@ -202,7 +203,7 @@ export function CalendarView({ config }: CalendarViewProps) {
   
   const dayHeaderClasses = (headerText: string) => cn(
     'p-2 text-center font-medium text-muted-foreground',
-    headerFontClass, 
+    headerFontClass, // Apply headerFont specifically to weekday headers
     getFontSizeClass(weekdayHeaderFontSize),
     getTextTransformClass(weekdayHeaderTextTransform),
     dayHeaderStyle === 'bordered' && 'border-b border-border',
@@ -211,14 +212,14 @@ export function CalendarView({ config }: CalendarViewProps) {
 
   const weekNumberHeaderClass = cn(
     'p-2 text-center font-medium text-muted-foreground italic',
-    headerFontClass, 
+    headerFontClass, // Apply headerFont to week number header as well
     getFontSizeClass(weekNumberFontSize || 'xs'),
      dayHeaderStyle === 'bordered' && 'border-b border-border',
   );
 
   const weekNumberCellClass = cn(
     'flex items-center justify-center text-muted-foreground italic aspect-square',
-    bodyFontClass, 
+    bodyFontClass, // Apply bodyFont to week number cells
     getFontSizeClass(weekNumberFontSize || 'xs'),
   );
   
@@ -229,12 +230,12 @@ export function CalendarView({ config }: CalendarViewProps) {
   const gridClasses = cn(
     "grid",
     ...gridLayoutClasses,
-    resizeRowsToFill ? "flex-grow auto-rows-fr" : "", 
-    (borderStyle !== 'none' && calendarStyle !== 'minimal') ? "gap-px bg-border" : "gap-0" 
+    resizeRowsToFill ? "flex-grow auto-rows-fr" : "",
+    (borderStyle !== 'none' && calendarStyle !== 'minimal') ? "gap-px bg-border" : "gap-0"
   );
   
   const cellWrapperClasses = cn(
-     (borderStyle !== 'none' && calendarStyle !== 'minimal') ? "bg-card" : "" 
+     (borderStyle !== 'none' && calendarStyle !== 'minimal') ? "bg-card" : ""
   );
 
   let displayDayHeaders = activeDayHeaders;
@@ -244,7 +245,7 @@ export function CalendarView({ config }: CalendarViewProps) {
     } else {
       displayDayHeaders = dayHeadersFullOriginal
         .filter(h => !(h.toLowerCase() === "sunday" || h.toLowerCase() === "saturday"))
-        .map(h => { 
+        .map(h => {
             if(weekdayHeaderLength === 'short') return h.substring(0,3);
             return h;
         });
@@ -299,3 +300,4 @@ export function CalendarView({ config }: CalendarViewProps) {
     </div>
   );
 }
+

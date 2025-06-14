@@ -33,9 +33,9 @@ import { Save, Share2, Printer } from 'lucide-react';
 const initialConfig: CalendarConfig = {
   selectedMonth: new Date().getMonth(),
   selectedYear: new Date().getFullYear(),
-  imageSrc: 'https://placehold.co/800x600.png', 
-  imagePosition: { x: 50, y: 50 }, 
-  imageSize: 100, 
+  imageSrc: 'https://placehold.co/800x600.png',
+  imagePosition: { x: 50, y: 50 },
+  imageSize: 100,
   imagePanelDimension: 30,
   showNotes: true,
   notesContent: 'Your notes here...',
@@ -116,12 +116,14 @@ export default function VisualCalPage() {
         mergedConfig.quotesContent = parsedConfig.quotesContent || initialConfig.quotesContent;
         mergedConfig.quotesPosition = parsedConfig.quotesPosition || initialConfig.quotesPosition;
         mergedConfig.showNotes = typeof parsedConfig.showNotes === 'boolean' ? parsedConfig.showNotes : initialConfig.showNotes;
+        mergedConfig.headerFont = parsedConfig.headerFont || initialConfig.headerFont;
+        mergedConfig.bodyFont = parsedConfig.bodyFont || initialConfig.bodyFont;
 
 
         setCalendarConfig(mergedConfig);
       } catch (error) {
         console.error("Failed to parse saved config:", error);
-        localStorage.removeItem('visualCalConfig'); 
+        localStorage.removeItem('visualCalConfig');
         setCalendarConfig(initialConfig);
       }
     } else {
@@ -141,7 +143,7 @@ export default function VisualCalPage() {
     
     const orientation = calendarConfig.paperOrientation || 'portrait';
     
-    const cssString = 
+    const cssString =
       "@media print {\n" +
       "  @page {\n" +
       "    size: " + orientation + ";\n" +
@@ -154,13 +156,13 @@ export default function VisualCalPage() {
       "  .visualcal-sidebar, .visualcal-print-button-group, .visualcal-resizer {\n" +
       "    display: none !important;\n" +
       "  }\n" +
-      "  .visualcal-main-content {\n" + 
+      "  .visualcal-main-content {\n" +
       "    width: 100% !important;\n" +
       "    height: auto !important;\n" +
       "    overflow: visible !important;\n" +
-      "    padding: 0 !important;\n" + 
+      "    padding: 0 !important;\n" +
       "  }\n" +
-      "  .visualcal-sidebar-inset {\n" + 
+      "  .visualcal-sidebar-inset {\n" +
       "    padding: 0 !important;\n" +
       "    margin: 0 !important;\n" +
       "    overflow: visible !important;\n" +
@@ -242,7 +244,7 @@ export default function VisualCalPage() {
     setDragStartX(e.clientX);
     setInitialDragDimension(calendarConfig.imagePanelDimension);
     setParentWidthAtDragStart(splitLayoutContainerRef.current.offsetWidth);
-    document.body.style.cursor = 'col-resize'; 
+    document.body.style.cursor = 'col-resize';
   };
 
   const handleGlobalMouseMove = useCallback((e: MouseEvent) => {
@@ -252,7 +254,7 @@ export default function VisualCalPage() {
     const dPercentage = (dx / parentWidthAtDragStart) * 100;
     
     let newDimension = initialDragDimension + dPercentage;
-    newDimension = Math.max(20, Math.min(80, newDimension)); // Allow wider range for image panel
+    newDimension = Math.max(20, Math.min(80, newDimension)); 
 
     handleConfigChange('imagePanelDimension', parseFloat(newDimension.toFixed(1)));
   }, [isResizing, dragStartX, initialDragDimension, parentWidthAtDragStart, handleConfigChange]);
@@ -275,12 +277,14 @@ export default function VisualCalPage() {
     return () => {
       document.removeEventListener('mousemove', handleGlobalMouseMove);
       document.removeEventListener('mouseup', handleGlobalMouseUp);
-      document.body.style.cursor = 'default'; 
+      document.body.style.cursor = 'default';
     };
   }, [isResizing, handleGlobalMouseMove, handleGlobalMouseUp]);
 
 
   const bodyFontClass = 'font-' + calendarConfig.bodyFont.toLowerCase().replace(/\s+/g, '');
+  const headerFontClass = 'font-' + calendarConfig.headerFont.toLowerCase().replace(/\s+/g, '');
+
 
   if (!isClient) {
     return (
@@ -323,13 +327,13 @@ export default function VisualCalPage() {
   return (
     <SidebarProvider defaultOpen>
       <div className={cn("flex h-screen w-full", bodyFontClass)}>
-        <Sidebar side="left" collapsible="icon" className="shadow-lg visualcal-sidebar">
-          <SidebarHeader className="p-4 border-b border-sidebar-border">
-            <h1 className="font-headline text-2xl font-bold text-sidebar-primary">VisualCal</h1>
-            <p className="text-sm text-sidebar-foreground/80">Customize your calendar</p>
+        <Sidebar side="left" collapsible="icon" className={cn("shadow-lg visualcal-sidebar", bodyFontClass)}>
+          <SidebarHeader className={cn("p-4 border-b border-sidebar-border")}>
+            <h1 className={cn("font-headline text-2xl font-bold text-sidebar-primary", headerFontClass)}>VisualCal</h1>
+            <p className={cn("text-sm text-sidebar-foreground/80", bodyFontClass)}>Customize your calendar</p>
           </SidebarHeader>
           <ScrollArea className="flex-1">
-            <SidebarContent className="p-0">
+            <SidebarContent className={cn("p-0", bodyFontClass)}>
               <SidebarGroup>
                 <MonthYearSelector config={calendarConfig} onConfigChange={handleConfigChange} />
               </SidebarGroup>
@@ -366,16 +370,16 @@ export default function VisualCalPage() {
             </div>
         </Sidebar>
 
-        <SidebarInset className="flex-1 overflow-auto bg-background visualcal-sidebar-inset">
-          <div className="flex flex-col h-full p-4 visualcal-main-content">
+        <SidebarInset className={cn("flex-1 overflow-auto bg-background visualcal-sidebar-inset", bodyFontClass)}>
+          <div className={cn("flex flex-col h-full p-4 visualcal-main-content", bodyFontClass)}>
             {calendarConfig.displayLayout === 'default' && (
               <>
                 {renderQuotes('above-image')}
                 {calendarConfig.imageSrc && (
-                  <div 
+                  <div
                     className="relative w-full bg-muted/30 p-2 rounded-lg shadow-inner"
                     style={{ height: defaultLayoutImageHeight }}
-                    data-ai-hint="decorative feature" 
+                    data-ai-hint="decorative feature"
                   >
                     <ImageDisplay
                       src={calendarConfig.imageSrc}
@@ -398,10 +402,10 @@ export default function VisualCalPage() {
 
             {calendarConfig.displayLayout === 'image-30-calendar-70' && (
               <div ref={splitLayoutContainerRef} className="flex flex-col md:flex-row h-full">
-                <div 
+                <div
                   className={cn(
-                    "w-full flex flex-col md:pr-0", 
-                    "visualcal-split-image-panel" 
+                    "w-full flex flex-col md:pr-0",
+                    "visualcal-split-image-panel"
                   )}
                   style={splitImageWidthStyle}
                 >
@@ -420,18 +424,18 @@ export default function VisualCalPage() {
                   {renderNotesUnderImage()}
                   {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes && renderQuotes('below-notes-module')}
                 </div>
-                <div 
-                  className="visualcal-resizer hidden md:flex items-center justify-center w-3 bg-transparent hover:bg-border/20 cursor-col-resize group"
+                <div
+                  className="visualcal-resizer hidden md:flex items-center justify-center w-2 bg-transparent hover:bg-border/0 cursor-col-resize group"
                   onMouseDown={handleMouseDownResizer}
                   role="separator"
                   aria-orientation="vertical"
                   aria-label="Resize image panel"
                 >
                 </div>
-                <div 
+                <div
                   className={cn(
-                    "flex-1 w-full md:pl-0", 
-                    "visualcal-split-calendar-panel" 
+                    "flex-1 w-full md:pl-0",
+                    "visualcal-split-calendar-panel"
                   )}
                   style={splitCalendarWidthStyle}
                 >
@@ -445,7 +449,7 @@ export default function VisualCalPage() {
               <>
                 {renderQuotes('above-image')}
                 {calendarConfig.imageSrc && (
-                  <div 
+                  <div
                     className="relative w-full bg-muted/30 p-2 rounded-lg shadow-inner"
                     style={{ height: landscapeBannerHeight }}
                     data-ai-hint="top banner"
