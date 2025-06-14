@@ -5,6 +5,7 @@ export type DayHeaderStyle = 'simple' | 'bordered' | 'pill';
 export type NotesPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'under-image';
 export type DisplayLayout = 'default' | 'image-30-calendar-70';
 export type SupportedFont = "Roboto" | "Open Sans" | "Montserrat" | "Lato" | "Poppins";
+export type PaperOrientation = 'portrait' | 'landscape';
 
 export interface CalendarConfig {
   selectedMonth: number; // 0-11
@@ -25,6 +26,7 @@ export interface CalendarConfig {
   startWeekOnMonday: boolean;
   resizeRowsToFill: boolean;
   displayLayout: DisplayLayout;
+  paperOrientation: PaperOrientation;
 }
 
 export const FONT_OPTIONS: SupportedFont[] = ["Roboto", "Open Sans", "Montserrat", "Lato", "Poppins"];
@@ -37,8 +39,9 @@ export const BORDER_WIDTH_OPTIONS: { label: string, value: BorderWidth }[] = [
 ];
 export const DAY_HEADER_STYLE_OPTIONS: DayHeaderStyle[] = ['simple', 'bordered', 'pill'];
 export const NOTES_POSITION_OPTIONS: NotesPosition[] = ['top-left', 'top-right', 'bottom-left', 'bottom-right', 'under-image'];
+export const PAPER_ORIENTATION_OPTIONS: PaperOrientation[] = ['portrait', 'landscape'];
 
 export const MONTH_NAMES = [
-  "January", "February", "March", "April", "May", "June", 
+  "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];

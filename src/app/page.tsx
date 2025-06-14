@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -25,14 +26,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 import { Button } from '@/components/ui/button';
-import { Save, Share2, Download } from 'lucide-react';
+import { Save, Share2, Printer } from 'lucide-react';
 
 const initialConfig: CalendarConfig = {
   selectedMonth: new Date().getMonth(),
   selectedYear: new Date().getFullYear(),
-  imageSrc: 'https://placehold.co/800x600.png', // Placeholder image
-  imagePosition: { x: 50, y: 50 }, // Center
-  imageSize: 100, // Scale
+  imageSrc: 'https://placehold.co/800x600.png', 
+  imagePosition: { x: 50, y: 50 }, 
+  imageSize: 100, 
   notesContent: 'Your notes here...',
   notesPosition: 'bottom-right',
   notesSize: { width: 250, height: 120 },
@@ -46,6 +47,7 @@ const initialConfig: CalendarConfig = {
   startWeekOnMonday: false,
   resizeRowsToFill: false,
   displayLayout: 'default',
+  paperOrientation: 'portrait',
 };
 
 export default function VisualCalPage() {
@@ -54,17 +56,62 @@ export default function VisualCalPage() {
 
   useEffect(() => {
     setIsClient(true);
-    // Load config from localStorage if available
     const savedConfig = localStorage.getItem('visualCalConfig');
     if (savedConfig) {
       try {
-        setCalendarConfig(JSON.parse(savedConfig));
+        const parsedConfig = JSON.parse(savedConfig);
+        setCalendarConfig({ ...initialConfig, ...parsedConfig });
       } catch (error) {
         console.error("Failed to parse saved config:", error);
-        localStorage.removeItem('visualCalConfig'); // Clear corrupted data
+        localStorage.removeItem('visualCalConfig'); 
+        setCalendarConfig(initialConfig);
       }
+    } else {
+      setCalendarConfig(initialConfig);
     }
   }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
+
+    let styleTag = document.getElementById('print-page-orientation-style');
+    if (!styleTag) {
+      styleTag = document.createElement('style');
+      styleTag.id = 'print-page-orientation-style';
+      document.head.appendChild(styleTag);
+    }
+    
+    const orientation = calendarConfig.paperOrientation || 'portrait';
+    
+    const cssString = 
+      "@media print {\n" +
+      "  @page {\n" +
+      "    size: " + orientation + ";\n" +
+      "    margin: 0.5in;\n" +
+      "  }\n" +
+      "  body {\n" +
+      "    -webkit-print-color-adjust: exact !important;\n" +
+      "    print-color-adjust: exact !important;\n" +
+      "  }\n" +
+      "  .visualcal-sidebar, .visualcal-print-button-group {\n" +
+      "    display: none !important;\n" +
+      "  }\n" +
+      "  .visualcal-main-content {\n" +
+      "    width: 100% !important;\n" +
+      "    height: auto !important;\n" +
+      "    overflow: visible !important;\n" +
+      "  }\n" +
+      "  .visualcal-sidebar-inset {\n" +
+      "    padding: 0 !important;\n" +
+      "    margin: 0 !important;\n" +
+      "    overflow: visible !important;\n" +
+      "  }\n" +
+      "}";
+      
+    styleTag.innerHTML = cssString;
+
+  }, [calendarConfig.paperOrientation, isClient]);
+
 
   const handleConfigChange = <K extends keyof CalendarConfig>(
     key: K,
@@ -79,10 +126,13 @@ export default function VisualCalPage() {
     });
   };
   
-  const bodyFontClass = `font-${calendarConfig.bodyFont.toLowerCase().replace(/\s+/g, '')}`;
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const bodyFontClass = 'font-' + calendarConfig.bodyFont.toLowerCase().replace(/\s+/g, '');
 
   if (!isClient) {
-    // Render a loading state or null until client-side hydration to avoid mismatches
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
         <p className="text-xl text-foreground">Loading VisualCal...</p>
@@ -93,7 +143,7 @@ export default function VisualCalPage() {
   return (
     <SidebarProvider defaultOpen>
       <div className={cn("flex h-screen w-full", bodyFontClass)}>
-        <Sidebar side="left" collapsible="icon" className="shadow-lg">
+        <Sidebar side="left" collapsible="icon" className="shadow-lg visualcal-sidebar">
           <SidebarHeader className="p-4 border-b border-sidebar-border">
             <h1 className="font-headline text-2xl font-bold text-sidebar-primary">VisualCal</h1>
             <p className="text-sm text-sidebar-foreground/80">Customize your calendar</p>
@@ -120,21 +170,21 @@ export default function VisualCalPage() {
                 <AppearanceSettings config={calendarConfig} onConfigChange={handleConfigChange} />
               </SidebarGroup>
               <SidebarGroup>
-                <SidebarGroupLabel className="px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">Layout</SidebarGroupLabel>
+                <SidebarGroupLabel className="px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">Layout & Print</SidebarGroupLabel>
                 <DisplaySettings config={calendarConfig} onConfigChange={handleConfigChange} />
               </SidebarGroup>
             </SidebarContent>
           </ScrollArea>
-           <div className="p-4 border-t border-sidebar-border space-y-2">
+           <div className="p-4 border-t border-sidebar-border space-y-2 visualcal-print-button-group">
               <Button className="w-full" variant="outline" onClick={() => alert("Save feature coming soon!")}><Save className="mr-2 h-4 w-4" /> Save Configuration</Button>
               <Button className="w-full" variant="outline" onClick={() => alert("Share feature coming soon!")}><Share2 className="mr-2 h-4 w-4" /> Share Calendar</Button>
-              <Button className="w-full" onClick={() => alert("Download feature coming soon!")}><Download className="mr-2 h-4 w-4" /> Download Calendar</Button>
+              <Button className="w-full" onClick={handlePrint}><Printer className="mr-2 h-4 w-4" /> Print Calendar</Button>
             </div>
         </Sidebar>
 
-        <SidebarInset className="flex-1 overflow-auto bg-background">
+        <SidebarInset className="flex-1 overflow-auto bg-background visualcal-sidebar-inset">
           <div className={cn(
-            "flex flex-col h-full",
+            "flex flex-col h-full visualcal-main-content",
             calendarConfig.displayLayout === 'image-30-calendar-70' ? "md:flex-row" : "flex-col"
           )}>
             {calendarConfig.imageSrc && calendarConfig.displayLayout === 'image-30-calendar-70' && (
