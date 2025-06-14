@@ -7,7 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { Switch } from '@/components/ui/switch'; // Added Switch import
+import { Switch } from '@/components/ui/switch'; 
+import { cn } from '@/lib/utils'; // Added import for cn
 
 interface NotesSettingsProps {
   config: CalendarConfig;
@@ -38,7 +39,7 @@ export function NotesSettings({ config, onConfigChange }: NotesSettingsProps) {
               value={config.notesContent}
               onChange={(e) => onConfigChange('notesContent', e.target.value)}
               placeholder="Enter your notes here..."
-              className={cn("h-24", bodyFontClass)} // Apply bodyFontClass here
+              className={cn("h-24", bodyFontClass)} 
             />
           </div>
           <div>
