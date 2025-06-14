@@ -1,3 +1,4 @@
+
 "use client";
 import type { CalendarConfig } from '@/components/visualcal/types';
 import { Textarea } from '@/components/ui/textarea';
@@ -10,17 +11,22 @@ interface NotesDisplayProps {
 }
 
 export function NotesDisplay({ config, onNotesChange, className }: NotesDisplayProps) {
-  const { notesContent, notesPosition, notesSize } = config;
+  const { notesContent, notesPosition, notesSize, bodyFont } = config;
+  const bodyFontClass = 'font-' + bodyFont.toLowerCase().replace(/\s+/g, '');
+
 
   if (notesPosition === 'under-image') {
     // This case is handled directly in page.tsx or specific layout component
-    // For direct use, it can be a simple textarea
     return (
       <Textarea
         value={notesContent}
         onChange={(e) => onNotesChange(e.target.value)}
         placeholder="Notes..."
-        className={cn("w-full h-24 resize-none bg-card p-2 shadow-md rounded-md", className)}
+        className={cn(
+            "w-full h-24 resize-none bg-card p-2 shadow-md rounded-md", 
+            bodyFontClass, 
+            className
+        )}
       />
     );
   }
@@ -58,7 +64,10 @@ export function NotesDisplay({ config, onNotesChange, className }: NotesDisplayP
         value={notesContent}
         onChange={(e) => onNotesChange(e.target.value)}
         placeholder="Notes..."
-        className="w-full h-full resize-none bg-card/80 backdrop-blur-sm p-2 shadow-xl rounded-lg border border-border"
+        className={cn(
+            "w-full h-full resize-none bg-card/80 backdrop-blur-sm p-2 shadow-xl rounded-lg border border-border",
+            bodyFontClass
+        )}
       />
     </div>
   );

@@ -37,6 +37,7 @@ const initialConfig: CalendarConfig = {
   imagePosition: { x: 50, y: 50 }, 
   imageSize: 100, 
   imagePanelDimension: 30,
+  showNotes: true,
   notesContent: 'Your notes here...',
   notesPosition: 'bottom-right',
   notesSize: { width: 250, height: 120 },
@@ -114,6 +115,7 @@ export default function VisualCalPage() {
         mergedConfig.showQuotes = typeof parsedConfig.showQuotes === 'boolean' ? parsedConfig.showQuotes : initialConfig.showQuotes;
         mergedConfig.quotesContent = parsedConfig.quotesContent || initialConfig.quotesContent;
         mergedConfig.quotesPosition = parsedConfig.quotesPosition || initialConfig.quotesPosition;
+        mergedConfig.showNotes = typeof parsedConfig.showNotes === 'boolean' ? parsedConfig.showNotes : initialConfig.showNotes;
 
 
         setCalendarConfig(mergedConfig);
@@ -296,19 +298,22 @@ export default function VisualCalPage() {
 
   const renderQuotes = (position: QuotesPosition) => {
     if (calendarConfig.showQuotes && calendarConfig.quotesPosition === position) {
-      return <QuotesDisplay content={calendarConfig.quotesContent} className={position === 'page-bottom' ? 'w-full mt-4' : 'my-2'} />;
+      return <QuotesDisplay config={calendarConfig} className={position === 'page-bottom' ? 'w-full mt-4' : 'my-2'} />;
     }
     return null;
   };
 
   const renderNotesUnderImage = () => {
-     if (calendarConfig.notesPosition === 'under-image') {
+     if (calendarConfig.showNotes && calendarConfig.notesPosition === 'under-image') {
        return (
         <Textarea
             value={calendarConfig.notesContent}
             onChange={(e) => handleConfigChange('notesContent', e.target.value)}
             placeholder="Notes..."
-            className="w-full h-24 resize-none bg-card p-2 shadow-md rounded-md border-border my-2"
+            className={cn(
+              "w-full h-24 resize-none bg-card p-2 shadow-md rounded-md border-border my-2",
+              bodyFontClass
+            )}
         />
        );
      }
@@ -382,12 +387,12 @@ export default function VisualCalPage() {
                 )}
                 {renderQuotes('below-image')}
                 {renderNotesUnderImage()}
-                {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition === 'under-image' && renderQuotes('below-notes-module')}
+                {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes && renderQuotes('below-notes-module')}
                 
                 <div className="flex-grow">
                   <CalendarView config={calendarConfig} />
                 </div>
-                {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition !== 'under-image' && renderQuotes('below-notes-module')}
+                {calendarConfig.quotesPosition === 'below-notes-module' && !(calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes) && renderQuotes('below-notes-module')}
               </>
             )}
 
@@ -413,10 +418,10 @@ export default function VisualCalPage() {
                   )}
                   {renderQuotes('below-image')}
                   {renderNotesUnderImage()}
-                  {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition === 'under-image' && renderQuotes('below-notes-module')}
+                  {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes && renderQuotes('below-notes-module')}
                 </div>
                 <div 
-                  className="visualcal-resizer hidden md:flex items-center justify-center w-3 bg-transparent hover:bg-border/50 cursor-col-resize group"
+                  className="visualcal-resizer hidden md:flex items-center justify-center w-3 bg-transparent hover:bg-border/20 cursor-col-resize group"
                   onMouseDown={handleMouseDownResizer}
                   role="separator"
                   aria-orientation="vertical"
@@ -432,7 +437,7 @@ export default function VisualCalPage() {
                 >
                   <CalendarView config={calendarConfig} />
                 </div>
-                 {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition !== 'under-image' && renderQuotes('below-notes-module')}
+                 {calendarConfig.quotesPosition === 'below-notes-module' && !(calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes) && renderQuotes('below-notes-module')}
               </div>
             )}
             
@@ -455,17 +460,17 @@ export default function VisualCalPage() {
                 )}
                 {renderQuotes('below-image')}
                 {renderNotesUnderImage()}
-                {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition === 'under-image' && renderQuotes('below-notes-module')}
+                {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes && renderQuotes('below-notes-module')}
                 <div className="flex-grow">
                   <CalendarView config={calendarConfig} />
                 </div>
-                {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition !== 'under-image' && renderQuotes('below-notes-module')}
+                {calendarConfig.quotesPosition === 'below-notes-module' && !(calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes) && renderQuotes('below-notes-module')}
               </>
             )}
              {renderQuotes('page-bottom')}
           </div>
 
-          {calendarConfig.notesPosition !== 'under-image' && (
+          {calendarConfig.showNotes && calendarConfig.notesPosition !== 'under-image' && (
             <NotesDisplay
               config={calendarConfig}
               onNotesChange={(notes) => handleConfigChange('notesContent', notes)}
@@ -476,3 +481,4 @@ export default function VisualCalPage() {
     </SidebarProvider>
   );
 }
+
