@@ -53,6 +53,8 @@ export type DayNumberAlignment =
 export interface CalendarConfig {
   selectedMonth: number; // 0-11
   selectedYear: number;
+
+  showImage: boolean; // New: Toggle for image visibility
   imageSrc: string | null;
   imagePosition: { x: number; y: number }; // percentages for transform translate
   imageSize: number; // percentage for transform scale
@@ -215,3 +217,4 @@ export const DAY_NUMBER_ALIGNMENT_OPTIONS: {label: string, value: DayNumberAlign
   {label: 'Bottom Center', value: 'bottom-center'},
   {label: 'Bottom Right', value: 'bottom-right'},
 ];
+
