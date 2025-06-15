@@ -11,7 +11,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Roboto', 'sans-serif'], // Default body font, but can be overridden by dynamic selection
+        body: ['Roboto', 'sans-serif'], // Default body font, can be overridden by dynamic selection
         headline: ['Poppins', 'sans-serif'], // Default headline font, can be overridden
 
         // Fonts from FONT_OPTIONS
