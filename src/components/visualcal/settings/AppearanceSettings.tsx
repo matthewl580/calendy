@@ -16,15 +16,6 @@ interface AppearanceSettingsProps {
 export function AppearanceSettings({ config, onConfigChange }: AppearanceSettingsProps) {
   return (
     <div className="space-y-4 p-2">
-      <div className="flex items-center justify-between">
-        <Label htmlFor="dark-mode" className="text-sm">Dark Mode</Label>
-        <Switch
-          id="dark-mode"
-          checked={config.darkMode}
-          onCheckedChange={(checked) => onConfigChange('darkMode', checked)}
-          aria-label="Toggle dark mode"
-        />
-      </div>
       <div>
         <Label htmlFor="app-theme" className="mb-1 block">Theme</Label>
         <Select
@@ -122,7 +113,7 @@ export function AppearanceSettings({ config, onConfigChange }: AppearanceSetting
           />
         </div>
       </div>
-      
+
       <Separator />
       <Label className="text-sm font-medium text-sidebar-foreground/90">Weekday Headers</Label>
        <div className="space-y-3 pl-2 border-l-2 border-sidebar-border ml-1">
@@ -136,7 +127,7 @@ export function AppearanceSettings({ config, onConfigChange }: AppearanceSetting
               <SelectValue placeholder="Select size" />
             </SelectTrigger>
             <SelectContent>
-              {FONT_SIZE_OPTIONS.filter(opt => !['2xl', '3xl'].includes(opt.value)).map(opt => ( 
+              {FONT_SIZE_OPTIONS.filter(opt => !['2xl', '3xl'].includes(opt.value)).map(opt => (
                 <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
               ))}
             </SelectContent>
@@ -244,7 +235,7 @@ export function AppearanceSettings({ config, onConfigChange }: AppearanceSetting
             </Select>
         </div>
       </div>
-      
+
       <Separator />
       <Label className="text-sm font-medium text-sidebar-foreground/90">Week Numbers</Label>
       <div className="space-y-3 pl-2 border-l-2 border-sidebar-border ml-1">

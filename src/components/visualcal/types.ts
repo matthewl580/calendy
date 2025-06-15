@@ -6,13 +6,13 @@ export type DayHeaderStyle = 'simple' | 'bordered' | 'pill';
 export type NotesPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'under-image';
 export type QuotesPosition = 'header' | 'above-image' | 'below-image' | 'below-notes-module' | 'page-bottom';
 export type DisplayLayout = 'default' | 'image-30-calendar-70' | 'landscape-banner';
-export type SupportedFont = 
-  "Roboto" | "Open Sans" | "Montserrat" | "Lato" | "Poppins" | 
+export type SupportedFont =
+  "Roboto" | "Open Sans" | "Montserrat" | "Lato" | "Poppins" |
   "Arial" | "Verdana" | "Georgia" | "Times New Roman" | "Courier New" |
   "Noto Sans" | "Source Sans Pro" | "Raleway" | "Oswald" | "Merriweather" | "Playfair Display";
 export type PaperOrientation = 'portrait' | 'landscape';
-export type AppTheme = 
-  'default' | 
+export type AppTheme =
+  'default' |
   'oceanic' |
   'forest-canopy' |
   'sunset-glow' |
@@ -44,7 +44,7 @@ export type TextTransformOption = 'none' | 'uppercase' | 'lowercase' | 'capitali
 export type WeekdayHeaderLength = 'short' | 'long'; // "Mon" vs "Monday"
 export type MonthYearDisplayOrder = 'month-year' | 'year-month';
 export type DayCellPaddingOption = 'xs' | 'sm' | 'base' | 'lg';
-export type DayNumberAlignment = 
+export type DayNumberAlignment =
   'top-left' | 'top-center' | 'top-right' |
   'center-left' | 'center' | 'center-right' |
   'bottom-left' | 'bottom-center' | 'bottom-right';
@@ -57,12 +57,12 @@ export interface CalendarConfig {
   imagePosition: { x: number; y: number }; // percentages for transform translate
   imageSize: number; // percentage for transform scale
   imagePanelDimension: number; // General dimension (20-50), interpreted by layout
-  
+
   showNotes: boolean;
   notesContent: string;
   notesPosition: NotesPosition;
   notesSize: { width: number; height: number }; // pixels or percentage for absolutely positioned notes
-  
+
   showQuotes: boolean;
   quotesContent: string;
   quotesPosition: QuotesPosition;
@@ -94,12 +94,11 @@ export interface CalendarConfig {
   dayCellPadding: DayCellPaddingOption;
   showWeekNumbers: boolean;
   weekNumberFontSize: FontSizeOption;
-  darkMode: boolean;
   dayNumberAlignment: DayNumberAlignment;
 }
 
 export const FONT_OPTIONS: SupportedFont[] = [
-  "Roboto", "Open Sans", "Montserrat", "Lato", "Poppins", 
+  "Roboto", "Open Sans", "Montserrat", "Lato", "Poppins",
   "Arial", "Verdana", "Georgia", "Times New Roman", "Courier New",
   "Noto Sans", "Source Sans Pro", "Raleway", "Oswald", "Merriweather", "Playfair Display"
 ];
@@ -216,4 +215,3 @@ export const DAY_NUMBER_ALIGNMENT_OPTIONS: {label: string, value: DayNumberAlign
   {label: 'Bottom Center', value: 'bottom-center'},
   {label: 'Bottom Right', value: 'bottom-right'},
 ];
-

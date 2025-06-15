@@ -36,7 +36,7 @@ const initialConfig: CalendarConfig = {
   imageSrc: 'https://placehold.co/800x600.png',
   imagePosition: { x: 50, y: 50 },
   imageSize: 100,
-  imagePanelDimension: 30, 
+  imagePanelDimension: 30,
   showNotes: true,
   notesContent: 'Your notes here...',
   notesPosition: 'bottom-right',
@@ -69,7 +69,6 @@ const initialConfig: CalendarConfig = {
   dayCellPadding: 'base' as DayCellPaddingOption,
   showWeekNumbers: false,
   weekNumberFontSize: 'xs' as FontSizeOption,
-  darkMode: false,
   dayNumberAlignment: 'top-left' as DayNumberAlignment,
 };
 
@@ -90,9 +89,13 @@ export default function VisualCalPage() {
     const savedConfig = localStorage.getItem('visualCalConfig');
     if (savedConfig) {
       try {
-        const parsedConfig = JSON.parse(savedConfig);
-        const mergedConfig = { 
-          ...initialConfig, 
+        let parsedConfig = JSON.parse(savedConfig);
+        // Remove darkMode if it exists from old configs
+        if ('darkMode' in parsedConfig) {
+          delete parsedConfig.darkMode;
+        }
+        const mergedConfig = {
+          ...initialConfig,
           ...parsedConfig,
           imagePosition: { ...initialConfig.imagePosition, ...(parsedConfig.imagePosition || {}) },
           notesSize: { ...initialConfig.notesSize, ...(parsedConfig.notesSize || {}) },
@@ -100,11 +103,11 @@ export default function VisualCalPage() {
         setCalendarConfig(mergedConfig);
       } catch (error) {
         console.error("Failed to parse saved config:", error);
-        localStorage.removeItem('visualCalConfig'); 
-        setCalendarConfig(initialConfig); 
+        localStorage.removeItem('visualCalConfig');
+        setCalendarConfig(initialConfig);
       }
     } else {
-      setCalendarConfig(initialConfig); 
+      setCalendarConfig(initialConfig);
     }
   }, []);
 
@@ -117,21 +120,21 @@ export default function VisualCalPage() {
       styleTag.id = 'print-page-orientation-style';
       document.head.appendChild(styleTag);
     }
-    
+
     const orientation = calendarConfig.paperOrientation || 'portrait';
-    
+
     const cssString = `
       @media print {
         @page {
           size: ${orientation};
-          margin: 0.5in;
+          margin: 0.5in; /* Standard margin */
         }
         html, body {
           width: 100% !important;
           height: 100% !important;
           margin: 0 !important;
           padding: 0 !important;
-          overflow: hidden !important;
+          overflow: hidden !important; /* Changed from visible to hidden */
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
           background-color: white !important;
@@ -139,125 +142,127 @@ export default function VisualCalPage() {
         .visualcal-sidebar, .visualcal-print-button-group, .visualcal-resizer {
           display: none !important;
         }
-        .visualcal-sidebar-inset {
+        .visualcal-sidebar-inset { /* This is the main wrapper for print content */
           display: flex !important;
           flex-direction: column !important;
           width: 100% !important;
-          height: 100% !important;
+          height: 100% !important; /* Fill the page */
           padding: 0 !important;
           margin: 0 !important;
           box-sizing: border-box !important;
           background-color: hsl(var(--background)) !important;
         }
-        .visualcal-main-content {
+        .visualcal-main-content { /* Container for image and calendar sections */
           display: flex !important;
-          flex-direction: column !important;
+          flex-direction: column !important; /* Default stacking */
           flex-grow: 1 !important;
           width: 100% !important;
-          padding: 0 !important; 
+          padding: 0 !important;
           margin: 0 !important;
           box-sizing: border-box !important;
-          overflow: hidden !important;
+          overflow: hidden !important; /* Ensure content does not break page */
         }
-        
-        .visualcal-main-content > .visualcal-image-host {
-          flex-shrink: 0 !important;
-          height: auto !important;
-          max-height: 40vh !important;
+
+        /* Image host adjustments for print */
+        .visualcal-image-host {
+          flex-shrink: 0 !important; /* Don't shrink image host beyond content */
+          height: auto !important; /* Let content dictate height */
+          max-height: 40vh !important; /* Cap image height to avoid dominating */
         }
-        .visualcal-main-content > .visualcal-image-host.landscape-banner-image-host {
+        .visualcal-image-host.landscape-banner-image-host {
            height: ${calendarConfig.displayLayout === 'landscape-banner' ? String(10 + calendarConfig.imagePanelDimension / 2.5) + 'vh' : 'auto'} !important;
            max-height: ${calendarConfig.displayLayout === 'landscape-banner' ? '35vh' : '40vh'} !important;
         }
-
-        .visualcal-main-content > .flex-grow.flex.flex-col { /* Wraps CalendarView in default/banner */
-          flex-grow: 1 !important; display: flex !important; flex-direction: column !important;
-          min-height: 0;
+        .visualcal-image-host img {
+            object-fit: contain !important;
+            width: 100% !important; height: 100% !important;
+            position: static !important; /* Override screen positioning */
+            transform: none !important; /* Override screen transforms */
         }
 
+        /* Split layout specific adjustments */
         .visualcal-main-content > .flex.md\\:flex-row.h-full { /* The ref={splitLayoutContainerRef} div */
            display: flex !important;
-           flex-direction: row !important;
+           flex-direction: row !important; /* Ensure row for split layout */
            width: 100% !important;
-           height: 100% !important;
+           height: 100% !important; /* Fill parent height */
         }
         .visualcal-split-image-panel, .visualcal-split-calendar-panel {
-          height: 100% !important;
+          height: 100% !important; /* Panels fill height of split container */
           padding: 0 !important; margin: 0 !important;
           display: flex !important; flex-direction: column !important;
           box-sizing: border-box !important;
+          overflow: hidden; /* Hide overflow within panels */
         }
-        .visualcal-split-image-panel > .relative.flex-grow,
-        .visualcal-split-calendar-panel > .calendar-view {
+        .visualcal-split-image-panel > .relative.flex-grow, /* Wrapper for ImageDisplay */
+        .visualcal-split-calendar-panel > .calendar-view { /* Direct child if calendar is in split */
           flex-grow: 1 !important; display: flex !important; flex-direction: column !important;
-          height: 100%;
+          height: 100%; /* Ensure they fill the panel */
+          min-height: 0; /* Allow shrinking if needed */
         }
 
-        .visualcal-image-host img {
-            object-fit: contain !important; 
-            width: 100% !important; height: 100% !important;
-            position: static !important;
-            transform: none !important;
+
+        /* Calendar View and its children */
+         .visualcal-main-content > .flex-grow.flex.flex-col { /* Wraps CalendarView in default/banner */
+          flex-grow: 1 !important; display: flex !important; flex-direction: column !important;
+          min-height: 0; /* Allow shrinking and growing properly */
         }
-        
         .calendar-view {
           display: flex !important; flex-direction: column !important;
-          flex-grow: 1 !important;
+          flex-grow: 1 !important; /* Crucial for calendar to fill space */
           width: 100% !important; min-height: 0 !important; box-sizing: border-box !important;
           background-color: hsl(var(--card)) !important;
-          /* Its own border (if any like 'border-border') from screen styles will form the outer box */
         }
-        
-        /* Grid for weekday headers */
+
+        /* Weekday headers grid */
         .calendar-view > .grid:first-of-type {
           display: grid !important;
-          flex-shrink: 0;
+          flex-shrink: 0; /* Don't let headers shrink */
         }
         .calendar-view > .grid:first-of-type > div { /* weekday header cells */
           padding: 0.1rem 0.25rem !important;
           font-size: 0.8em !important;
           text-align: center !important;
           border-bottom: 1px solid hsl(var(--border)) !important;
-          background-color: hsl(var(--card)) !important; /* Ensure background for headers */
+          background-color: hsl(var(--card)) !important;
         }
         .calendar-view > .grid:first-of-type > div:not(:last-child) {
             border-right: 1px solid hsl(var(--border)) !important;
         }
 
         /* Day Cell Grid - Explicit Border Strategy for Print */
-        .calendar-view > .grid.bg-border { /* Targets day grid if on-screen had 'bg-border' for gap technique */
+        .calendar-view > .grid.bg-border { /* Day grid when on-screen uses gap technique */
             display: grid !important;
-            flex-grow: 1 !important;
+            flex-grow: 1 !important; /* Allow day grid to expand */
             gap: 0 !important; /* No gap for explicit borders */
-            background-color: transparent !important; /* Grid itself is transparent */
+            background-color: transparent !important;
+            grid-auto-rows: minmax(0, 1fr); /* Make rows distribute space */
         }
-        .calendar-view > .grid.bg-border > div { /* Cell wrappers within the 'bg-border' grid */
-            background-color: hsl(var(--card)) !important; /* Cell's own background */
+        .calendar-view > .grid.bg-border > div { /* Cell wrappers */
+            background-color: hsl(var(--card)) !important;
             border-top: 1px solid hsl(var(--border)) !important;
             border-left: 1px solid hsl(var(--border)) !important;
             box-sizing: border-box !important;
+            display: flex; /* Ensure content inside aligns */
         }
-        
-        /* Day Cell Grid - Borderless for Print (if on-screen was borderless) */
-        .calendar-view > .grid.gap-0 { /* Targets day grid if on-screen was 'gap-0' (borderless) */
+        /* Day Cell Grid - Borderless for Print */
+        .calendar-view > .grid.gap-0 { /* Day grid if on-screen was borderless */
            display: grid !important;
            flex-grow: 1 !important;
            gap: 0 !important;
+           grid-auto-rows: minmax(0, 1fr);
         }
-        .calendar-view > .grid.gap-0 > div { /* Cell wrappers in a borderless grid */
-          background-color: hsl(var(--card)) !important; /* Or transparent if minimal style */
+        .calendar-view > .grid.gap-0 > div {
+          background-color: hsl(var(--card)) !important;
           box-sizing: border-box !important;
+          display: flex;
         }
-        /* Adjust for minimal style if it implies transparent cells */
-        .calendar-view.minimal-style > .grid.gap-0 > div { /* Hypothetical minimal-style class */
-            background-color: transparent !important;
-        }
-        
-        .calendar-day-cell { /* The actual content holder inside the cell wrapper */
-          aspect-ratio: unset !important; /* Allow cells to be non-square */
-          width: 100% !important; 
-          height: 100% !important; 
-          display: flex !important;
+
+        .calendar-day-cell {
+          aspect-ratio: unset !important; /* Allow cells to be non-square for print fill */
+          width: 100% !important;
+          height: 100% !important;
+          display: flex !important; /* Keep flex for internal alignment */
           box-sizing: border-box !important;
         }
 
@@ -275,7 +280,7 @@ export default function VisualCalPage() {
         }
       }
     `;
-      
+
     styleTag.innerHTML = cssString;
 
   }, [calendarConfig.paperOrientation, calendarConfig.displayLayout, calendarConfig.imagePanelDimension, isClient]);
@@ -283,18 +288,14 @@ export default function VisualCalPage() {
   useEffect(() => {
     if (isClient && calendarConfig.theme) {
       document.documentElement.dataset.theme = calendarConfig.theme;
-    }
-  }, [calendarConfig.theme, isClient]);
-
-  useEffect(() => {
-    if (isClient) {
-      if (calendarConfig.darkMode) {
+      // Handle inherently dark themes by adding/removing .dark class
+      if (['cosmic-dark', 'minimalist-dark', 'cyberpunk-neon'].includes(calendarConfig.theme)) {
         document.documentElement.classList.add('dark');
       } else {
         document.documentElement.classList.remove('dark');
       }
     }
-  }, [calendarConfig.darkMode, isClient]);
+  }, [calendarConfig.theme, isClient]);
 
 
   const handleConfigChange = useCallback(<K extends keyof CalendarConfig>(
@@ -309,7 +310,7 @@ export default function VisualCalPage() {
       return newConfig;
     });
   }, [isClient]);
-  
+
   const handlePrint = () => {
     window.print();
   };
@@ -355,9 +356,9 @@ export default function VisualCalPage() {
 
     const dx = e.clientX - dragStartX;
     const dPercentage = (dx / parentWidthAtDragStart) * 100;
-    
+
     let newDimension = initialDragDimension + dPercentage;
-    newDimension = Math.max(20, Math.min(80, newDimension)); 
+    newDimension = Math.max(20, Math.min(80, newDimension));
     handleConfigChange('imagePanelDimension', parseFloat(newDimension.toFixed(1)));
   }, [isResizing, dragStartX, initialDragDimension, parentWidthAtDragStart, handleConfigChange]);
 
@@ -395,9 +396,9 @@ export default function VisualCalPage() {
       </div>
     );
   }
-  
-  const defaultLayoutImageHeight = String(100 + (calendarConfig.imagePanelDimension - 10) * 8) + 'px'; 
-  const landscapeBannerHeight = String(10 + calendarConfig.imagePanelDimension / 2.5) + 'vh'; 
+
+  const defaultLayoutImageHeight = String(100 + (calendarConfig.imagePanelDimension - 10) * 8) + 'px';
+  const landscapeBannerHeight = String(10 + calendarConfig.imagePanelDimension / 2.5) + 'vh';
 
   const splitImageWidthStyle = { width: String(calendarConfig.imagePanelDimension + '%') };
   const splitCalendarWidthStyle = { width: String((100 - calendarConfig.imagePanelDimension) + '%') };
@@ -494,7 +495,7 @@ export default function VisualCalPage() {
                 {renderQuotes('below-image')}
                 {renderNotesUnderImage()}
                 {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes && renderQuotes('below-notes-module')}
-                
+
                 <div className="flex-grow flex flex-col min-h-0">
                   <CalendarView config={calendarConfig} />
                 </div>
@@ -526,7 +527,7 @@ export default function VisualCalPage() {
                   {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes && renderQuotes('below-notes-module')}
                 </div>
                 <div
-                  className="visualcal-resizer hidden md:flex items-center justify-center w-0 hover:bg-transparent cursor-col-resize group" 
+                  className="visualcal-resizer hidden md:flex items-center justify-center w-0 hover:bg-transparent cursor-col-resize group"
                   onMouseDown={handleMouseDownResizer}
                   role="separator"
                   aria-orientation="vertical"
@@ -535,7 +536,7 @@ export default function VisualCalPage() {
                 </div>
                 <div
                   className={cn(
-                    "flex-1 w-full md:pl-0 visualcal-split-calendar-panel flex flex-col min-h-0" 
+                    "flex-1 w-full md:pl-0 visualcal-split-calendar-panel flex flex-col min-h-0"
                   )}
                   style={splitCalendarWidthStyle}
                 >
@@ -544,7 +545,7 @@ export default function VisualCalPage() {
                  {calendarConfig.quotesPosition === 'below-notes-module' && !(calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes) && renderQuotes('below-notes-module')}
               </div>
             )}
-            
+
             {calendarConfig.displayLayout === 'landscape-banner' && (
               <>
                 {renderQuotes('above-image')}
@@ -565,7 +566,7 @@ export default function VisualCalPage() {
                 {renderQuotes('below-image')}
                 {renderNotesUnderImage()}
                 {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes && renderQuotes('below-notes-module')}
-                <div className="flex-grow flex flex-col min-h-0"> 
+                <div className="flex-grow flex flex-col min-h-0">
                   <CalendarView config={calendarConfig} />
                 </div>
                 {calendarConfig.quotesPosition === 'below-notes-module' && !(calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes) && renderQuotes('below-notes-module')}
@@ -578,7 +579,7 @@ export default function VisualCalPage() {
             <NotesDisplay
               config={calendarConfig}
               onNotesChange={(notes) => handleConfigChange('notesContent', notes)}
-              className="notes-display-absolute" 
+              className="notes-display-absolute"
             />
           )}
         </SidebarInset>
@@ -586,4 +587,3 @@ export default function VisualCalPage() {
     </SidebarProvider>
   );
 }
-    
