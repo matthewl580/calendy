@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -10,28 +11,26 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Roboto', 'sans-serif'], // Default body font
-        headline: ['Poppins', 'sans-serif'], // Default headline font
-        
-        // Predefined Google Fonts
+        body: ['Roboto', 'sans-serif'], // Default body font, but can be overridden by dynamic selection
+        headline: ['Poppins', 'sans-serif'], // Default headline font, can be overridden
+
+        // Fonts from FONT_OPTIONS
         roboto: ['Roboto', 'sans-serif'],
         opensans: ['Open Sans', 'sans-serif'],
         montserrat: ['Montserrat', 'sans-serif'],
         lato: ['Lato', 'sans-serif'],
         poppins: ['Poppins', 'sans-serif'],
+        arial: ['Arial', 'sans-serif'],
+        verdana: ['Verdana', 'sans-serif'],
+        georgia: ['Georgia', 'serif'],
+        timesnewroman: ['Times New Roman', 'serif'],
+        couriernew: ['Courier New', 'monospace'],
         notosans: ['Noto Sans', 'sans-serif'],
         sourcesanspro: ['Source Sans Pro', 'sans-serif'],
         raleway: ['Raleway', 'sans-serif'],
         oswald: ['Oswald', 'sans-serif'],
         merriweather: ['Merriweather', 'serif'],
         playfairdisplay: ['Playfair Display', 'serif'],
-        
-        // Common System Fonts
-        arial: ['Arial', 'sans-serif'],
-        verdana: ['Verdana', 'sans-serif'],
-        georgia: ['Georgia', 'serif'],
-        timesnewroman: ['Times New Roman', 'serif'],
-        couriernew: ['Courier New', 'monospace'],
         
         code: ['monospace'],
       },
