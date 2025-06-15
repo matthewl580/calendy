@@ -12,11 +12,10 @@ interface NotesDisplayProps {
 
 export function NotesDisplay({ config, onNotesChange, className }: NotesDisplayProps) {
   const { notesContent, notesPosition, notesSize, bodyFont } = config;
-  const bodyFontClass = 'font-' + bodyFont.toLowerCase().replace(/\s+/g, '');
+  const bodyFontClass = `font-${bodyFont.toLowerCase().replace(/\s+/g, '')}`;
 
 
   if (notesPosition === 'under-image') {
-    // This case is handled directly in page.tsx or specific layout component
     return (
       <Textarea
         value={notesContent}
@@ -31,7 +30,6 @@ export function NotesDisplay({ config, onNotesChange, className }: NotesDisplayP
     );
   }
 
-  // Calculate position for absolute positioning
   let positionStyles: React.CSSProperties = {
     position: 'absolute',
     width: `${notesSize.width}px`,

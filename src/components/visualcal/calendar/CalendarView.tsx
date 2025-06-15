@@ -84,8 +84,8 @@ export function CalendarView({ config }: CalendarViewProps) {
     quotesPosition,
   } = config;
 
-  const headerFontClass = 'font-' + headerFont.toLowerCase().replace(/\s+/g, '');
-  const bodyFontClass = 'font-' + bodyFont.toLowerCase().replace(/\s+/g, '');
+  const headerFontClass = `font-${headerFont.toLowerCase().replace(/\s+/g, '')}`;
+  const bodyFontClass = `font-${bodyFont.toLowerCase().replace(/\s+/g, '')}`;
 
   const daysInMonth = getDaysInMonth(selectedYear, selectedMonth);
   const firstDayOfMonth = getFirstDayOfMonth(selectedYear, selectedMonth, startWeekOnMonday);
@@ -113,7 +113,7 @@ export function CalendarView({ config }: CalendarViewProps) {
          let dateForWeekNum = firstDateOfMonth;
          if (startWeekOnMonday && firstDayOfMonth !== 0) {
             const tempDate = new Date(firstDateOfMonth);
-            tempDate.setDate(tempDate.getDate() - firstDayOfMonth + (firstDayOfMonth > 0 ? 0 : 7) ); // Adjust if firstDayOfMonth lands on Sun
+            tempDate.setDate(tempDate.getDate() - firstDayOfMonth + (firstDayOfMonth > 0 ? 0 : 7) ); 
             dateForWeekNum = tempDate;
          } else if (!startWeekOnMonday && firstDayOfMonth !==0) {
             const tempDate = new Date(firstDateOfMonth);
@@ -131,18 +131,18 @@ export function CalendarView({ config }: CalendarViewProps) {
 
     for (let i = 1; i <= daysInMonth; i++) {
       const currentDate = new Date(selectedYear, selectedMonth, i);
-      const dayOfWeek = currentDate.getDay(); // Sunday = 0, Monday = 1, etc.
+      const dayOfWeek = currentDate.getDay(); 
 
       if (showWeekNumbers && daysArray.length > 0) {
-        // Add week number if it's the first day of the week column
+        
         const isFirstDayOfWeekSlot = (startWeekOnMonday && dayOfWeek === 1) || (!startWeekOnMonday && dayOfWeek === 0);
         const isNewRowStarting = daysArray.length % columns === 0; 
-        // Check if previous item was NOT a week number
+        
         const previousItemIsNotWeekNumber = daysArray[daysArray.length - 1]?.type !== 'weekNumber';
 
 
         if (isFirstDayOfWeekSlot && previousItemIsNotWeekNumber && !isNewRowStarting && daysArray.length > (showWeekends ? 0 : (showWeekNumbers ? 1 : 0))) {
-           // This logic ensures we only add week numbers at the actual start of a visual row.
+           
         } else if(isFirstDayOfWeekSlot && (isNewRowStarting || daysArray.length === 0 || (daysArray.length % columns ===1 && daysArray[0].type === 'weekNumber'))){
           const weekNum = getWeekNumber(currentDate);
           daysArray.push({ type: 'weekNumber', number: weekNum, date: null });
@@ -157,11 +157,11 @@ export function CalendarView({ config }: CalendarViewProps) {
     const totalCellsBeforeAddingSuffix = daysArray.length;
     let numRows = Math.ceil(totalCellsBeforeAddingSuffix / columns);
     
-    // If the last row isn't full and starts with a week number, it might need one more cell to complete.
+    
     if (showWeekNumbers && totalCellsBeforeAddingSuffix % columns !== 0 && daysArray[numRows * columns - columns]?.type === 'weekNumber' && totalCellsBeforeAddingSuffix % columns === 1) {
-       // This condition seems too specific or might lead to an extra empty row. Let's simplify.
+       
     } else if (totalCellsBeforeAddingSuffix % columns !== 0) {
-      // numRows is already correct
+      
     }
 
 
@@ -171,18 +171,18 @@ export function CalendarView({ config }: CalendarViewProps) {
     for (let i = 0; i < cellsToAdd; i++) {
       const currentPosInRow = (totalCellsBeforeAddingSuffix + i) % columns;
       if (showWeekNumbers && currentPosInRow === 0) {
-          // Logic for adding week numbers to placeholder rows
+          
           const lastFilledDateEntry = [...daysArray].reverse().find(d => d.type ==='day' && d.date && d.isCurrentMonth);
           let nextPotentialDate;
           if (lastFilledDateEntry?.date) {
             nextPotentialDate = new Date(lastFilledDateEntry.date);
-            // Calculate how many days into the new week this placeholder row is
-            const daysIntoPlaceholderWeek = Math.floor((totalCellsBeforeAddingSuffix + i - (columns-1) * (numRows -1) ) / (columns - (showWeekNumbers?1:0) ) ) * 7; // Approximate
+            
+            const daysIntoPlaceholderWeek = Math.floor((totalCellsBeforeAddingSuffix + i - (columns-1) * (numRows -1) ) / (columns - (showWeekNumbers?1:0) ) ) * 7; 
             nextPotentialDate.setDate(nextPotentialDate.getDate() + daysIntoPlaceholderWeek + 1);
              daysArray.push({ type: 'weekNumber', number: getWeekNumber(nextPotentialDate), date: null });
           } else {
-            // Fallback if no current month day found (e.g. empty calendar start)
-             daysArray.push({ type: 'day', day: null, isCurrentMonth: false, date: null }); // Should be a placeholder for day cell
+            
+             daysArray.push({ type: 'day', day: null, isCurrentMonth: false, date: null }); 
           }
 
       } else {
@@ -224,11 +224,15 @@ export function CalendarView({ config }: CalendarViewProps) {
     )
   );
   
-  const dayHeaderClasses = (headerText: string) => cn(
+  const dayHeaderBaseClass = cn(
     'p-2 text-center font-medium text-muted-foreground',
     headerFontClass, 
     getFontSizeClass(weekdayHeaderFontSize),
-    getTextTransformClass(weekdayHeaderTextTransform),
+    getTextTransformClass(weekdayHeaderTextTransform)
+  );
+
+  const dayHeaderClasses = (headerText: string) => cn(
+    dayHeaderBaseClass,
     dayHeaderStyle === 'bordered' && 'border-b border-border',
     dayHeaderStyle === 'pill' && 'bg-primary text-primary-foreground rounded-full m-1 py-1'
   );
@@ -253,7 +257,7 @@ export function CalendarView({ config }: CalendarViewProps) {
   const gridClasses = cn(
     "grid",
     ...gridLayoutClasses,
-    resizeRowsToFill ? "flex-grow auto-rows-fr" : "", // auto-rows-fr will make rows expand
+    resizeRowsToFill ? "flex-grow auto-rows-fr" : "", 
     (borderStyle !== 'none' && calendarStyle !== 'minimal') ? "gap-px bg-border" : "gap-0"
   );
   
@@ -272,7 +276,7 @@ export function CalendarView({ config }: CalendarViewProps) {
             if(weekdayHeaderLength === 'short') return h.substring(0,3);
             return h;
         });
-       if(startWeekOnMonday){ // This block seems redundant if already handled by activeDayHeaders
+       if(startWeekOnMonday){ 
          const mondayIndex = displayDayHeaders.findIndex(h => h.toLowerCase().startsWith("mon"));
          displayDayHeaders = [...displayDayHeaders.slice(mondayIndex), ...displayDayHeaders.slice(0, mondayIndex)];
        }
@@ -281,19 +285,19 @@ export function CalendarView({ config }: CalendarViewProps) {
 
 
   return (
-    <div className={containerClasses}>
+    <div className={cn(containerClasses, bodyFontClass)}>
       {(showMonthName || showYear) && (
-        <div className={monthYearHeaderBaseClass}>
+        <div className={cn(monthYearHeaderBaseClass, headerFontClass)}>
           {monthYearDisplayString}
         </div>
       )}
       {showQuotes && quotesPosition === 'header' && (
-        <QuotesDisplay config={config} className={cn("text-center text-sm italic p-2 border-t border-border", bodyFontClass)} />
+        <QuotesDisplay config={config} className={cn("text-center text-sm italic p-2 border-t border-border")} />
       )}
       <div className={cn("grid", ...gridLayoutClasses)}>
-        {showWeekNumbers && <div className={weekNumberHeaderClass}>Wk</div>}
+        {showWeekNumbers && <div className={cn(weekNumberHeaderClass, headerFontClass)}>Wk</div>}
         {displayDayHeaders.map(header => (
-            <div key={header} className={dayHeaderClasses(header)}>
+            <div key={header} className={cn(dayHeaderClasses(header), headerFontClass)}>
               {header}
             </div>
           )
@@ -303,7 +307,7 @@ export function CalendarView({ config }: CalendarViewProps) {
         {calendarDays.map((item, index) => {
           if (item.type === 'weekNumber') {
             return (
-              <div key={String('wn-' + index)} className={cn(cellWrapperClasses, weekNumberCellClass)}>
+              <div key={String('wn-' + index)} className={cn(cellWrapperClasses, weekNumberCellClass, bodyFontClass)}>
                 {item.number}
               </div>
             );

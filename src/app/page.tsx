@@ -102,7 +102,7 @@ export default function VisualCalPage() {
     if (savedConfig) {
       try {
         let parsedConfig = JSON.parse(savedConfig);
-        if ('darkMode' in parsedConfig) { // Clean up old darkMode prop if present
+        if ('darkMode' in parsedConfig) { 
           delete parsedConfig.darkMode;
         }
         const mergedConfig = {
@@ -114,7 +114,7 @@ export default function VisualCalPage() {
         setCalendarConfig(mergedConfig);
       } catch (error) {
         console.error("Failed to parse saved config:", error);
-        localStorage.removeItem('visualCalConfig'); // Clear corrupted config
+        localStorage.removeItem('visualCalConfig'); 
         setCalendarConfig(initialConfig);
       }
     } else {
@@ -134,12 +134,11 @@ export default function VisualCalPage() {
 
     const orientation = calendarConfig.paperOrientation || 'portrait';
 
-    // Print styles to make output closely resemble the screen and fit one page
     const cssString = `
       @media print {
         @page {
           size: ${orientation};
-          margin: 0.5in; /* Standard margin, adjust if needed */
+          margin: 0.5in; 
         }
         html, body {
           width: 100% !important;
@@ -149,100 +148,93 @@ export default function VisualCalPage() {
           overflow: hidden !important; 
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
-          background-color: white !important; /* Ensure background prints */
+          background-color: white !important;
         }
         .visualcal-sidebar, .visualcal-print-button-group, .visualcal-resizer {
           display: none !important;
         }
-        .visualcal-sidebar-inset { /* This is the main print canvas */
+        .visualcal-sidebar-inset { 
           display: flex !important;
           flex-direction: column !important;
           width: 100% !important;
-          height: 100% !important; /* Ensure it fills the page */
+          height: 100% !important;
           padding: 0 !important;
           margin: 0 !important;
           box-sizing: border-box !important;
-          background-color: hsl(var(--background)) !important; /* Use theme background */
+          background-color: hsl(var(--background)) !important; 
         }
-        .visualcal-main-content { /* Wrapper for different layouts */
+        .visualcal-main-content { 
           display: flex !important;
-          flex-direction: column !important; /* Default for stacked layouts */
+          flex-direction: column !important;
           flex-grow: 1 !important;
           width: 100% !important;
           padding: 0 !important;
           margin: 0 !important;
           box-sizing: border-box !important;
-          overflow: hidden !important; /* Prevent internal scrollbars if content overflows page */
+          overflow: hidden !important;
         }
 
-        /* Image Host Styling (for default and landscape-banner layouts) */
         .visualcal-image-host {
-          flex-shrink: 0 !important; /* Prevent shrinking more than content */
-          height: auto !important; /* Let content dictate height */
+          flex-shrink: 0 !important; 
+          height: auto !important; 
           min-height: 0 !important;
-          max-height: 40vh !important; /* Cap image height to avoid dominating page */
+          max-height: 40vh !important; 
         }
         .visualcal-image-host.landscape-banner-image-host {
            height: ${calendarConfig.displayLayout === 'landscape-banner' && calendarConfig.showImage ? String(10 + calendarConfig.imagePanelDimension / 2.5) + 'vh' : 'auto'} !important;
            max-height: ${calendarConfig.displayLayout === 'landscape-banner' && calendarConfig.showImage ? '35vh' : '40vh'} !important;
         }
-        /* Ensure Next/Image scales correctly for print */
          .visualcal-image-host img, .visualcal-image-host > div[data-ai-hint] > img {
             object-fit: contain !important;
-            position: static !important; /* Override 'fill' or 'absolute' */
-            transform: none !important; /* Reset screen transforms */
+            position: static !important; 
+            transform: none !important; 
             width: 100% !important;
-            height: 100% !important; /* Let wrapper control size */
+            height: 100% !important; 
          }
-         .visualcal-image-host > div[data-ai-hint] { /* Next/Image wrapper */
-            position: relative !important; /* Needed for Next/Image child */
+         .visualcal-image-host > div[data-ai-hint] { 
+            position: relative !important; 
             width: 100% !important;
-            height: 100% !important; /* Fills its parent .visualcal-image-host */
+            height: 100% !important; 
          }
 
-        /* Split Layout Specifics for Print */
-        .visualcal-main-content > .flex.md\\:flex-row.h-full { /* Target split layout container */
+        .visualcal-main-content > .flex.md\\:flex-row.h-full { 
            display: flex !important;
-           flex-direction: row !important; /* Enforce row for landscape */
+           flex-direction: row !important; 
            width: 100% !important;
            height: 100% !important;
            max-height: none !important;
         }
         .visualcal-split-image-panel, .visualcal-split-calendar-panel {
-          height: 100% !important; /* Fill parent height in split view */
+          height: 100% !important; 
           padding: 0 !important; margin: 0 !important;
           display: flex !important; flex-direction: column !important;
           box-sizing: border-box !important;
-          overflow: hidden; /* Prevent scrollbars within panels */
+          overflow: hidden; 
         }
         .visualcal-split-image-panel > .relative.flex-grow, 
         .visualcal-split-calendar-panel > .calendar-view { 
           flex-grow: 1 !important; display: flex !important; flex-direction: column !important;
-          height: 100%; /* Ensure child takes full panel height */
-          min-height: 0; /* Important for flex children */
+          height: 100%; 
+          min-height: 0; 
         }
-
-         /* Ensure calendar view in general layouts also grows */
         .visualcal-main-content > .flex-grow.flex.flex-col { 
           flex-grow: 1 !important; display: flex !important; flex-direction: column !important;
-          min-height: 0; /* Important for flex children */
+          min-height: 0; 
         }
-
-        /* Calendar View and its components */
         .calendar-view {
           display: flex !important; flex-direction: column !important;
-          flex-grow: 1 !important; /* Critical for calendar to fill space */
+          flex-grow: 1 !important; 
           width: 100% !important; min-height: 0 !important; box-sizing: border-box !important;
           background-color: hsl(var(--card)) !important;
         }
-        /* Weekday Headers */
         .calendar-view > .grid:first-of-type {
           display: grid !important;
-          flex-shrink: 0; /* Don't let headers shrink */
+          flex-shrink: 0;
+          background-color: hsl(var(--card)) !important;
         }
-        .calendar-view > .grid:first-of-type > div { /* Individual weekday header cell */
-          padding: 0.1rem 0.25rem !important; /* Smaller padding for print */
-          font-size: 0.8em !important; /* Smaller font for print */
+        .calendar-view > .grid:first-of-type > div { 
+          padding: 0.1rem 0.25rem !important; 
+          font-size: 0.8em !important; 
           text-align: center !important;
           border-bottom: 1px solid hsl(var(--border)) !important;
           background-color: hsl(var(--card)) !important;
@@ -250,58 +242,50 @@ export default function VisualCalPage() {
         .calendar-view > .grid:first-of-type > div:not(:last-child) {
             border-right: 1px solid hsl(var(--border)) !important;
         }
-
-        /* Day Cells Grid - Explicit borders for print */
-        .calendar-view > .grid.bg-border { /* This targets the grid using gap-px on screen */
+        .calendar-view > .grid.bg-border { 
             display: grid !important;
-            flex-grow: 1 !important; /* Allow grid to expand */
-            gap: 0 !important; /* Remove gap for explicit borders */
-            background-color: transparent !important; /* Grid itself is transparent */
-            border-right: 1px solid hsl(var(--border)) !important; /* Add right border for grid */
-            border-bottom: 1px solid hsl(var(--border)) !important; /* Add bottom border for grid */
-            grid-auto-rows: minmax(0, 1fr); /* Ensure rows distribute space */
+            flex-grow: 1 !important; 
+            gap: 0 !important; 
+            background-color: transparent !important; 
+            border-right: 1px solid hsl(var(--border)) !important; 
+            border-bottom: 1px solid hsl(var(--border)) !important;
+            grid-auto-rows: minmax(0, 1fr); 
         }
-        .calendar-view > .grid.bg-border > div { /* Cell wrappers inside the bordered grid */
+        .calendar-view > .grid.bg-border > div { 
             background-color: hsl(var(--card)) !important;
             border-top: 1px solid hsl(var(--border)) !important;
             border-left: 1px solid hsl(var(--border)) !important;
             box-sizing: border-box !important;
-            display: flex; /* Ensure CalendarDay inside aligns correctly */
+            display: flex; 
         }
-        
-        /* Day Cells Grid - For borderless styles on screen */
-        .calendar-view > .grid.gap-0 { /* This targets the grid for minimal/none border style */
+        .calendar-view > .grid.gap-0 { 
            display: grid !important;
            flex-grow: 1 !important;
            gap: 0 !important;
-           grid-auto-rows: minmax(0, 1fr); /* Ensure rows distribute space */
+           grid-auto-rows: minmax(0, 1fr); 
         }
-        .calendar-view > .grid.gap-0 > div { /* Cell wrappers */
+        .calendar-view > .grid.gap-0 > div { 
           background-color: hsl(var(--card)) !important;
           box-sizing: border-box !important;
           display: flex;
         }
-
-        /* Individual Day Cell styling */
         .calendar-day-cell {
-          aspect-ratio: unset !important; /* Allow cell to stretch, not force square */
+          aspect-ratio: unset !important; 
           width: 100% !important;
           height: 100% !important;
-          display: flex !important; /* Keep alignment props working */
+          display: flex !important; 
           box-sizing: border-box !important;
         }
-
-        /* Notes and Quotes */
         .notes-display-absolute, .quotes-display-block {
-          position: static !important; /* Stack them for print */
+          position: static !important; 
           width: 100% !important; height: auto !important;
           margin-top: 0.25rem !important; margin-bottom: 0.25rem !important;
           padding: 0.25rem !important; font-size: 0.8em !important;
-          page-break-inside: avoid !important; /* Try to keep them on one page */
+          page-break-inside: avoid !important; 
           border: 1px solid hsl(var(--border)) !important;
           background-color: hsl(var(--card)) !important;
         }
-        .quotes-display-block blockquote { /* Specific to quotes display */
+        .quotes-display-block blockquote { 
            margin-left: 0.5rem !important;
            padding-left: 0.5rem !important;
         }
@@ -384,7 +368,7 @@ export default function VisualCalPage() {
     const dPercentage = (dx / parentWidthAtDragStart) * 100;
 
     let newDimension = initialDragDimension + dPercentage;
-    newDimension = Math.max(20, Math.min(80, newDimension)); // Keep within 20-80 range
+    newDimension = Math.max(20, Math.min(80, newDimension)); 
     handleConfigChange('imagePanelDimension', parseFloat(newDimension.toFixed(1)));
   }, [isResizing, dragStartX, initialDragDimension, parentWidthAtDragStart, handleConfigChange]);
 
@@ -406,7 +390,7 @@ export default function VisualCalPage() {
     return () => {
       document.removeEventListener('mousemove', handleGlobalMouseMove);
       document.removeEventListener('mouseup', handleGlobalMouseUp);
-      document.body.style.cursor = 'default'; // Ensure cursor resets on unmount
+      document.body.style.cursor = 'default'; 
     };
   }, [isResizing, handleGlobalMouseMove, handleGlobalMouseUp]);
 
@@ -440,7 +424,7 @@ export default function VisualCalPage() {
 
   const renderQuotes = (position: QuotesPosition) => {
     if (calendarConfig.showQuotes && calendarConfig.quotesPosition === position) {
-      return <QuotesDisplay config={calendarConfig} className={cn(position === 'page-bottom' ? 'w-full mt-4 quotes-display-block' : 'my-2 quotes-display-block', bodyFontClass)} />;
+      return <QuotesDisplay config={calendarConfig} className={cn(position === 'page-bottom' ? 'w-full mt-4 quotes-display-block' : 'my-2 quotes-display-block')} />;
     }
     return null;
   };
@@ -472,7 +456,7 @@ export default function VisualCalPage() {
   return (
     <SidebarProvider defaultOpen>
       <div className={cn("flex h-screen w-full", bodyFontClass)}>
-        <Sidebar side="left" collapsible="icon" className={cn("shadow-lg visualcal-sidebar", bodyFontClass, headerFontClass)}>
+        <Sidebar side="left" collapsible="icon" className={cn("shadow-lg visualcal-sidebar", bodyFontClass)}>
           <SidebarHeader className={cn("p-4 border-b border-sidebar-border")}>
             <h1 className={cn("text-2xl font-bold text-sidebar-primary", headerFontClass)}>Calendy</h1>
             <p className={cn("text-sm text-sidebar-foreground/80", bodyFontClass)}>Customize your calendar</p>
