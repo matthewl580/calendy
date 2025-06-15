@@ -10,13 +10,7 @@ interface QuotesDisplayProps {
 }
 
 export function QuotesDisplay({ config, className }: QuotesDisplayProps) {
-  const { quotesContent, bodyFont, headerFont } = config; 
-  const bodyFontClass = `font-${bodyFont.toLowerCase().replace(/\s+/g, '')}`;
-  // Using headerFont for quotes if it's a header quote, otherwise bodyFont
-  const quoteFontClass = config.quotesPosition === 'header' 
-    ? `font-${headerFont.toLowerCase().replace(/\s+/g, '')}` 
-    : bodyFontClass;
-
+  const { quotesContent, quotesPosition } = config; 
 
   if (!quotesContent) return null;
 
@@ -26,10 +20,11 @@ export function QuotesDisplay({ config, className }: QuotesDisplayProps) {
         "italic text-sm border-l-4 pl-3",
         "text-card-foreground", 
         "border-accent",
-        quoteFontClass 
+        // Removed dynamic font class based on config.headerFont or config.bodyFont
+        quotesPosition === 'header' ? 'font-semibold' : '' // Example: make header quotes semibold
       )}>
         {quotesContent.split('\n').map((line, index) => (
-          <p key={index} className={cn(index > 0 ? "mt-1" : "", quoteFontClass)}>{line}</p>
+          <p key={index} className={cn(index > 0 ? "mt-1" : "")}>{line}</p>
         ))}
       </blockquote>
     </div>

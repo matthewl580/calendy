@@ -6,10 +6,6 @@ export type DayHeaderStyle = 'simple' | 'bordered' | 'pill';
 export type NotesPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'under-image';
 export type QuotesPosition = 'header' | 'above-image' | 'below-image' | 'below-notes-module' | 'page-bottom';
 export type DisplayLayout = 'default' | 'image-30-calendar-70' | 'landscape-banner';
-export type SupportedFont =
-  "Roboto" | "Open Sans" | "Montserrat" | "Lato" | "Poppins" |
-  "Arial" | "Verdana" | "Georgia" | "Times New Roman" | "Courier New" |
-  "Noto Sans" | "Source Sans Pro" | "Raleway" | "Oswald" | "Merriweather" | "Playfair Display";
 export type PaperOrientation = 'portrait' | 'landscape';
 export type AppTheme =
   'default' |
@@ -54,23 +50,21 @@ export interface CalendarConfig {
   selectedMonth: number; // 0-11
   selectedYear: number;
 
-  showImage: boolean; // New: Toggle for image visibility
+  showImage: boolean;
   imageSrc: string | null;
-  imagePosition: { x: number; y: number }; // percentages for transform translate
-  imageSize: number; // percentage for transform scale
-  imagePanelDimension: number; // General dimension (20-50), interpreted by layout
+  imagePosition: { x: number; y: number };
+  imageSize: number; 
+  imagePanelDimension: number; 
 
   showNotes: boolean;
   notesContent: string;
   notesPosition: NotesPosition;
-  notesSize: { width: number; height: number }; // pixels or percentage for absolutely positioned notes
+  notesSize: { width: number; height: number }; 
 
   showQuotes: boolean;
   quotesContent: string;
   quotesPosition: QuotesPosition;
 
-  headerFont: SupportedFont;
-  bodyFont: SupportedFont;
   calendarStyle: CalendarStyle;
   borderStyle: BorderStyle;
   borderWidth: BorderWidth;
@@ -84,7 +78,6 @@ export interface CalendarConfig {
   dayNumberFontSize: DayNumberFontSize;
   monthYearHeaderAlignment: MonthYearHeaderAlignment;
 
-  // New Customization Options
   monthYearHeaderFontSize: FontSizeOption;
   monthYearDisplayOrder: MonthYearDisplayOrder;
   showMonthName: boolean;
@@ -97,13 +90,9 @@ export interface CalendarConfig {
   showWeekNumbers: boolean;
   weekNumberFontSize: FontSizeOption;
   dayNumberAlignment: DayNumberAlignment;
+  combineWeekends: boolean; // New
 }
 
-export const FONT_OPTIONS: SupportedFont[] = [
-  "Roboto", "Open Sans", "Montserrat", "Lato", "Poppins",
-  "Arial", "Verdana", "Georgia", "Times New Roman", "Courier New",
-  "Noto Sans", "Source Sans Pro", "Raleway", "Oswald", "Merriweather", "Playfair Display"
-];
 export const CALENDAR_STYLE_OPTIONS: CalendarStyle[] = ['modern', 'classic', 'minimal'];
 export const BORDER_STYLE_OPTIONS: BorderStyle[] = ['solid', 'rounded', 'none'];
 export const BORDER_WIDTH_OPTIONS: { label: string, value: BorderWidth }[] = [
@@ -217,4 +206,3 @@ export const DAY_NUMBER_ALIGNMENT_OPTIONS: {label: string, value: DayNumberAlign
   {label: 'Bottom Center', value: 'bottom-center'},
   {label: 'Bottom Right', value: 'bottom-right'},
 ];
-

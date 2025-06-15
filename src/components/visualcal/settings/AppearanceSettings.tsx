@@ -325,17 +325,31 @@ export function AppearanceSettings({ config, onConfigChange }: AppearanceSetting
         )}
       </div>
 
-
       <Separator />
       <Label className="text-sm font-medium text-sidebar-foreground/90">General Calendar Behavior</Label>
       <div className="space-y-2 pl-2 border-l-2 border-sidebar-border ml-1 pt-2">
         <div className="flex items-center justify-between">
-          <Label htmlFor="show-weekends" className="text-xs">Show Weekends</Label>
+          <Label htmlFor="show-weekends" className="text-xs">Show Individual Weekend Days</Label>
           <Switch
             id="show-weekends"
             checked={config.showWeekends}
             onCheckedChange={(checked) => onConfigChange('showWeekends', checked)}
-            aria-label="Toggle showing weekends"
+            aria-label="Toggle showing individual weekend days"
+            disabled={config.combineWeekends} // Disable if combineWeekends is true
+          />
+        </div>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="combine-weekends" className="text-xs">Combine Sat/Sun into "Weekend" Column</Label>
+          <Switch
+            id="combine-weekends"
+            checked={config.combineWeekends}
+            onCheckedChange={(checked) => {
+              onConfigChange('combineWeekends', checked);
+              if (checked) { // If combining, ensure showWeekends (individual) is false
+                onConfigChange('showWeekends', false);
+              }
+            }}
+            aria-label="Toggle combining Saturday and Sunday into a single Weekend column"
           />
         </div>
         <div className="flex items-center justify-between">

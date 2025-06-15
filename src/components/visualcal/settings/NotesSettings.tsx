@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch'; 
-import { cn } from '@/lib/utils'; // Added import for cn
+import { cn } from '@/lib/utils';
 
 interface NotesSettingsProps {
   config: CalendarConfig;
@@ -16,8 +16,6 @@ interface NotesSettingsProps {
 }
 
 export function NotesSettings({ config, onConfigChange }: NotesSettingsProps) {
-  const bodyFontClass = 'font-' + config.bodyFont.toLowerCase().replace(/\s+/g, '');
-
   return (
     <div className="space-y-4 p-2">
       <div className="flex items-center justify-between">
@@ -39,7 +37,7 @@ export function NotesSettings({ config, onConfigChange }: NotesSettingsProps) {
               value={config.notesContent}
               onChange={(e) => onConfigChange('notesContent', e.target.value)}
               placeholder="Enter your notes here..."
-              className={cn("h-24", bodyFontClass)} 
+              className={cn("h-24")} 
             />
           </div>
           <div>

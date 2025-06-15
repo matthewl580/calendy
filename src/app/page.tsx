@@ -16,14 +16,14 @@ import { MonthYearSelector } from '@/components/visualcal/settings/MonthYearSele
 import { ImageSettings } from '@/components/visualcal/settings/ImageSettings';
 import { NotesSettings } from '@/components/visualcal/settings/NotesSettings';
 import { QuotesSettings } from '@/components/visualcal/settings/QuotesSettings';
-import { FontSettings } from '@/components/visualcal/settings/FontSettings';
+// import { FontSettings } from '@/components/visualcal/settings/FontSettings'; // Removed
 import { AppearanceSettings } from '@/components/visualcal/settings/AppearanceSettings';
 import { DisplaySettings } from '@/components/visualcal/settings/DisplaySettings';
 import { CalendarView } from '@/components/visualcal/calendar/CalendarView';
 import { ImageDisplay } from '@/components/visualcal/calendar/ImageDisplay';
 import { NotesDisplay } from '@/components/visualcal/calendar/NotesDisplay';
 import { QuotesDisplay } from '@/components/visualcal/calendar/QuotesDisplay';
-import type { CalendarConfig, FontSizeOption, TextTransformOption, WeekdayHeaderLength, MonthYearDisplayOrder, DayCellPaddingOption, DayNumberAlignment, QuotesPosition, SupportedFont } from '@/components/visualcal/types';
+import type { CalendarConfig, FontSizeOption, TextTransformOption, WeekdayHeaderLength, MonthYearDisplayOrder, DayCellPaddingOption, DayNumberAlignment, QuotesPosition } from '@/components/visualcal/types';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
@@ -36,7 +36,7 @@ import {
   Image as ImageIcon,
   FileText as FileTextIcon,
   Quote as QuoteIcon,
-  Type as TypeIcon,
+  // Type as TypeIcon, // Removed
   Palette as PaletteIcon,
   LayoutGrid as LayoutGridIcon
 } from 'lucide-react';
@@ -56,8 +56,8 @@ const initialConfig: CalendarConfig = {
   showQuotes: false,
   quotesContent: 'A wise quote for the day.',
   quotesPosition: 'header' as QuotesPosition,
-  headerFont: 'Poppins' as SupportedFont,
-  bodyFont: 'Roboto' as SupportedFont,
+  // headerFont: 'Poppins' as SupportedFont, // Removed
+  // bodyFont: 'Roboto' as SupportedFont,   // Removed
   calendarStyle: 'modern',
   borderStyle: 'rounded',
   borderWidth: 'thin',
@@ -82,6 +82,7 @@ const initialConfig: CalendarConfig = {
   showWeekNumbers: false,
   weekNumberFontSize: 'xs' as FontSizeOption,
   dayNumberAlignment: 'top-left' as DayNumberAlignment,
+  combineWeekends: false, // New
 };
 
 export default function VisualCalPage() {
@@ -102,9 +103,11 @@ export default function VisualCalPage() {
     if (savedConfig) {
       try {
         let parsedConfig = JSON.parse(savedConfig);
-        if ('darkMode' in parsedConfig) { 
-          delete parsedConfig.darkMode;
-        }
+        // Clean up old font properties if they exist
+        if ('headerFont' in parsedConfig) delete parsedConfig.headerFont;
+        if ('bodyFont' in parsedConfig) delete parsedConfig.bodyFont;
+        if ('darkMode' in parsedConfig) delete parsedConfig.darkMode; // Removed in previous step
+
         const mergedConfig = {
           ...initialConfig,
           ...parsedConfig,
@@ -148,7 +151,7 @@ export default function VisualCalPage() {
           overflow: hidden !important; 
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
-          background-color: white !important;
+          background-color: white !important; /* Ensure background for print */
         }
         .visualcal-sidebar, .visualcal-print-button-group, .visualcal-resizer {
           display: none !important;
@@ -157,17 +160,19 @@ export default function VisualCalPage() {
           display: flex !important;
           flex-direction: column !important;
           width: 100% !important;
-          height: 100% !important;
+          height: 100% !important; /* Changed from auto for full page context */
           padding: 0 !important;
           margin: 0 !important;
           box-sizing: border-box !important;
           background-color: hsl(var(--background)) !important; 
+          overflow: hidden !important; /* Prevent scrollbars on print page */
         }
         .visualcal-main-content { 
           display: flex !important;
           flex-direction: column !important;
           flex-grow: 1 !important;
           width: 100% !important;
+          height: 100% !important; /* Ensure it fills the inset */
           padding: 0 !important;
           margin: 0 !important;
           box-sizing: border-box !important;
@@ -176,9 +181,9 @@ export default function VisualCalPage() {
 
         .visualcal-image-host {
           flex-shrink: 0 !important; 
-          height: auto !important; 
+          height: auto !important; /* Allow content to define height */
           min-height: 0 !important;
-          max-height: 40vh !important; 
+          max-height: 40vh !important; /* Keep a reasonable max */
         }
         .visualcal-image-host.landscape-banner-image-host {
            height: ${calendarConfig.displayLayout === 'landscape-banner' && calendarConfig.showImage ? String(10 + calendarConfig.imagePanelDimension / 2.5) + 'vh' : 'auto'} !important;
@@ -196,16 +201,17 @@ export default function VisualCalPage() {
             width: 100% !important;
             height: 100% !important; 
          }
-
+        
+        /* For Split Layout Print */
         .visualcal-main-content > .flex.md\\:flex-row.h-full { 
            display: flex !important;
            flex-direction: row !important; 
            width: 100% !important;
-           height: 100% !important;
+           height: 100% !important; /* Fill height */
            max-height: none !important;
         }
         .visualcal-split-image-panel, .visualcal-split-calendar-panel {
-          height: 100% !important; 
+          height: 100% !important; /* Fill height of parent row */
           padding: 0 !important; margin: 0 !important;
           display: flex !important; flex-direction: column !important;
           box-sizing: border-box !important;
@@ -217,67 +223,79 @@ export default function VisualCalPage() {
           height: 100%; 
           min-height: 0; 
         }
+        
+        /* Default layout main content area for calendar */
         .visualcal-main-content > .flex-grow.flex.flex-col { 
           flex-grow: 1 !important; display: flex !important; flex-direction: column !important;
-          min-height: 0; 
+          min-height: 0; /* Allow shrinking */
+          height: 100%; /* Grow to fill */
         }
+
         .calendar-view {
           display: flex !important; flex-direction: column !important;
           flex-grow: 1 !important; 
           width: 100% !important; min-height: 0 !important; box-sizing: border-box !important;
           background-color: hsl(var(--card)) !important;
+          height: 100% !important; /* Make calendar view itself take full allotted height */
         }
+        
+        /* Weekday Headers */
         .calendar-view > .grid:first-of-type {
           display: grid !important;
           flex-shrink: 0;
           background-color: hsl(var(--card)) !important;
         }
-        .calendar-view > .grid:first-of-type > div { 
+        .calendar-view > .grid:first-of-type > div { /* Individual weekday header cell */
           padding: 0.1rem 0.25rem !important; 
           font-size: 0.8em !important; 
           text-align: center !important;
           border-bottom: 1px solid hsl(var(--border)) !important;
-          background-color: hsl(var(--card)) !important;
+          background-color: hsl(var(--card)) !important; /* Ensure bg for borders */
         }
         .calendar-view > .grid:first-of-type > div:not(:last-child) {
             border-right: 1px solid hsl(var(--border)) !important;
         }
-        .calendar-view > .grid.bg-border { 
+
+        /* Calendar Day Grid - using explicit borders for print */
+        .calendar-view > .grid.bg-border { /* This class indicates borders were gapped on screen */
             display: grid !important;
             flex-grow: 1 !important; 
-            gap: 0 !important; 
-            background-color: transparent !important; 
-            border-right: 1px solid hsl(var(--border)) !important; 
-            border-bottom: 1px solid hsl(var(--border)) !important;
-            grid-auto-rows: minmax(0, 1fr); 
+            gap: 0 !important; /* Remove gap for explicit borders */
+            background-color: transparent !important; /* Grid bg transparent */
+            border-right: 1px solid hsl(var(--border)) !important; /* Right border for the whole grid */
+            border-bottom: 1px solid hsl(var(--border)) !important; /* Bottom border for the whole grid */
+            grid-auto-rows: minmax(0, 1fr); /* resizeRowsToFill equivalent */
         }
-        .calendar-view > .grid.bg-border > div { 
+        .calendar-view > .grid.bg-border > div { /* Cell wrapper */
             background-color: hsl(var(--card)) !important;
             border-top: 1px solid hsl(var(--border)) !important;
             border-left: 1px solid hsl(var(--border)) !important;
             box-sizing: border-box !important;
-            display: flex; 
+            display: flex; /* ensure content within wrapper is managed */
         }
-        .calendar-view > .grid.gap-0 { 
+
+        /* Calendar Day Grid - for no border style (minimal) */
+         .calendar-view > .grid.gap-0 { /* This class indicates no borders on screen */
            display: grid !important;
            flex-grow: 1 !important;
            gap: 0 !important;
-           grid-auto-rows: minmax(0, 1fr); 
+           grid-auto-rows: minmax(0, 1fr); /* resizeRowsToFill equivalent */
         }
-        .calendar-view > .grid.gap-0 > div { 
+         .calendar-view > .grid.gap-0 > div { /* Cell wrapper */
           background-color: hsl(var(--card)) !important;
           box-sizing: border-box !important;
           display: flex;
         }
+
         .calendar-day-cell {
-          aspect-ratio: unset !important; 
+          aspect-ratio: unset !important; /* Allow flexible aspect ratio for print fill */
           width: 100% !important;
           height: 100% !important;
-          display: flex !important; 
+          display: flex !important; /* to honor alignment props within */
           box-sizing: border-box !important;
         }
         .notes-display-absolute, .quotes-display-block {
-          position: static !important; 
+          position: static !important; /* Notes/Quotes flow in document */
           width: 100% !important; height: auto !important;
           margin-top: 0.25rem !important; margin-bottom: 0.25rem !important;
           padding: 0.25rem !important; font-size: 0.8em !important;
@@ -292,7 +310,9 @@ export default function VisualCalPage() {
       }
     `;
 
-    styleTag.innerHTML = cssString;
+    if (styleTag) {
+      styleTag.innerHTML = cssString;
+    }
 
   }, [calendarConfig.paperOrientation, calendarConfig.displayLayout, calendarConfig.imagePanelDimension, calendarConfig.showImage, isClient]);
 
@@ -395,14 +415,10 @@ export default function VisualCalPage() {
   }, [isResizing, handleGlobalMouseMove, handleGlobalMouseUp]);
 
 
-  const bodyFontClass = `font-${calendarConfig.bodyFont.toLowerCase().replace(/\s+/g, '')}`;
-  const headerFontClass = `font-${calendarConfig.headerFont.toLowerCase().replace(/\s+/g, '')}`;
-
-
   if (!isClient) {
     return (
-      <div className={cn("flex items-center justify-center min-h-screen", bodyFontClass)}>
-        <p className={cn("text-xl text-foreground", headerFontClass)}>Loading Calendy...</p>
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-xl text-foreground">Loading Calendy...</p>
       </div>
     );
   }
@@ -437,8 +453,7 @@ export default function VisualCalPage() {
             onChange={(e) => handleConfigChange('notesContent', e.target.value)}
             placeholder="Notes..."
             className={cn(
-              "w-full h-24 resize-none bg-card p-2 shadow-md rounded-md border-border my-2",
-              bodyFontClass
+              "w-full h-24 resize-none bg-card p-2 shadow-md rounded-md border-border my-2"
             )}
         />
        );
@@ -455,14 +470,14 @@ export default function VisualCalPage() {
 
   return (
     <SidebarProvider defaultOpen>
-      <div className={cn("flex h-screen w-full", bodyFontClass)}>
-        <Sidebar side="left" collapsible="icon" className={cn("shadow-lg visualcal-sidebar", bodyFontClass)}>
-          <SidebarHeader className={cn("p-4 border-b border-sidebar-border")}>
-            <h1 className={cn("text-2xl font-bold text-sidebar-primary", headerFontClass)}>Calendy</h1>
-            <p className={cn("text-sm text-sidebar-foreground/80", bodyFontClass)}>Customize your calendar</p>
+      <div className="flex h-screen w-full">
+        <Sidebar side="left" collapsible="icon" className="shadow-lg visualcal-sidebar">
+          <SidebarHeader className="p-4 border-b border-sidebar-border">
+            <h1 className="text-2xl font-bold text-sidebar-primary">Calendy</h1>
+            <p className="text-sm text-sidebar-foreground/80">Customize your calendar</p>
           </SidebarHeader>
           <ScrollArea className="flex-1">
-            <SidebarContent className={cn("p-0", bodyFontClass)}>
+            <SidebarContent className="p-0">
               <SidebarGroup>
                 <SidebarGroupLabel className="flex items-center px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">
                    <CalendarDays className="mr-2 h-4 w-4" /> Month & Year
@@ -487,12 +502,7 @@ export default function VisualCalPage() {
                 </SidebarGroupLabel>
                 <QuotesSettings config={calendarConfig} onConfigChange={handleConfigChange} />
               </SidebarGroup>
-              <SidebarGroup>
-                <SidebarGroupLabel className="flex items-center px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">
-                  <TypeIcon className="mr-2 h-4 w-4" /> Fonts
-                </SidebarGroupLabel>
-                <FontSettings config={calendarConfig} onConfigChange={handleConfigChange} />
-              </SidebarGroup>
+              {/* FontSettings removed */}
               <SidebarGroup>
                 <SidebarGroupLabel className="flex items-center px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">
                   <PaletteIcon className="mr-2 h-4 w-4" /> Appearance & Style
@@ -514,8 +524,8 @@ export default function VisualCalPage() {
             </div>
         </Sidebar>
 
-        <SidebarInset className={cn("flex-1 overflow-auto bg-background visualcal-sidebar-inset", bodyFontClass)}>
-          <div className={cn("flex flex-col h-full p-4 visualcal-main-content", bodyFontClass)}>
+        <SidebarInset className="flex-1 overflow-auto bg-background visualcal-sidebar-inset">
+          <div className="flex flex-col h-full p-4 visualcal-main-content">
             {calendarConfig.displayLayout === 'default' && (
               <>
                 {renderQuotes('above-image')}
@@ -558,9 +568,7 @@ export default function VisualCalPage() {
               <div ref={splitLayoutContainerRef} className="flex flex-col md:flex-row h-full">
                 {calendarConfig.showImage && (
                   <div
-                    className={cn(
-                      "w-full flex flex-col md:pr-0 visualcal-split-image-panel"
-                    )}
+                    className="w-full flex flex-col md:pr-0 visualcal-split-image-panel"
                     style={splitImageWidthStyle}
                   >
                     {renderQuotes('above-image')}
@@ -661,4 +669,3 @@ export default function VisualCalPage() {
     </SidebarProvider>
   );
 }
-

@@ -11,28 +11,15 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Roboto', 'sans-serif'], // Default body font, can be overridden by dynamic selection
-        headline: ['Poppins', 'sans-serif'], // Default headline font, can be overridden
-
-        // Fonts from FONT_OPTIONS
-        roboto: ['Roboto', 'sans-serif'],
-        opensans: ['Open Sans', 'sans-serif'],
-        montserrat: ['Montserrat', 'sans-serif'],
-        lato: ['Lato', 'sans-serif'],
-        poppins: ['Poppins', 'sans-serif'],
-        arial: ['Arial', 'sans-serif'],
-        verdana: ['Verdana', 'sans-serif'],
-        georgia: ['Georgia', 'serif'],
-        timesnewroman: ['Times New Roman', 'serif'],
-        couriernew: ['Courier New', 'monospace'],
-        notosans: ['Noto Sans', 'sans-serif'],
-        sourcesanspro: ['Source Sans Pro', 'sans-serif'],
-        raleway: ['Raleway', 'sans-serif'],
-        oswald: ['Oswald', 'sans-serif'],
-        merriweather: ['Merriweather', 'serif'],
-        playfairdisplay: ['Playfair Display', 'serif'],
-        
-        code: ['monospace'],
+        // Removed specific font definitions for Roboto, Poppins, Open Sans etc.
+        // Rely on Tailwind's default sans-serif, serif, mono stacks or base browser fonts.
+        // If specific default app fonts (like Poppins for headlines, Roboto for body) are desired
+        // they can be re-added here and applied globally or selectively.
+        // For now, this is simplified to remove custom font selection related families.
+        sans: ['ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', '"Noto Sans"', 'sans-serif', '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"', '"Noto Color Emoji"'],
+        serif: ['ui-serif', 'Georgia', 'Cambria', '"Times New Roman"', 'Times', 'serif'],
+        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace'],
+        code: ['monospace'], // Kept for consistency if used
       },
       colors: {
         background: 'hsl(var(--background))',

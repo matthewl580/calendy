@@ -8,6 +8,8 @@ interface CalendarDayProps {
   day: number | null;
   isCurrentMonth: boolean;
   config: CalendarConfig;
+  // day2?: number | null; // For combined weekend - to be implemented
+  // isCurrentMonth2?: boolean; // For combined weekend - to be implemented
 }
 
 const getPaddingClass = (paddingOption: DayCellPaddingOption): string => {
@@ -37,7 +39,6 @@ const getAlignmentClasses = (alignment: DayNumberAlignment): string => {
 
 export function CalendarDay({ day, isCurrentMonth, config }: CalendarDayProps) {
   const { dayNumberFontSize, dayCellPadding, dayNumberAlignment } = config;
-  // const bodyFontClass = `font-${bodyFont.toLowerCase().replace(/\s+/g, '')}`; // Generate directly in cn
   
   let fontSizeClass = '';
   switch (dayNumberFontSize) {
@@ -52,11 +53,13 @@ export function CalendarDay({ day, isCurrentMonth, config }: CalendarDayProps) {
   const paddingClass = getPaddingClass(dayCellPadding);
   const alignmentClass = getAlignmentClasses(dayNumberAlignment);
 
+  // TODO: Add logic to display day1/day2 if day2 is present for combined weekends
+
   return (
     <div
       className={cn(
         'calendar-day-cell aspect-square flex transition-colors duration-150 ease-in-out',
-        `font-${config.bodyFont.toLowerCase().replace(/\s+/g, '')}`, // Direct generation
+        // Removed dynamic font class based on config.bodyFont
         fontSizeClass,
         paddingClass,
         alignmentClass,
@@ -70,5 +73,3 @@ export function CalendarDay({ day, isCurrentMonth, config }: CalendarDayProps) {
     </div>
   );
 }
-
-    
