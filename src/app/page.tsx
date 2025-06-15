@@ -124,14 +124,14 @@ export default function VisualCalPage() {
       @media print {
         @page {
           size: ${orientation};
-          margin: 0.5in; /* Adjust as needed, or set to 0 for full bleed if printer supports */
+          margin: 0.5in;
         }
         html, body {
           width: 100% !important;
           height: 100% !important;
           margin: 0 !important;
           padding: 0 !important;
-          overflow: hidden !important; /* Changed from visible to hidden */
+          overflow: hidden !important;
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
           background-color: white !important;
@@ -139,66 +139,64 @@ export default function VisualCalPage() {
         .visualcal-sidebar, .visualcal-print-button-group, .visualcal-resizer {
           display: none !important;
         }
-        .visualcal-sidebar-inset { /* This is the main page wrapper for print */
+        .visualcal-sidebar-inset {
           display: flex !important;
           flex-direction: column !important;
           width: 100% !important;
-          height: 100% !important; /* Take full page height */
+          height: 100% !important;
           padding: 0 !important;
           margin: 0 !important;
           box-sizing: border-box !important;
-          background-color: hsl(var(--background)) !important; /* Match app background */
+          background-color: hsl(var(--background)) !important;
         }
-        .visualcal-main-content { /* This is inside sidebar-inset */
+        .visualcal-main-content {
           display: flex !important;
           flex-direction: column !important;
-          flex-grow: 1 !important; /* Grow to fill sidebar-inset */
+          flex-grow: 1 !important;
           width: 100% !important;
           padding: 0 !important; 
           margin: 0 !important;
           box-sizing: border-box !important;
-          overflow: hidden !important; /* Prevent content from spilling if it's too large */
+          overflow: hidden !important;
         }
         
-        /* Default and Landscape Banner Layout specific print styling */
-        .visualcal-main-content > .visualcal-image-host { /* Targets the div around ImageDisplay */
+        .visualcal-main-content > .visualcal-image-host {
           flex-shrink: 0 !important;
-          height: auto !important; /* Let content or flex calculation rule height */
-          max-height: 40vh !important; /* Cap image panel height to prevent excessive growth */
+          height: auto !important;
+          max-height: 40vh !important;
         }
         .visualcal-main-content > .visualcal-image-host.landscape-banner-image-host {
            height: ${calendarConfig.displayLayout === 'landscape-banner' ? String(10 + calendarConfig.imagePanelDimension / 2.5) + 'vh' : 'auto'} !important;
-           max-height: ${calendarConfig.displayLayout === 'landscape-banner' ? '35vh' : '40vh'} !important; /* More control for banner */
+           max-height: ${calendarConfig.displayLayout === 'landscape-banner' ? '35vh' : '40vh'} !important;
         }
 
         .visualcal-main-content > .flex-grow.flex.flex-col { /* Wraps CalendarView in default/banner */
           flex-grow: 1 !important; display: flex !important; flex-direction: column !important;
-          min-height: 0; /* Allow shrinking */
+          min-height: 0;
         }
 
-        /* Split Layout specific print styling */
         .visualcal-main-content > .flex.md\\:flex-row.h-full { /* The ref={splitLayoutContainerRef} div */
            display: flex !important;
-           flex-direction: row !important; /* Force row for print */
+           flex-direction: row !important;
            width: 100% !important;
            height: 100% !important;
         }
         .visualcal-split-image-panel, .visualcal-split-calendar-panel {
-          height: 100% !important; /* Fill height of the row container */
+          height: 100% !important;
           padding: 0 !important; margin: 0 !important;
           display: flex !important; flex-direction: column !important;
           box-sizing: border-box !important;
         }
-        .visualcal-split-image-panel > .relative.flex-grow, /* Image container within split image panel */
-        .visualcal-split-calendar-panel > .calendar-view { /* CalendarView within split calendar panel */
+        .visualcal-split-image-panel > .relative.flex-grow,
+        .visualcal-split-calendar-panel > .calendar-view {
           flex-grow: 1 !important; display: flex !important; flex-direction: column !important;
-          height: 100%; /* Ensure they fill their panel */
+          height: 100%;
         }
 
-        .visualcal-image-host img { /* Ensure image scales nicely within its container */
+        .visualcal-image-host img {
             object-fit: contain !important; 
             width: 100% !important; height: 100% !important;
-            position: static !important; /* Override inline styles for position/transform */
+            position: static !important;
             transform: none !important;
         }
         
@@ -206,64 +204,69 @@ export default function VisualCalPage() {
           display: flex !important; flex-direction: column !important;
           flex-grow: 1 !important;
           width: 100% !important; min-height: 0 !important; box-sizing: border-box !important;
-          background-color: hsl(var(--card)) !important; /* Calendar background */
+          background-color: hsl(var(--card)) !important;
+          /* Its own border (if any like 'border-border') from screen styles will form the outer box */
         }
         
         /* Grid for weekday headers */
         .calendar-view > .grid:first-of-type {
           display: grid !important;
-          flex-shrink: 0; /* Prevent header grid from shrinking too much */
+          flex-shrink: 0;
         }
         .calendar-view > .grid:first-of-type > div { /* weekday header cells */
-          padding: 0.1rem 0.25rem !important; /* Reduced padding for print */
-          font-size: 0.8em !important; /* Slightly smaller font for headers in print */
+          padding: 0.1rem 0.25rem !important;
+          font-size: 0.8em !important;
           text-align: center !important;
-          border-bottom: 1px solid hsl(var(--border)) !important; /* Ensure header bottom border */
+          border-bottom: 1px solid hsl(var(--border)) !important;
+          background-color: hsl(var(--card)) !important; /* Ensure background for headers */
         }
         .calendar-view > .grid:first-of-type > div:not(:last-child) {
             border-right: 1px solid hsl(var(--border)) !important;
         }
 
-
-        /* Grid for day cells */
-        .calendar-view > .grid:last-of-type {
-           display: grid !important;
-           flex-grow: 1 !important;
+        /* Day Cell Grid - Explicit Border Strategy for Print */
+        .calendar-view > .grid.bg-border { /* Targets day grid if on-screen had 'bg-border' for gap technique */
+            display: grid !important;
+            flex-grow: 1 !important;
+            gap: 0 !important; /* No gap for explicit borders */
+            background-color: transparent !important; /* Grid itself is transparent */
         }
-        .calendar-view > .grid.bg-border { /* If component has bg-border (borders enabled) */
-            background-color: hsl(var(--border)) !important;
-            gap: 1px !important;
-        }
-        .calendar-view > .grid.gap-0 { /* If component has gap-0 (borders disabled) */
-            gap: 0 !important;
-        }
-
-        /* Cell wrappers (direct children of the grids) */
-        .calendar-view > .grid > div.bg-card { /* If component has bg-card on wrapper (borders enabled) */
-          background-color: hsl(var(--card)) !important;
-        }
-         .calendar-view > .grid > div:not(.bg-card) { /* If component does NOT have bg-card (borders disabled) */
-          background-color: transparent !important;
+        .calendar-view > .grid.bg-border > div { /* Cell wrappers within the 'bg-border' grid */
+            background-color: hsl(var(--card)) !important; /* Cell's own background */
+            border-top: 1px solid hsl(var(--border)) !important;
+            border-left: 1px solid hsl(var(--border)) !important;
+            box-sizing: border-box !important;
         }
         
-        .calendar-day-cell {
-          aspect-ratio: unset !important; /* Allow cells to be non-square to fill space */
+        /* Day Cell Grid - Borderless for Print (if on-screen was borderless) */
+        .calendar-view > .grid.gap-0 { /* Targets day grid if on-screen was 'gap-0' (borderless) */
+           display: grid !important;
+           flex-grow: 1 !important;
+           gap: 0 !important;
+        }
+        .calendar-view > .grid.gap-0 > div { /* Cell wrappers in a borderless grid */
+          background-color: hsl(var(--card)) !important; /* Or transparent if minimal style */
+          box-sizing: border-box !important;
+        }
+        /* Adjust for minimal style if it implies transparent cells */
+        .calendar-view.minimal-style > .grid.gap-0 > div { /* Hypothetical minimal-style class */
+            background-color: transparent !important;
+        }
+        
+        .calendar-day-cell { /* The actual content holder inside the cell wrapper */
+          aspect-ratio: unset !important; /* Allow cells to be non-square */
           width: 100% !important; 
           height: 100% !important; 
           display: flex !important;
           box-sizing: border-box !important;
-          /* Padding and alignment are handled by CalendarDay config - ensure they are small enough */
-          /* font-size might need to be reduced for print if content overflows cells */
-          /* font-size: 0.9em !important; */ 
         }
 
-        /* Notes and Quotes for print */
         .notes-display-absolute, .quotes-display-block {
           position: static !important; width: 100% !important; height: auto !important;
           margin-top: 0.25rem !important; margin-bottom: 0.25rem !important;
           padding: 0.25rem !important; font-size: 0.8em !important;
           page-break-inside: avoid !important;
-          border: 1px solid hsl(var(--border)) !important; /* Add a light border for print */
+          border: 1px solid hsl(var(--border)) !important;
           background-color: hsl(var(--card)) !important;
         }
         .quotes-display-block blockquote {
@@ -388,7 +391,7 @@ export default function VisualCalPage() {
   if (!isClient) {
     return (
       <div className={cn("flex items-center justify-center min-h-screen", bodyFontClass)}>
-        <p className="text-xl text-foreground">Loading Calendy...</p>
+        <p className={cn("text-xl text-foreground", headerFontClass)}>Loading Calendy...</p>
       </div>
     );
   }
@@ -401,7 +404,7 @@ export default function VisualCalPage() {
 
   const renderQuotes = (position: QuotesPosition) => {
     if (calendarConfig.showQuotes && calendarConfig.quotesPosition === position) {
-      return <QuotesDisplay config={calendarConfig} className={cn(position === 'page-bottom' ? 'w-full mt-4 quotes-display-block' : 'my-2 quotes-display-block', bodyFontClass, headerFontClass)} />;
+      return <QuotesDisplay config={calendarConfig} className={cn(position === 'page-bottom' ? 'w-full mt-4 quotes-display-block' : 'my-2 quotes-display-block', bodyFontClass)} />;
     }
     return null;
   };
@@ -426,7 +429,7 @@ export default function VisualCalPage() {
   return (
     <SidebarProvider defaultOpen>
       <div className={cn("flex h-screen w-full", bodyFontClass)}>
-        <Sidebar side="left" collapsible="icon" className={cn("shadow-lg visualcal-sidebar", bodyFontClass, headerFontClass)}>
+        <Sidebar side="left" collapsible="icon" className={cn("shadow-lg visualcal-sidebar", bodyFontClass)}>
           <SidebarHeader className={cn("p-4 border-b border-sidebar-border")}>
             <h1 className={cn("text-2xl font-bold text-sidebar-primary", headerFontClass)}>Calendy</h1>
             <p className={cn("text-sm text-sidebar-foreground/80", bodyFontClass)}>Customize your calendar</p>
