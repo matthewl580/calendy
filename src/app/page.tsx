@@ -23,7 +23,7 @@ import { CalendarView } from '@/components/visualcal/calendar/CalendarView';
 import { ImageDisplay } from '@/components/visualcal/calendar/ImageDisplay';
 import { NotesDisplay } from '@/components/visualcal/calendar/NotesDisplay';
 import { QuotesDisplay } from '@/components/visualcal/calendar/QuotesDisplay';
-import type { CalendarConfig, FontSizeOption, TextTransformOption, WeekdayHeaderLength, MonthYearDisplayOrder, DayCellPaddingOption, DayNumberAlignment, QuotesPosition } from '@/components/visualcal/types';
+import type { CalendarConfig, FontSizeOption, TextTransformOption, WeekdayHeaderLength, MonthYearDisplayOrder, DayCellPaddingOption, DayNumberAlignment, QuotesPosition, SupportedFont } from '@/components/visualcal/types';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
@@ -44,8 +44,8 @@ const initialConfig: CalendarConfig = {
   showQuotes: false,
   quotesContent: 'A wise quote for the day.',
   quotesPosition: 'header' as QuotesPosition,
-  headerFont: 'Poppins',
-  bodyFont: 'Roboto',
+  headerFont: 'Poppins' as SupportedFont,
+  bodyFont: 'Roboto' as SupportedFont,
   calendarStyle: 'modern',
   borderStyle: 'rounded',
   borderWidth: 'thin',
@@ -138,15 +138,19 @@ export default function VisualCalPage() {
       "    height: auto !important;\n" +
       "    overflow: visible !important;\n" +
       "    padding: 0 !important;\n" +
+      "    margin: 0 !important;\n" +
       "  }\n" +
       "  .visualcal-sidebar-inset {\n" +
       "    padding: 0 !important;\n" +
       "    margin: 0 !important;\n" +
       "    overflow: visible !important;\n" +
+      "    height: auto !important;\n" +
       "  }\n" +
-      "  .visualcal-split-image-panel, .visualcal-split-calendar-panel {\n" +
+      "  .visualcal-split-image-panel, .visualcal-split-calendar-panel, .visualcal-image-host {\n" +
       "    height: auto !important; \n" +
       "    padding: 0 !important; \n" +
+      "    margin: 0 !important; \n" +
+      "    min-height: 0 !important;\n" +
       "  }\n" +
       "}";
       
@@ -266,7 +270,7 @@ export default function VisualCalPage() {
   if (!isClient) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
-        <p className="text-xl text-foreground">Loading VisualCal...</p>
+        <p className="text-xl text-foreground">Loading Calendy...</p>
       </div>
     );
   }
@@ -279,7 +283,7 @@ export default function VisualCalPage() {
 
   const renderQuotes = (position: QuotesPosition) => {
     if (calendarConfig.showQuotes && calendarConfig.quotesPosition === position) {
-      return <QuotesDisplay config={calendarConfig} className={position === 'page-bottom' ? 'w-full mt-4' : 'my-2'} />;
+      return <QuotesDisplay config={calendarConfig} className={cn(position === 'page-bottom' ? 'w-full mt-4' : 'my-2', bodyFontClass, headerFontClass)} />;
     }
     return null;
   };
@@ -306,7 +310,7 @@ export default function VisualCalPage() {
       <div className={cn("flex h-screen w-full", bodyFontClass)}>
         <Sidebar side="left" collapsible="icon" className={cn("shadow-lg visualcal-sidebar", bodyFontClass)}>
           <SidebarHeader className={cn("p-4 border-b border-sidebar-border")}>
-            <h1 className={cn("text-2xl font-bold text-sidebar-primary", headerFontClass)}>VisualCal</h1>
+            <h1 className={cn("text-2xl font-bold text-sidebar-primary", headerFontClass)}>Calendy</h1>
             <p className={cn("text-sm text-sidebar-foreground/80", bodyFontClass)}>Customize your calendar</p>
           </SidebarHeader>
           <ScrollArea className="flex-1">
@@ -354,7 +358,7 @@ export default function VisualCalPage() {
                 {renderQuotes('above-image')}
                 {calendarConfig.imageSrc && (
                   <div
-                    className="relative w-full bg-muted/30 p-2 rounded-lg shadow-inner"
+                    className="relative w-full bg-muted/30 p-2 rounded-lg shadow-inner visualcal-image-host"
                     style={{ height: defaultLayoutImageHeight }}
                     data-ai-hint="decorative feature"
                   >
@@ -381,8 +385,8 @@ export default function VisualCalPage() {
               <div ref={splitLayoutContainerRef} className="flex flex-col md:flex-row h-full">
                 <div
                   className={cn(
-                    "w-full flex flex-col md:pr-0",
-                    "visualcal-split-image-panel"
+                    "w-full flex flex-col md:pr-0 visualcal-split-image-panel",
+                    "visualcal-image-host" 
                   )}
                   style={splitImageWidthStyle}
                 >
@@ -402,7 +406,7 @@ export default function VisualCalPage() {
                   {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes && renderQuotes('below-notes-module')}
                 </div>
                 <div
-                  className="visualcal-resizer hidden md:flex items-center justify-center w-2 bg-transparent hover:bg-border/0 cursor-col-resize group"
+                  className="visualcal-resizer hidden md:flex items-center justify-center w-2 bg-transparent hover:bg-transparent cursor-col-resize group"
                   onMouseDown={handleMouseDownResizer}
                   role="separator"
                   aria-orientation="vertical"
@@ -411,8 +415,7 @@ export default function VisualCalPage() {
                 </div>
                 <div
                   className={cn(
-                    "flex-1 w-full md:pl-0",
-                    "visualcal-split-calendar-panel"
+                    "flex-1 w-full md:pl-0 visualcal-split-calendar-panel"
                   )}
                   style={splitCalendarWidthStyle}
                 >
@@ -427,7 +430,7 @@ export default function VisualCalPage() {
                 {renderQuotes('above-image')}
                 {calendarConfig.imageSrc && (
                   <div
-                    className="relative w-full bg-muted/30 p-2 rounded-lg shadow-inner"
+                    className="relative w-full bg-muted/30 p-2 rounded-lg shadow-inner visualcal-image-host"
                     style={{ height: landscapeBannerHeight }}
                     data-ai-hint="top banner"
                   >
@@ -462,6 +465,4 @@ export default function VisualCalPage() {
     </SidebarProvider>
   );
 }
-
-
     
