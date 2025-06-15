@@ -66,8 +66,8 @@ export function CalendarView({ config }: CalendarViewProps) {
     borderStyle,
     borderWidth,
     dayHeaderStyle,
-    headerFont,
-    bodyFont,
+    // headerFont, // Not needed to be destructured if used directly from config
+    // bodyFont,   // Not needed to be destructured if used directly from config
     resizeRowsToFill,
     monthYearHeaderAlignment,
     monthYearHeaderFontSize,
@@ -83,9 +83,6 @@ export function CalendarView({ config }: CalendarViewProps) {
     showQuotes,
     quotesPosition,
   } = config;
-
-  const headerFontClass = `font-${headerFont.toLowerCase().replace(/\s+/g, '')}`;
-  const bodyFontClass = `font-${bodyFont.toLowerCase().replace(/\s+/g, '')}`;
 
   const daysInMonth = getDaysInMonth(selectedYear, selectedMonth);
   const firstDayOfMonth = getFirstDayOfMonth(selectedYear, selectedMonth, startWeekOnMonday);
@@ -195,7 +192,6 @@ export function CalendarView({ config }: CalendarViewProps) {
 
   const containerClasses = cn(
     'calendar-view bg-card text-card-foreground overflow-hidden h-full flex flex-col',
-    bodyFontClass, 
     calendarStyle === 'modern' && 'rounded-lg shadow-xl',
     calendarStyle === 'classic' && borderStyle !== 'none' && 'border',
     borderStyle === 'rounded' && 'rounded-lg',
@@ -216,7 +212,6 @@ export function CalendarView({ config }: CalendarViewProps) {
 
   const monthYearHeaderBaseClass = cn(
     'font-medium py-3 px-4',
-    headerFontClass, 
     getFontSizeClass(monthYearHeaderFontSize),
     monthYearHeaderFullWidth ? 'w-full text-center' : (
       monthYearHeaderAlignment === 'left' ? 'text-left' :
@@ -226,7 +221,6 @@ export function CalendarView({ config }: CalendarViewProps) {
   
   const dayHeaderBaseClass = cn(
     'p-2 text-center font-medium text-muted-foreground',
-    headerFontClass, 
     getFontSizeClass(weekdayHeaderFontSize),
     getTextTransformClass(weekdayHeaderTextTransform)
   );
@@ -239,14 +233,12 @@ export function CalendarView({ config }: CalendarViewProps) {
 
   const weekNumberHeaderClass = cn(
     'p-2 text-center font-medium text-muted-foreground italic',
-    headerFontClass, 
     getFontSizeClass(weekNumberFontSize || 'xs'),
      dayHeaderStyle === 'bordered' && 'border-b border-border',
   );
 
   const weekNumberCellClass = cn(
     'flex items-center justify-center text-muted-foreground italic aspect-square',
-    bodyFontClass, 
     getFontSizeClass(weekNumberFontSize || 'xs'),
   );
   
@@ -285,9 +277,9 @@ export function CalendarView({ config }: CalendarViewProps) {
 
 
   return (
-    <div className={cn(containerClasses, bodyFontClass)}>
+    <div className={cn(containerClasses, `font-${config.bodyFont.toLowerCase().replace(/\s+/g, '')}`)}>
       {(showMonthName || showYear) && (
-        <div className={cn(monthYearHeaderBaseClass, headerFontClass)}>
+        <div className={cn(monthYearHeaderBaseClass, `font-${config.headerFont.toLowerCase().replace(/\s+/g, '')}`)}>
           {monthYearDisplayString}
         </div>
       )}
@@ -295,9 +287,9 @@ export function CalendarView({ config }: CalendarViewProps) {
         <QuotesDisplay config={config} className={cn("text-center text-sm italic p-2 border-t border-border")} />
       )}
       <div className={cn("grid", ...gridLayoutClasses)}>
-        {showWeekNumbers && <div className={cn(weekNumberHeaderClass, headerFontClass)}>Wk</div>}
+        {showWeekNumbers && <div className={cn(weekNumberHeaderClass, `font-${config.headerFont.toLowerCase().replace(/\s+/g, '')}`)}>Wk</div>}
         {displayDayHeaders.map(header => (
-            <div key={header} className={cn(dayHeaderClasses(header), headerFontClass)}>
+            <div key={header} className={cn(dayHeaderClasses(header), `font-${config.headerFont.toLowerCase().replace(/\s+/g, '')}`)}>
               {header}
             </div>
           )
@@ -307,7 +299,7 @@ export function CalendarView({ config }: CalendarViewProps) {
         {calendarDays.map((item, index) => {
           if (item.type === 'weekNumber') {
             return (
-              <div key={String('wn-' + index)} className={cn(cellWrapperClasses, weekNumberCellClass, bodyFontClass)}>
+              <div key={String('wn-' + index)} className={cn(cellWrapperClasses, weekNumberCellClass, `font-${config.bodyFont.toLowerCase().replace(/\s+/g, '')}`)}>
                 {item.number}
               </div>
             );
@@ -328,3 +320,4 @@ export function CalendarView({ config }: CalendarViewProps) {
   );
 }
 
+    

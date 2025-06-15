@@ -36,8 +36,8 @@ const getAlignmentClasses = (alignment: DayNumberAlignment): string => {
 };
 
 export function CalendarDay({ day, isCurrentMonth, config }: CalendarDayProps) {
-  const { bodyFont, dayNumberFontSize, dayCellPadding, dayNumberAlignment } = config;
-  const bodyFontClass = `font-${bodyFont.toLowerCase().replace(/\s+/g, '')}`;
+  const { dayNumberFontSize, dayCellPadding, dayNumberAlignment } = config;
+  // const bodyFontClass = `font-${bodyFont.toLowerCase().replace(/\s+/g, '')}`; // Generate directly in cn
   
   let fontSizeClass = '';
   switch (dayNumberFontSize) {
@@ -56,7 +56,7 @@ export function CalendarDay({ day, isCurrentMonth, config }: CalendarDayProps) {
     <div
       className={cn(
         'calendar-day-cell aspect-square flex transition-colors duration-150 ease-in-out',
-        bodyFontClass,
+        `font-${config.bodyFont.toLowerCase().replace(/\s+/g, '')}`, // Direct generation
         fontSizeClass,
         paddingClass,
         alignmentClass,
@@ -71,3 +71,4 @@ export function CalendarDay({ day, isCurrentMonth, config }: CalendarDayProps) {
   );
 }
 
+    
