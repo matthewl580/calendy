@@ -16,7 +16,6 @@ import { MonthYearSelector } from '@/components/visualcal/settings/MonthYearSele
 import { ImageSettings } from '@/components/visualcal/settings/ImageSettings';
 import { NotesSettings } from '@/components/visualcal/settings/NotesSettings';
 import { QuotesSettings } from '@/components/visualcal/settings/QuotesSettings';
-// import { FontSettings } from '@/components/visualcal/settings/FontSettings'; // Removed
 import { AppearanceSettings } from '@/components/visualcal/settings/AppearanceSettings';
 import { DisplaySettings } from '@/components/visualcal/settings/DisplaySettings';
 import { CalendarView } from '@/components/visualcal/calendar/CalendarView';
@@ -36,7 +35,6 @@ import {
   Image as ImageIcon,
   FileText as FileTextIcon,
   Quote as QuoteIcon,
-  // Type as TypeIcon, // Removed
   Palette as PaletteIcon,
   LayoutGrid as LayoutGridIcon
 } from 'lucide-react';
@@ -56,8 +54,6 @@ const initialConfig: CalendarConfig = {
   showQuotes: false,
   quotesContent: 'A wise quote for the day.',
   quotesPosition: 'header' as QuotesPosition,
-  // headerFont: 'Poppins' as SupportedFont, // Removed
-  // bodyFont: 'Roboto' as SupportedFont,   // Removed
   calendarStyle: 'modern',
   borderStyle: 'rounded',
   borderWidth: 'thin',
@@ -82,7 +78,7 @@ const initialConfig: CalendarConfig = {
   showWeekNumbers: false,
   weekNumberFontSize: 'xs' as FontSizeOption,
   dayNumberAlignment: 'top-left' as DayNumberAlignment,
-  combineWeekends: false, // New
+  combineWeekends: false, 
 };
 
 export default function VisualCalPage() {
@@ -106,7 +102,7 @@ export default function VisualCalPage() {
         // Clean up old font properties if they exist
         if ('headerFont' in parsedConfig) delete parsedConfig.headerFont;
         if ('bodyFont' in parsedConfig) delete parsedConfig.bodyFont;
-        if ('darkMode' in parsedConfig) delete parsedConfig.darkMode; // Removed in previous step
+        if ('darkMode' in parsedConfig) delete parsedConfig.darkMode; 
 
         const mergedConfig = {
           ...initialConfig,
@@ -145,7 +141,7 @@ export default function VisualCalPage() {
         }
         html, body {
           width: 100% !important;
-          height: 100% !important;
+          height: 100% !important; /* Ensure body fills the print page */
           margin: 0 !important;
           padding: 0 !important;
           overflow: hidden !important; 
@@ -179,7 +175,7 @@ export default function VisualCalPage() {
           overflow: hidden !important;
         }
 
-        .visualcal-image-host {
+        .visualcal-image-host { /* Applied to default and landscape banner image containers */
           flex-shrink: 0 !important; 
           height: auto !important; /* Allow content to define height */
           min-height: 0 !important;
@@ -418,7 +414,7 @@ export default function VisualCalPage() {
   if (!isClient) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-xl text-foreground">Loading Calendy...</p>
+        <p className="text-xl text-foreground">Loading Calendi...</p>
       </div>
     );
   }
@@ -473,7 +469,7 @@ export default function VisualCalPage() {
       <div className="flex h-screen w-full">
         <Sidebar side="left" collapsible="icon" className="shadow-lg visualcal-sidebar">
           <SidebarHeader className="p-4 border-b border-sidebar-border">
-            <h1 className="text-2xl font-bold text-sidebar-primary">Calendy</h1>
+            <h1 className="text-2xl font-bold text-sidebar-primary">Calendi</h1>
             <p className="text-sm text-sidebar-foreground/80">Customize your calendar</p>
           </SidebarHeader>
           <ScrollArea className="flex-1">
@@ -502,7 +498,6 @@ export default function VisualCalPage() {
                 </SidebarGroupLabel>
                 <QuotesSettings config={calendarConfig} onConfigChange={handleConfigChange} />
               </SidebarGroup>
-              {/* FontSettings removed */}
               <SidebarGroup>
                 <SidebarGroupLabel className="flex items-center px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">
                   <PaletteIcon className="mr-2 h-4 w-4" /> Appearance & Style

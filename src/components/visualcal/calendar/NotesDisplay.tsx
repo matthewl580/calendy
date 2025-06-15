@@ -11,8 +11,7 @@ interface NotesDisplayProps {
 }
 
 export function NotesDisplay({ config, onNotesChange, className }: NotesDisplayProps) {
-  const { notesContent, notesPosition, notesSize, bodyFont } = config;
-  const bodyFontClass = `font-${bodyFont.toLowerCase().replace(/\s+/g, '')}`;
+  const { notesContent, notesPosition, notesSize } = config;
 
 
   if (notesPosition === 'under-image') {
@@ -23,7 +22,6 @@ export function NotesDisplay({ config, onNotesChange, className }: NotesDisplayP
         placeholder="Notes..."
         className={cn(
             "w-full h-24 resize-none bg-card p-2 shadow-md rounded-md", 
-            bodyFontClass, 
             className
         )}
       />
@@ -63,8 +61,7 @@ export function NotesDisplay({ config, onNotesChange, className }: NotesDisplayP
         onChange={(e) => onNotesChange(e.target.value)}
         placeholder="Notes..."
         className={cn(
-            "w-full h-full resize-none bg-card/80 backdrop-blur-sm p-2 shadow-xl rounded-lg border border-border",
-            bodyFontClass
+            "w-full h-full resize-none bg-card/80 backdrop-blur-sm p-2 shadow-xl rounded-lg border border-border"
         )}
       />
     </div>

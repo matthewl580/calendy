@@ -4,7 +4,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'Calendy',
+  title: 'Calendi',
   description: 'A customizable calendar app with image integration.',
 };
 
@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Removed Google Font links for custom selectable fonts */}
+        {/* Google Font links removed as font selection feature was removed */}
       </head>
       <body className="antialiased" suppressHydrationWarning={true}>
         {children}
