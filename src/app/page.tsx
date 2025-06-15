@@ -129,9 +129,21 @@ export default function VisualCalPage() {
       "  body {\n" +
       "    -webkit-print-color-adjust: exact !important;\n" +
       "    print-color-adjust: exact !important;\n" +
+      "    width: 100%;\n" +
+      "    height: 100%;\n" +
+      "    overflow: hidden !important;\n" +
       "  }\n" +
       "  .visualcal-sidebar, .visualcal-print-button-group, .visualcal-resizer {\n" +
       "    display: none !important;\n" +
+      "  }\n" +
+       "  .visualcal-sidebar-inset {\n" +
+      "    padding: 0 !important;\n" +
+      "    margin: 0 !important;\n" +
+      "    overflow: visible !important;\n" +
+      "    height: auto !important;\n" +
+      "    display: flex !important;\n" +
+      "    flex-direction: column !important;\n" +
+      "    width: 100% !important;\n" +
       "  }\n" +
       "  .visualcal-main-content {\n" +
       "    width: 100% !important;\n" +
@@ -139,18 +151,25 @@ export default function VisualCalPage() {
       "    overflow: visible !important;\n" +
       "    padding: 0 !important;\n" +
       "    margin: 0 !important;\n" +
-      "  }\n" +
-      "  .visualcal-sidebar-inset {\n" +
-      "    padding: 0 !important;\n" +
-      "    margin: 0 !important;\n" +
-      "    overflow: visible !important;\n" +
-      "    height: auto !important;\n" +
+      "    flex-grow: 1 !important;\n" +
+      "    display: flex !important;\n" +
+      "    flex-direction: column !important;\n" +
       "  }\n" +
       "  .visualcal-split-image-panel, .visualcal-split-calendar-panel, .visualcal-image-host {\n" +
       "    height: auto !important; \n" +
       "    padding: 0 !important; \n" +
       "    margin: 0 !important; \n" +
       "    min-height: 0 !important;\n" +
+      "    flex-shrink: 0 !important;\n" +
+      "  }\n" +
+      "  .calendar-view {\n" +
+      "    height: auto !important;\n" +
+      "    display: flex !important;\n" +
+      "    flex-direction: column !important;\n" +
+      "    flex-grow: 1 !important;\n" +
+      "  }\n" +
+      "  .calendar-view > .grid:last-child {\n" +
+      "     flex-grow: 1 !important;\n" +
       "  }\n" +
       "}";
       
@@ -374,7 +393,7 @@ export default function VisualCalPage() {
                 {renderNotesUnderImage()}
                 {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes && renderQuotes('below-notes-module')}
                 
-                <div className="flex-grow">
+                <div className="flex-grow flex flex-col">
                   <CalendarView config={calendarConfig} />
                 </div>
                 {calendarConfig.quotesPosition === 'below-notes-module' && !(calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes) && renderQuotes('below-notes-module')}
@@ -415,7 +434,7 @@ export default function VisualCalPage() {
                 </div>
                 <div
                   className={cn(
-                    "flex-1 w-full md:pl-0 visualcal-split-calendar-panel"
+                    "flex-1 w-full md:pl-0 visualcal-split-calendar-panel flex flex-col" 
                   )}
                   style={splitCalendarWidthStyle}
                 >
@@ -445,7 +464,7 @@ export default function VisualCalPage() {
                 {renderQuotes('below-image')}
                 {renderNotesUnderImage()}
                 {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes && renderQuotes('below-notes-module')}
-                <div className="flex-grow">
+                <div className="flex-grow flex flex-col">
                   <CalendarView config={calendarConfig} />
                 </div>
                 {calendarConfig.quotesPosition === 'below-notes-module' && !(calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes) && renderQuotes('below-notes-module')}
@@ -466,3 +485,4 @@ export default function VisualCalPage() {
   );
 }
     
+
