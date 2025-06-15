@@ -28,7 +28,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import { Button } from '@/components/ui/button';
-import { Save, Share2, Printer } from 'lucide-react';
+import { 
+  Save, 
+  Share2, 
+  Printer,
+  CalendarDays,
+  Image as ImageIcon,
+  FileText as FileTextIcon,
+  Quote as QuoteIcon,
+  Type as TypeIcon,
+  Palette as PaletteIcon,
+  LayoutGrid as LayoutGridIcon
+} from 'lucide-react';
 
 const initialConfig: CalendarConfig = {
   selectedMonth: new Date().getMonth(),
@@ -90,7 +101,6 @@ export default function VisualCalPage() {
     if (savedConfig) {
       try {
         let parsedConfig = JSON.parse(savedConfig);
-        // Remove darkMode if it exists from old configs
         if ('darkMode' in parsedConfig) {
           delete parsedConfig.darkMode;
         }
@@ -134,7 +144,7 @@ export default function VisualCalPage() {
           height: 100% !important;
           margin: 0 !important;
           padding: 0 !important;
-          overflow: hidden !important; /* Changed from visible to hidden */
+          overflow: hidden !important; 
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
           background-color: white !important;
@@ -142,84 +152,94 @@ export default function VisualCalPage() {
         .visualcal-sidebar, .visualcal-print-button-group, .visualcal-resizer {
           display: none !important;
         }
-        .visualcal-sidebar-inset { /* This is the main wrapper for print content */
+        .visualcal-sidebar-inset { 
           display: flex !important;
           flex-direction: column !important;
           width: 100% !important;
-          height: 100% !important; /* Fill the page */
+          height: 100% !important; 
           padding: 0 !important;
           margin: 0 !important;
           box-sizing: border-box !important;
           background-color: hsl(var(--background)) !important;
         }
-        .visualcal-main-content { /* Container for image and calendar sections */
+        .visualcal-main-content { 
           display: flex !important;
-          flex-direction: column !important; /* Default stacking */
+          flex-direction: column !important; 
           flex-grow: 1 !important;
           width: 100% !important;
           padding: 0 !important;
           margin: 0 !important;
           box-sizing: border-box !important;
-          overflow: hidden !important; /* Ensure content does not break page */
+          overflow: hidden !important;
         }
 
-        /* Image host adjustments for print */
-        .visualcal-image-host {
-          flex-shrink: 0 !important; /* Don't shrink image host beyond content */
-          height: auto !important; /* Let content dictate height */
-          max-height: 40vh !important; /* Cap image height to avoid dominating */
+        .visualcal-image-host, .visualcal-split-image-panel {
+          flex-shrink: 0 !important; 
+          height: auto !important; 
+          min-height: 0 !important;
+          max-height: 40vh !important; 
         }
         .visualcal-image-host.landscape-banner-image-host {
            height: ${calendarConfig.displayLayout === 'landscape-banner' ? String(10 + calendarConfig.imagePanelDimension / 2.5) + 'vh' : 'auto'} !important;
            max-height: ${calendarConfig.displayLayout === 'landscape-banner' ? '35vh' : '40vh'} !important;
         }
-        .visualcal-image-host img {
+        .visualcal-image-host img { /* Specifically target img tag if ImageDisplay renders one */
             object-fit: contain !important;
             width: 100% !important; height: 100% !important;
-            position: static !important; /* Override screen positioning */
-            transform: none !important; /* Override screen transforms */
+            position: static !important; 
+            transform: none !important; 
         }
+         .visualcal-image-host > div[data-ai-hint="calendar photo"] { /* Target Next/Image wrapper */
+            position: relative !important; /* Override fill for static layout */
+            width: 100% !important;
+            height: 100% !important; /* Ensure wrapper fills its parent */
+         }
+         .visualcal-image-host > div[data-ai-hint="calendar photo"] > img { /* Target Next/Image actual img */
+             object-fit: contain !important;
+             position: static !important;
+             transform: none !important;
+             width: 100% !important;
+             height: 100% !important;
+         }
 
-        /* Split layout specific adjustments */
-        .visualcal-main-content > .flex.md\\:flex-row.h-full { /* The ref={splitLayoutContainerRef} div */
+
+        .visualcal-main-content > .flex.md\\:flex-row.h-full { 
            display: flex !important;
-           flex-direction: row !important; /* Ensure row for split layout */
+           flex-direction: row !important; 
            width: 100% !important;
-           height: 100% !important; /* Fill parent height */
+           height: 100% !important;
+           max-height: none !important; /* Remove max-height if any */
         }
         .visualcal-split-image-panel, .visualcal-split-calendar-panel {
-          height: 100% !important; /* Panels fill height of split container */
+          height: 100% !important; 
           padding: 0 !important; margin: 0 !important;
           display: flex !important; flex-direction: column !important;
           box-sizing: border-box !important;
-          overflow: hidden; /* Hide overflow within panels */
+          overflow: hidden;
         }
-        .visualcal-split-image-panel > .relative.flex-grow, /* Wrapper for ImageDisplay */
-        .visualcal-split-calendar-panel > .calendar-view { /* Direct child if calendar is in split */
+        .visualcal-split-image-panel > .relative.flex-grow, 
+        .visualcal-split-calendar-panel > .calendar-view { 
           flex-grow: 1 !important; display: flex !important; flex-direction: column !important;
-          height: 100%; /* Ensure they fill the panel */
-          min-height: 0; /* Allow shrinking if needed */
+          height: 100%; 
+          min-height: 0; 
         }
 
-
-        /* Calendar View and its children */
-         .visualcal-main-content > .flex-grow.flex.flex-col { /* Wraps CalendarView in default/banner */
+         .visualcal-main-content > .flex-grow.flex.flex-col { 
           flex-grow: 1 !important; display: flex !important; flex-direction: column !important;
-          min-height: 0; /* Allow shrinking and growing properly */
+          min-height: 0; 
         }
         .calendar-view {
           display: flex !important; flex-direction: column !important;
-          flex-grow: 1 !important; /* Crucial for calendar to fill space */
+          flex-grow: 1 !important; 
           width: 100% !important; min-height: 0 !important; box-sizing: border-box !important;
           background-color: hsl(var(--card)) !important;
         }
 
-        /* Weekday headers grid */
         .calendar-view > .grid:first-of-type {
           display: grid !important;
-          flex-shrink: 0; /* Don't let headers shrink */
+          flex-shrink: 0; 
         }
-        .calendar-view > .grid:first-of-type > div { /* weekday header cells */
+        .calendar-view > .grid:first-of-type > div { 
           padding: 0.1rem 0.25rem !important;
           font-size: 0.8em !important;
           text-align: center !important;
@@ -230,23 +250,24 @@ export default function VisualCalPage() {
             border-right: 1px solid hsl(var(--border)) !important;
         }
 
-        /* Day Cell Grid - Explicit Border Strategy for Print */
-        .calendar-view > .grid.bg-border { /* Day grid when on-screen uses gap technique */
+        .calendar-view > .grid.bg-border { 
             display: grid !important;
-            flex-grow: 1 !important; /* Allow day grid to expand */
-            gap: 0 !important; /* No gap for explicit borders */
+            flex-grow: 1 !important; 
+            gap: 0 !important; 
             background-color: transparent !important;
-            grid-auto-rows: minmax(0, 1fr); /* Make rows distribute space */
+            border-right: 1px solid hsl(var(--border)) !important; /* Add right border for grid */
+            border-bottom: 1px solid hsl(var(--border)) !important; /* Add bottom border for grid */
+            grid-auto-rows: minmax(0, 1fr); 
         }
-        .calendar-view > .grid.bg-border > div { /* Cell wrappers */
+        .calendar-view > .grid.bg-border > div { 
             background-color: hsl(var(--card)) !important;
             border-top: 1px solid hsl(var(--border)) !important;
             border-left: 1px solid hsl(var(--border)) !important;
             box-sizing: border-box !important;
-            display: flex; /* Ensure content inside aligns */
+            display: flex; 
         }
-        /* Day Cell Grid - Borderless for Print */
-        .calendar-view > .grid.gap-0 { /* Day grid if on-screen was borderless */
+        
+        .calendar-view > .grid.gap-0 { 
            display: grid !important;
            flex-grow: 1 !important;
            gap: 0 !important;
@@ -259,10 +280,10 @@ export default function VisualCalPage() {
         }
 
         .calendar-day-cell {
-          aspect-ratio: unset !important; /* Allow cells to be non-square for print fill */
+          aspect-ratio: unset !important; 
           width: 100% !important;
           height: 100% !important;
-          display: flex !important; /* Keep flex for internal alignment */
+          display: flex !important; 
           box-sizing: border-box !important;
         }
 
@@ -288,7 +309,6 @@ export default function VisualCalPage() {
   useEffect(() => {
     if (isClient && calendarConfig.theme) {
       document.documentElement.dataset.theme = calendarConfig.theme;
-      // Handle inherently dark themes by adding/removing .dark class
       if (['cosmic-dark', 'minimalist-dark', 'cyberpunk-neon'].includes(calendarConfig.theme)) {
         document.documentElement.classList.add('dark');
       } else {
@@ -385,8 +405,8 @@ export default function VisualCalPage() {
   }, [isResizing, handleGlobalMouseMove, handleGlobalMouseUp]);
 
 
-  const bodyFontClass = 'font-' + calendarConfig.bodyFont.toLowerCase().replace(/\s+/g, '');
-  const headerFontClass = 'font-' + calendarConfig.headerFont.toLowerCase().replace(/\s+/g, '');
+  const bodyFontClass = `font-${calendarConfig.bodyFont.toLowerCase().replace(/\s+/g, '')}`;
+  const headerFontClass = `font-${calendarConfig.headerFont.toLowerCase().replace(/\s+/g, '')}`;
 
 
   if (!isClient) {
@@ -427,6 +447,13 @@ export default function VisualCalPage() {
      return null;
   }
 
+  const showPattern = !calendarConfig.imageSrc || calendarConfig.imageSrc === initialConfig.imageSrc;
+  const imagePatternStyle: React.CSSProperties = {
+    backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 4px, hsla(var(--foreground), 0.03) 4px, hsla(var(--foreground), 0.03) 8px)',
+    backgroundSize: '11.31px 11.31px', // Controls density of pattern (approx sqrt(2)*8)
+  };
+
+
   return (
     <SidebarProvider defaultOpen>
       <div className={cn("flex h-screen w-full", bodyFontClass)}>
@@ -438,30 +465,45 @@ export default function VisualCalPage() {
           <ScrollArea className="flex-1">
             <SidebarContent className={cn("p-0", bodyFontClass)}>
               <SidebarGroup>
+                <SidebarGroupLabel className="flex items-center px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">
+                   <CalendarDays className="mr-2 h-4 w-4" /> Month & Year
+                </SidebarGroupLabel>
                 <MonthYearSelector config={calendarConfig} onConfigChange={handleConfigChange} />
               </SidebarGroup>
               <SidebarGroup>
-                <SidebarGroupLabel className="px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">Image</SidebarGroupLabel>
+                <SidebarGroupLabel className="flex items-center px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">
+                  <ImageIcon className="mr-2 h-4 w-4" /> Image
+                </SidebarGroupLabel>
                 <ImageSettings config={calendarConfig} onConfigChange={handleConfigChange} />
               </SidebarGroup>
               <SidebarGroup>
-                <SidebarGroupLabel className="px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">Notes</SidebarGroupLabel>
+                <SidebarGroupLabel className="flex items-center px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">
+                  <FileTextIcon className="mr-2 h-4 w-4" /> Notes
+                </SidebarGroupLabel>
                 <NotesSettings config={calendarConfig} onConfigChange={handleConfigChange} />
               </SidebarGroup>
               <SidebarGroup>
-                <SidebarGroupLabel className="px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">Quotes</SidebarGroupLabel>
+                <SidebarGroupLabel className="flex items-center px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">
+                  <QuoteIcon className="mr-2 h-4 w-4" /> Quotes
+                </SidebarGroupLabel>
                 <QuotesSettings config={calendarConfig} onConfigChange={handleConfigChange} />
               </SidebarGroup>
               <SidebarGroup>
-                <SidebarGroupLabel className="px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">Fonts</SidebarGroupLabel>
+                <SidebarGroupLabel className="flex items-center px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">
+                  <TypeIcon className="mr-2 h-4 w-4" /> Fonts
+                </SidebarGroupLabel>
                 <FontSettings config={calendarConfig} onConfigChange={handleConfigChange} />
               </SidebarGroup>
               <SidebarGroup>
-                <SidebarGroupLabel className="px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">Appearance & Style</SidebarGroupLabel>
+                <SidebarGroupLabel className="flex items-center px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">
+                  <PaletteIcon className="mr-2 h-4 w-4" /> Appearance & Style
+                </SidebarGroupLabel>
                 <AppearanceSettings config={calendarConfig} onConfigChange={handleConfigChange} />
               </SidebarGroup>
               <SidebarGroup>
-                <SidebarGroupLabel className="px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">Layout & Print</SidebarGroupLabel>
+                <SidebarGroupLabel className="flex items-center px-4 pt-2 text-xs uppercase tracking-wider text-sidebar-foreground/70">
+                  <LayoutGridIcon className="mr-2 h-4 w-4" /> Layout & Print
+                </SidebarGroupLabel>
                 <DisplaySettings config={calendarConfig} onConfigChange={handleConfigChange} />
               </SidebarGroup>
             </SidebarContent>
@@ -478,19 +520,27 @@ export default function VisualCalPage() {
             {calendarConfig.displayLayout === 'default' && (
               <>
                 {renderQuotes('above-image')}
-                {calendarConfig.imageSrc && (
+                {showPattern ? (
                   <div
-                    className="relative w-full bg-muted/30 p-2 rounded-lg shadow-inner visualcal-image-host"
-                    style={{ height: defaultLayoutImageHeight }}
-                    data-ai-hint="decorative feature"
-                  >
-                    <ImageDisplay
-                      src={calendarConfig.imageSrc}
-                      alt="Calendar visual"
-                      position={calendarConfig.imagePosition}
-                      size={calendarConfig.imageSize}
-                    />
-                  </div>
+                    className="relative w-full bg-card p-2 rounded-lg shadow-inner visualcal-image-host"
+                    style={{ height: defaultLayoutImageHeight, ...imagePatternStyle }}
+                    data-ai-hint="background pattern"
+                  />
+                ) : (
+                  calendarConfig.imageSrc && (
+                    <div
+                      className="relative w-full bg-muted/30 p-2 rounded-lg shadow-inner visualcal-image-host"
+                      style={{ height: defaultLayoutImageHeight }}
+                      data-ai-hint="decorative feature"
+                    >
+                      <ImageDisplay
+                        src={calendarConfig.imageSrc}
+                        alt="Calendar visual"
+                        position={calendarConfig.imagePosition}
+                        size={calendarConfig.imageSize}
+                      />
+                    </div>
+                  )
                 )}
                 {renderQuotes('below-image')}
                 {renderNotesUnderImage()}
@@ -512,15 +562,23 @@ export default function VisualCalPage() {
                   style={splitImageWidthStyle}
                 >
                   {renderQuotes('above-image')}
-                  {calendarConfig.imageSrc && (
-                    <div className="relative flex-grow bg-muted/30 p-2 md:p-0 md:pr-1 rounded-lg shadow-inner min-h-[200px] md:min-h-0 visualcal-image-host" data-ai-hint="custom background">
-                      <ImageDisplay
-                        src={calendarConfig.imageSrc}
-                        alt="Calendar visual"
-                        position={calendarConfig.imagePosition}
-                        size={calendarConfig.imageSize}
+                  {showPattern ? (
+                     <div 
+                        className="relative flex-grow bg-card p-2 md:p-0 md:pr-1 rounded-lg shadow-inner min-h-[200px] md:min-h-0 visualcal-image-host" 
+                        style={imagePatternStyle}
+                        data-ai-hint="background pattern side"
                       />
-                    </div>
+                  ) : (
+                    calendarConfig.imageSrc && (
+                      <div className="relative flex-grow bg-muted/30 p-2 md:p-0 md:pr-1 rounded-lg shadow-inner min-h-[200px] md:min-h-0 visualcal-image-host" data-ai-hint="custom background">
+                        <ImageDisplay
+                          src={calendarConfig.imageSrc}
+                          alt="Calendar visual"
+                          position={calendarConfig.imagePosition}
+                          size={calendarConfig.imageSize}
+                        />
+                      </div>
+                    )
                   )}
                   {renderQuotes('below-image')}
                   {renderNotesUnderImage()}
@@ -549,19 +607,27 @@ export default function VisualCalPage() {
             {calendarConfig.displayLayout === 'landscape-banner' && (
               <>
                 {renderQuotes('above-image')}
-                {calendarConfig.imageSrc && (
+                {showPattern ? (
                   <div
-                    className="relative w-full bg-muted/30 p-2 rounded-lg shadow-inner visualcal-image-host landscape-banner-image-host"
-                    style={{ height: landscapeBannerHeight }}
-                    data-ai-hint="top banner"
-                  >
-                    <ImageDisplay
-                      src={calendarConfig.imageSrc}
-                      alt="Calendar banner"
-                      position={calendarConfig.imagePosition}
-                      size={calendarConfig.imageSize}
-                    />
-                  </div>
+                    className="relative w-full bg-card p-2 rounded-lg shadow-inner visualcal-image-host landscape-banner-image-host"
+                    style={{ height: landscapeBannerHeight, ...imagePatternStyle }}
+                    data-ai-hint="background pattern banner"
+                  />
+                ) : (
+                  calendarConfig.imageSrc && (
+                    <div
+                      className="relative w-full bg-muted/30 p-2 rounded-lg shadow-inner visualcal-image-host landscape-banner-image-host"
+                      style={{ height: landscapeBannerHeight }}
+                      data-ai-hint="top banner"
+                    >
+                      <ImageDisplay
+                        src={calendarConfig.imageSrc}
+                        alt="Calendar banner"
+                        position={calendarConfig.imagePosition}
+                        size={calendarConfig.imageSize}
+                      />
+                    </div>
+                  )
                 )}
                 {renderQuotes('below-image')}
                 {renderNotesUnderImage()}
