@@ -36,7 +36,7 @@ const initialConfig: CalendarConfig = {
   imageSrc: 'https://placehold.co/800x600.png',
   imagePosition: { x: 50, y: 50 },
   imageSize: 100,
-  imagePanelDimension: 30,
+  imagePanelDimension: 30, // Default for split view, affects banner/default heights
   showNotes: true,
   notesContent: 'Your notes here...',
   notesPosition: 'bottom-right',
@@ -126,56 +126,104 @@ export default function VisualCalPage() {
       "    size: " + orientation + ";\n" +
       "    margin: 0.5in;\n" +
       "  }\n" +
-      "  body {\n" +
+      "  html, body {\n" +
+      "    width: 100% !important;\n" +
+      "    height: 100% !important;\n" +
+      "    margin: 0 !important;\n" +
+      "    padding: 0 !important;\n" +
+      "    overflow: hidden !important;\n" +
       "    -webkit-print-color-adjust: exact !important;\n" +
       "    print-color-adjust: exact !important;\n" +
-      "    width: 100%;\n" +
-      "    height: 100%;\n" +
-      "    overflow: hidden !important;\n" +
+      "    background-color: white !important; /* Ensure background for print */\n" +
       "  }\n" +
       "  .visualcal-sidebar, .visualcal-print-button-group, .visualcal-resizer {\n" +
       "    display: none !important;\n" +
       "  }\n" +
-       "  .visualcal-sidebar-inset {\n" +
-      "    padding: 0 !important;\n" +
-      "    margin: 0 !important;\n" +
-      "    overflow: visible !important;\n" +
-      "    height: auto !important;\n" +
+       "  .visualcal-sidebar-inset {\n" + // This is the main page wrapper for print
       "    display: flex !important;\n" +
       "    flex-direction: column !important;\n" +
       "    width: 100% !important;\n" +
-      "  }\n" +
-      "  .visualcal-main-content {\n" +
-      "    width: 100% !important;\n" +
-      "    height: auto !important;\n" +
-      "    overflow: visible !important;\n" +
+      "    height: 100% !important;\n" + // Take full page height
       "    padding: 0 !important;\n" +
       "    margin: 0 !important;\n" +
+      "    box-sizing: border-box !important;\n" +
+      "    background-color: var(--background) !important; /* Match app background */\n" +
+      "  }\n" +
+      "  .visualcal-main-content {\n" + // This is inside sidebar-inset
+      "    display: flex !important;\n" +
+      "    flex-direction: column !important;\n" +
+      "    flex-grow: 1 !important;\n" + // Grow to fill sidebar-inset
+      "    width: 100% !important;\n" +
+      "    padding: 0 !important;\n" + // Remove padding for print
+      "    margin: 0 !important;\n" +
+      "    box-sizing: border-box !important;\n" +
+      "  }\n" +
+       // Default and Landscape Banner Layout specific print styling
+      "  .visualcal-main-content > .visualcal-image-host {\n" +
+      "    flex-shrink: 0 !important;\n" + // Don't let image panel shrink
+      "    height: auto !important;\n" + // Let content or proportional height rule
+      (calendarConfig.displayLayout === 'landscape-banner' ? `    height: ${String(10 + calendarConfig.imagePanelDimension / 2)}vh !important; \n` : '    max-height: 40vh !important;\n') + // Example max height
+      "  }\n" +
+      "  .visualcal-main-content > .flex-grow.flex.flex-col {\n" + // This wraps CalendarView in default/banner
       "    flex-grow: 1 !important;\n" +
       "    display: flex !important;\n" +
       "    flex-direction: column !important;\n" +
+      "    min-height: 0;\n" + // Allow shrinking if necessary
       "  }\n" +
-      "  .visualcal-split-image-panel, .visualcal-split-calendar-panel, .visualcal-image-host {\n" +
-      "    height: auto !important; \n" +
+      // Split Layout specific print styling
+      "  .visualcal-main-content > .flex.md\\:flex-row.h-full {\n" + // This is the ref={splitLayoutContainerRef} div
+      "     display: flex !important;\n"+
+      "     flex-direction: row !important;\n"+ // Force row for print regardless of screen size
+      "     width: 100% !important;\n"+
+      "     height: 100% !important;\n"+
+      "  }\n" +
+      "  .visualcal-split-image-panel, .visualcal-split-calendar-panel {\n" +
+      "    height: 100% !important;\n" + // Fill height of the row container
+      "    padding: 0 !important;\n" +
+      "    margin: 0 !important;\n" +
+      "    display: flex !important;\n" +
+      "    flex-direction: column !important;\n" +
+      "    box-sizing: border-box !important;\n" +
+      "  }\n" +
+      "  .visualcal-split-image-panel > .relative.flex-grow, \n" + // Image container within split image panel
+      "  .visualcal-split-calendar-panel > .calendar-view {\n" + // CalendarView within split calendar panel
+      "    flex-grow: 1 !important;\n" +
+      "    display: flex !important;\n" +
+      "    flex-direction: column !important;\n" +
+      "    height: 100%;\n" + // Ensure they fill their panel
+      "  }\n" +
+      "  .visualcal-image-host {\n" + // General image host
       "    padding: 0 !important; \n" +
       "    margin: 0 !important; \n" +
       "    min-height: 0 !important;\n" +
-      "    flex-shrink: 0 !important;\n" +
+      "    background-color: transparent !important; /* Remove any background artifacts */\n" +
       "  }\n" +
       "  .calendar-view {\n" +
-      "    height: auto !important;\n" +
       "    display: flex !important;\n" +
       "    flex-direction: column !important;\n" +
-      "    flex-grow: 1 !important;\n" +
+      "    flex-grow: 1 !important;\n" + // Key for calendar to fill its allocated space
+      "    /* height: auto !important; */ /* Let flex-grow manage height */\n" +
+      "    width: 100% !important; \n" +
+      "    min-height: 0 !important; \n" +
+      "    box-sizing: border-box !important;\n" +
       "  }\n" +
-      "  .calendar-view > .grid:last-child {\n" +
-      "     flex-grow: 1 !important;\n" +
+      "  .calendar-view > .grid:last-child {\n" + // The grid of day cells
+      "     flex-grow: 1 !important;\n" + // Allows rows with auto-rows-fr to expand
+      "     display: grid !important; /* Ensure grid display */ \n" +
+      "  }\n" +
+      // Notes and Quotes for print
+      "  .notes-display-absolute, .quotes-display-block {\n" + // Add classes to these components if needed
+      "    position: static !important; /* Override absolute positioning for notes/quotes */\n" +
+      "    width: 100% !important; \n" +
+      "    height: auto !important; \n" +
+      "    margin-top: 0.5rem !important; \n" +
+      "    margin-bottom: 0.5rem !important; \n" +
       "  }\n" +
       "}";
       
     styleTag.innerHTML = cssString;
 
-  }, [calendarConfig.paperOrientation, isClient]);
+  }, [calendarConfig.paperOrientation, calendarConfig.displayLayout, calendarConfig.imagePanelDimension, isClient]);
 
   useEffect(() => {
     if (isClient && calendarConfig.theme) {
@@ -254,7 +302,7 @@ export default function VisualCalPage() {
     const dPercentage = (dx / parentWidthAtDragStart) * 100;
     
     let newDimension = initialDragDimension + dPercentage;
-    newDimension = Math.max(20, Math.min(50, newDimension)); 
+    newDimension = Math.max(20, Math.min(80, newDimension)); // Allow image panel to be larger
 
     handleConfigChange('imagePanelDimension', parseFloat(newDimension.toFixed(1)));
   }, [isResizing, dragStartX, initialDragDimension, parentWidthAtDragStart, handleConfigChange]);
@@ -288,21 +336,23 @@ export default function VisualCalPage() {
 
   if (!isClient) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
+      <div className={cn("flex items-center justify-center min-h-screen bg-background", bodyFontClass)}>
         <p className="text-xl text-foreground">Loading Calendy...</p>
       </div>
     );
   }
-
-  const defaultLayoutImageHeight = String(100 + (calendarConfig.imagePanelDimension - 10) * 10) + 'px';
-  const landscapeBannerHeight = String(10 + calendarConfig.imagePanelDimension / 2) + 'vh';
   
+  // Height calculation for 'default' layout's image panel
+  const defaultLayoutImageHeight = String(100 + (calendarConfig.imagePanelDimension - 10) * 8) + 'px'; // Scaled based on imagePanelDimension
+  // Height for 'landscape-banner' layout's image panel
+  const landscapeBannerHeight = String(10 + calendarConfig.imagePanelDimension / 2.5) + 'vh'; // Scaled based on imagePanelDimension
+
   const splitImageWidthStyle = { width: String(calendarConfig.imagePanelDimension + '%') };
   const splitCalendarWidthStyle = { width: String((100 - calendarConfig.imagePanelDimension) + '%') };
 
   const renderQuotes = (position: QuotesPosition) => {
     if (calendarConfig.showQuotes && calendarConfig.quotesPosition === position) {
-      return <QuotesDisplay config={calendarConfig} className={cn(position === 'page-bottom' ? 'w-full mt-4' : 'my-2', bodyFontClass, headerFontClass)} />;
+      return <QuotesDisplay config={calendarConfig} className={cn(position === 'page-bottom' ? 'w-full mt-4 quotes-display-block' : 'my-2 quotes-display-block', bodyFontClass, headerFontClass)} />;
     }
     return null;
   };
@@ -393,7 +443,7 @@ export default function VisualCalPage() {
                 {renderNotesUnderImage()}
                 {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes && renderQuotes('below-notes-module')}
                 
-                <div className="flex-grow flex flex-col">
+                <div className="flex-grow flex flex-col min-h-0"> {/* Added min-h-0 */}
                   <CalendarView config={calendarConfig} />
                 </div>
                 {calendarConfig.quotesPosition === 'below-notes-module' && !(calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes) && renderQuotes('below-notes-module')}
@@ -425,7 +475,7 @@ export default function VisualCalPage() {
                   {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes && renderQuotes('below-notes-module')}
                 </div>
                 <div
-                  className="visualcal-resizer hidden md:flex items-center justify-center w-2 bg-transparent hover:bg-transparent cursor-col-resize group"
+                  className="visualcal-resizer hidden md:flex items-center justify-center w-0 hover:bg-transparent cursor-col-resize group" // w-2 to w-0
                   onMouseDown={handleMouseDownResizer}
                   role="separator"
                   aria-orientation="vertical"
@@ -434,7 +484,7 @@ export default function VisualCalPage() {
                 </div>
                 <div
                   className={cn(
-                    "flex-1 w-full md:pl-0 visualcal-split-calendar-panel flex flex-col" 
+                    "flex-1 w-full md:pl-0 visualcal-split-calendar-panel flex flex-col min-h-0" // Added min-h-0
                   )}
                   style={splitCalendarWidthStyle}
                 >
@@ -464,7 +514,7 @@ export default function VisualCalPage() {
                 {renderQuotes('below-image')}
                 {renderNotesUnderImage()}
                 {calendarConfig.quotesPosition === 'below-notes-module' && calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes && renderQuotes('below-notes-module')}
-                <div className="flex-grow flex flex-col">
+                <div className="flex-grow flex flex-col min-h-0"> {/* Added min-h-0 */}
                   <CalendarView config={calendarConfig} />
                 </div>
                 {calendarConfig.quotesPosition === 'below-notes-module' && !(calendarConfig.notesPosition === 'under-image' && calendarConfig.showNotes) && renderQuotes('below-notes-module')}
@@ -477,6 +527,7 @@ export default function VisualCalPage() {
             <NotesDisplay
               config={calendarConfig}
               onNotesChange={(notes) => handleConfigChange('notesContent', notes)}
+              className="notes-display-absolute" // Add class for print targeting
             />
           )}
         </SidebarInset>
@@ -485,4 +536,3 @@ export default function VisualCalPage() {
   );
 }
     
-
